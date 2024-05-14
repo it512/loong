@@ -20,9 +20,9 @@ type ProcInst struct {
 	BusiType string
 
 	/*
-	EndCode string
-	EndName string
-	EndType string
+		EndCode string
+		EndName string
+		EndType string
 	*/
 
 	StartTime time.Time
@@ -55,6 +55,8 @@ type Exec struct {
 	Input Var
 
 	*ProcInst
+
+	elementID string // 当前bpmnElementID
 }
 
 func (e Exec) Eval(ctx context.Context, el string) (any, error) {
@@ -71,6 +73,10 @@ func (c Exec) Emit(ctx context.Context, emt Emitter) error {
 
 func (c Exec) Type() ActivityType {
 	return NotApplicable
+}
+
+func (s Exec) GetTaskDefinition(ctx context.Context) TaskDefinition {
+	return idTaskDef{id: s.elementID}
 }
 
 func (e Exec) EmitDefault(ctx context.Context, o Out, emt Emitter) error {

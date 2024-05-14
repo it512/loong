@@ -64,6 +64,8 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 		panic(fmt.Errorf("未找到目标 TargetRef = %s", c.TargetRef))
 	}
 
+	c.Exec.elementID = c.target.GetId()
+
 	return nil
 }
 
@@ -76,7 +78,7 @@ func (c sequenceFlow) Emit(_ context.Context, commit Emitter) error {
 	case bpmn.ParallelGateway:
 		return commit.Emit(&parallelGatewayCmd{gateway: gateway{Forker: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec}})
 	case bpmn.ServiceTask:
-		return commit.Emit(&ServiceTask{Exec: c.Exec, TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
+		return commit.Emit(&ServiceTask{Exec: c.Exec, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
 	case bpmn.EndEvent:
 		return commit.Emit(&EndEventOp{Exec: c.Exec, TEndEvent: bpmn.Cast[bpmn.TEndEvent](c.target)})
 	case bpmn.IntermediateThrowEvent:

@@ -44,3 +44,19 @@ func (serviceTask TServiceTask) GetOutgoingAssociation() []string {
 func (serviceTask TServiceTask) GetType() ElementType {
 	return ServiceTask
 }
+
+func (serviceTask TServiceTask) GetIoInput() []zeebe.TIoMapping {
+	return serviceTask.Input
+}
+
+func (serviceTask TServiceTask) GetIoOutput() []zeebe.TIoMapping {
+	return serviceTask.Output
+}
+
+func (s TServiceTask) GetTaskHeader(key string) (string, bool) {
+	return zeebe.GetTaskHeader(s.TaskHeaders, key)
+}
+
+func (s TServiceTask) GetProperty(name string) (string, bool) {
+	return zeebe.GetProperty(s.Properties, name)
+}

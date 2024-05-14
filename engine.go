@@ -27,6 +27,7 @@ type Config struct {
 	store     Store
 	eh        EventHandler
 	templates Templates
+	sc        ServiceConnector
 
 	ctx context.Context
 
@@ -60,11 +61,11 @@ type Engine struct {
 	Templates
 	Store
 	IDGen
+	ServiceConnector
 
 	ctx context.Context
 
-	connector ServiceConnector
-	driver    Driver
+	driver Driver
 
 	config *Config
 }
@@ -74,6 +75,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 		queueSize: 4,
 		eh:        emptyEh,
 		ctx:       context.Background(),
+		sc:        emptyConnect,
 	}
 
 	for _, op := range ops {
@@ -81,10 +83,10 @@ func NewEngine(name string, ops ...Option) *Engine {
 	}
 
 	return &Engine{
-		Name:      name,
-		Evaluator: expr.New(),
-		IDGen:     uid{},
-		connector: emptyConnect,
+		Name:             name,
+		Evaluator:        expr.New(),
+		IDGen:            uid{},
+		ServiceConnector: config.sc,
 
 		Templates: config.templates,
 		Store:     config.store,
