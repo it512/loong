@@ -28,11 +28,18 @@ type Config struct {
 	eh        EventHandler
 	templates Templates
 
+	ctx context.Context
+
 	queueSize uint
-	ctx       context.Context
 }
 
 type Option func(*Config)
+
+func SetContext(ctx context.Context) Option {
+	return func(e *Config) {
+		e.ctx = ctx
+	}
+}
 
 func SetStore(s Store) Option {
 	return func(e *Config) {
