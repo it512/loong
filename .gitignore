@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+.env
+
+entc.go
+migr.go
+tools.go

@@ -1,0 +1,34 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar Map
+
+type ProcReturn {
+  instId: String!
+}
+
+type CommitTaskReturn {
+  taskId: String!
+}
+
+input StartProcCmd {
+  procId: String!
+  starter: String!
+  busiKey: String!
+  busiType:String!
+  input: Map!
+}
+
+input UserTaskCommitCmd {
+  taskId: String!
+  operator: String!
+  input: Map!
+  result: Int!
+  version: Int!
+}
+
+type Mutation {
+  startProc(input: StartProcCmd!): ProcReturn!
+  commitTask(input: UserTaskCommitCmd!): CommitTaskReturn!
+}

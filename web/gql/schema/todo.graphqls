@@ -1,0 +1,40 @@
+
+type Item {
+  taskId: ID!
+
+  formKey:String!
+
+  busiKey:String!
+  busiType:String!
+
+  actName:String!
+  actId:String!
+
+  candidateGroups:String!
+
+  owner:String!
+
+  status:Int!
+
+  version:Int!
+}
+
+type TodoPageResult {
+  items: [Item]!
+  max: ID!
+  mix: ID!
+  count: Int!
+}
+
+input TodoQueryParam {
+  candidateGroups: [String!]!
+  busiType:String
+  last:ID!
+  size:Int!
+  direction:Int!
+}
+
+type Query {
+  todosPage(input: TodoQueryParam!): TodoPageResult!
+}
+
