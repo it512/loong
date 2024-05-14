@@ -36,7 +36,7 @@ func OpenDB(url string) (*sql.DB, error) {
 	return OpenDBCtx(context.Background(), url)
 }
 
-func New(db *sql.DB) *Store {
+func NewStore(db *sql.DB) *Store {
 	return &Store{
 		Client: open(db),
 	}
@@ -44,6 +44,6 @@ func New(db *sql.DB) *Store {
 
 func PgxStore(url string) loong.Option {
 	db := loong.Must(OpenDB(url))
-	store := New(db)
+	store := NewStore(db)
 	return loong.SetStore(store)
 }

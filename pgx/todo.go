@@ -2,6 +2,7 @@ package pgx
 
 import (
 	"context"
+	"database/sql"
 	"slices"
 
 	"github.com/it512/loong"
@@ -12,6 +13,12 @@ import (
 
 type TodoStore struct {
 	*ent.Client
+}
+
+func NewTodoStore(db *sql.DB) *TodoStore {
+	return &TodoStore{
+		Client: open(db),
+	}
 }
 
 func todoPageDown(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Client) (r todo.TodoPageResult, err error) {
