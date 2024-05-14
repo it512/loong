@@ -21,7 +21,7 @@ func NewTodoStore(db *sql.DB) *TodoStore {
 	}
 }
 
-func todoPageDown(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Client) (r todo.TodoPageResult, err error) {
+func todoPageDown(ctx context.Context, tp todo.TodoQueryParam, client *ent.Client) (r *todo.TodoPageResult, err error) {
 	groups := slices.Concat(tp.CandidateGroups, tp.SudoGroups)
 
 	q := client.UserTask.Query()
@@ -38,6 +38,8 @@ func todoPageDown(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Clie
 		return
 	}
 
+	r = new(todo.TodoPageResult)
+
 	for _, u := range ut {
 		r.Items = append(r.Items, xx(u))
 	}
@@ -50,7 +52,7 @@ func todoPageDown(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Clie
 	return
 }
 
-func todoPageUp(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Client) (r todo.TodoPageResult, err error) {
+func todoPageUp(ctx context.Context, tp todo.TodoQueryParam, client *ent.Client) (r *todo.TodoPageResult, err error) {
 	groups := slices.Concat(tp.CandidateGroups, tp.SudoGroups)
 
 	q := client.UserTask.Query()
@@ -66,6 +68,8 @@ func todoPageUp(ctx context.Context, tp *todo.TodoQueryParam, client *ent.Client
 	if ut, err = q.All(ctx); err != nil {
 		return
 	}
+
+	r = new(todo.TodoPageResult)
 
 	for _, u := range ut {
 		r.Items = append(r.Items, xx(u))
@@ -92,7 +96,7 @@ func xx(u *ent.UserTask) *todo.Item {
 	}
 }
 
-func (m *TodoStore) QueryTaskPage(ctx context.Context, tp *todo.TodoQueryParam) (todo.TodoPageResult, error) {
+func (m *TodoStore) QueryTaskPage(ctx context.Context, tp todo.TodoQueryParam) (*todo.TodoPageResult, error) {
 	if tp.Direction == 0 { //down
 		return todoPageDown(ctx, tp, m.Client)
 	}
