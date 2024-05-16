@@ -36,7 +36,7 @@ type gateway struct {
 func (c *gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
 	for _, ex := range xs {
 		sf := fromExec(ex, ex.OutTag)
-		emt.Emit(sf)
+		emt.Emit(sf) //nolint:errcheck
 	}
 	return nil
 }

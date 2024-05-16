@@ -97,7 +97,7 @@ func xx(u *ent.UserTask) *todo.Item {
 }
 
 func (m *TodoStore) QueryTaskPage(ctx context.Context, tp todo.TodoQueryParam) (*todo.TodoPageResult, error) {
-	if tp.Direction == 0 { //down
+	if tp.Direction == 0 { // down
 		return todoPageDown(ctx, tp, m.Client)
 	}
 	return todoPageUp(ctx, tp, m.Client)
