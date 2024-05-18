@@ -37,7 +37,6 @@ type userTaskOp struct {
 }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
-
 	c.UserTask.FormKey = c.TUserTask.FormDefinition.FormKey
 	c.UserTask.InstID = c.ProcInst.InstID
 	c.UserTask.ActID = c.TUserTask.GetId()
@@ -121,14 +120,14 @@ type vote struct {
 
 func (v *vote) Put(ut []UserTask) {
 	for _, u := range ut {
-		v.numberOfInstances = v.numberOfInstances + 1
+		v.numberOfInstances++
 
 		if u.Status == STATUS_START { // 未投票的
-			v.numberOfActiveInstances = v.numberOfActiveInstances + 1
+			v.numberOfActiveInstances++
 		}
 
 		if u.Result != 0 { // 投票不通过
-			v.numberOfTerminatedInstances = v.numberOfTerminatedInstances + 1
+			v.numberOfTerminatedInstances++
 		}
 	}
 
