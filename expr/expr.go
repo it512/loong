@@ -9,14 +9,12 @@ import (
 )
 
 type ExprEval struct {
-	//prgMap map[string]*vm.Program
 	inst *vm.VM
 }
 
 func New() *ExprEval {
 	return &ExprEval{
 		inst: &vm.VM{},
-		//prgMap: make(map[string]*vm.Program),
 	}
 }
 
@@ -26,6 +24,7 @@ func (e *ExprEval) Eval(ctx context.Context, ex string, a any) (any, error) {
 	if el, ok = exp(ex); !ok {
 		return el, nil
 	}
+
 	program, err := expr.Compile(el)
 	if err != nil {
 		return nil, err

@@ -7,18 +7,18 @@ import (
 	"github.com/it512/loong/bpmn"
 )
 
-func choose(ctx context.Context, eval ActivationEvaluator, in []bpmn.TSequenceFlow) (out []bpmn.TSequenceFlow, err error) {
+func choose(ctx context.Context, ae ActivationEvaluator, in []bpmn.TSequenceFlow) (out []bpmn.TSequenceFlow, err error) {
 	if len(in) == 1 {
 		return in, nil
 	}
 
-	var v any
 	for _, flow := range in {
 		if flow.HasConditionExpression() {
-			if v, err = eval.Eval(ctx, flow.GetConditionExpression()); err != nil {
+			var b bool
+			if b, _, err = eval[bool](ctx, ae, flow.GetConditionExpression()); err != nil {
 				return
 			}
-			if v == true {
+			if b {
 				out = append(out, flow)
 			}
 		}

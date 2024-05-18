@@ -2,6 +2,7 @@ package loong
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/it512/loong/bpmn"
@@ -17,7 +18,9 @@ type UserTask struct {
 	ActName string
 	ActID   string
 
+	Assignee        string
 	CandidateGroups string
+	CandidateUsers  string
 
 	Operator string
 
@@ -47,15 +50,15 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	var tasks []UserTask
 	if c.TUserTask.HasMultiInstanceLoopCharacteristics() {
 	} else {
-		groupAny, err := c.Eval(ctx, c.TUserTask.AssignmentDefinition.CandidateGroups)
-		if err != nil {
-			return err
+		var err error
+		if c.UserTask.Assignee, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.Assignee); err != nil {
+			panic(fmt.Errorf("执行人为空:%w", err))
 		}
-
-		var ok bool
-		c.UserTask.CandidateGroups, ok = groupAny.(string)
-		if !ok || c.UserTask.CandidateGroups == "" {
-			panic("执行人为空")
+		if c.UserTask.CandidateGroups, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.CandidateGroups); err != nil {
+			panic(fmt.Errorf("执行人为空:%w", err))
+		}
+		if c.UserTask.CandidateUsers, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.CandidateUsers); err != nil {
+			panic(fmt.Errorf("执行人为空:%w", err))
 		}
 
 		c.UserTask.BatchNo = c.IDGen.NewID()

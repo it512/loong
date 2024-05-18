@@ -14,6 +14,10 @@ type IDGen interface {
 	NewID() string
 }
 
+type uid struct{}
+
+func (uid) NewID() string { return uuid.Must(uuid.NewV7()).String() }
+
 type Emitter interface {
 	Emit(...Activity) error
 }
@@ -29,6 +33,14 @@ type Evaluator interface {
 
 type ActivationEvaluator interface {
 	Eval(ctx context.Context, el string) (any, error)
+}
+
+func eval[T any](ctx context.Context, ae ActivationEvaluator, el string) (val T, a any, err error) {
+	a, err = ae.Eval(ctx, el)
+	if err != nil {
+		return
+	}
+	return a.(T), a, nil
 }
 
 type Store interface {
@@ -62,7 +74,3 @@ func Must[T any](t T, err error) T {
 	}
 	return t
 }
-
-type uid struct{}
-
-func (uid) NewID() string { return uuid.Must(uuid.NewV7()).String() }
