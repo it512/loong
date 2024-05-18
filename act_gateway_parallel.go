@@ -19,7 +19,6 @@ func (p *parallelGatewayCmd) Emit(ctx context.Context, emt Emitter) error {
 }
 
 func (p *parallelGatewayCmd) join(ctx context.Context) error {
-
 	in := len(p.GetIncomingAssociation())
 	if in > 1 && p.ForkID == "" {
 		panic("不支持无fork 直接join, 在当前节点之前缺少排他网关")
@@ -94,7 +93,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 	}
 
 	if c.ForkMode == fullJoin {
-		//全join, 存在2种情况
+		// 全join, 存在2种情况
 		// 1 最顶层的fork - join
 		// 2 嵌套的  fork - join
 		// 区别为p join ID 是否非空， "" 顶层， 非空为嵌套
@@ -105,7 +104,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 			// 注意, join 后可以立即fork
 			top := c.Exec.top()
 			if outN == 1 {
-				//只有一个出口，正常结束
+				// 只有一个出口，正常结束
 				// 设置一下outTag
 				xs := top.children(out)
 				return c.EmitExec(ctx, xs, emt)
@@ -147,7 +146,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 func findJoined(tags []Exec, me string) (n int, in []Exec, finished int) {
 	for _, x := range tags {
 		if x.JoinTag == me {
-			n = n + 1
+			n++
 			in = append(in, x)
 		}
 		if x.Status == STATUS_FINISH {
