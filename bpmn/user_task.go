@@ -18,7 +18,7 @@ type TMultiInstanceLoopCharacteristics struct {
 }
 
 func (m TMultiInstanceLoopCharacteristics) GetCompletionCondition() string {
-	return m.CompletionCondition.Text
+	return m.CompletionCondition.GetText()
 }
 
 func (m TMultiInstanceLoopCharacteristics) GetInputCollection() string {
