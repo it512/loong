@@ -17,17 +17,12 @@ type TSequenceFlow struct {
 	Properties []zeebe.TProperty `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
 }
 
-type TExpression struct {
-	Text string `xml:",innerxml"`
-	Type string `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
-}
-
 func (e TSequenceFlow) HasConditionExpression() bool {
 	return len(e.ConditionExpression) == 1 && len(strings.TrimSpace(e.GetConditionExpression())) > 0
 }
 
 func (e TSequenceFlow) GetConditionExpression() string {
-	return html.UnescapeString(e.ConditionExpression[0].Text)
+	return e.ConditionExpression[0].GetText()
 }
 
 func (e TSequenceFlow) GetId() string {

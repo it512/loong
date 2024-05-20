@@ -1,5 +1,7 @@
 package bpmn
 
+import "html"
+
 // xmins:activiti="http://activiti.org/bpmn"
 
 type TDefinitions struct {
@@ -121,4 +123,13 @@ type TError struct {
 
 func (e TError) GetId() string {
 	return e.Id
+}
+
+type TExpression struct {
+	Text string `xml:",innerxml"`
+	Type string `xml:"http://www.w3.org/2001/XMLSchema-instance type,attr"`
+}
+
+func (exp TExpression) GetText() string {
+	return html.UnescapeString(exp.Text)
 }
