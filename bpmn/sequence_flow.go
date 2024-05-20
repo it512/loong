@@ -1,7 +1,6 @@
 package bpmn
 
 import (
-	"html"
 	"strings"
 
 	"github.com/it512/loong/bpmn/zeebe"
