@@ -127,13 +127,21 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
 	v := &vote{}
 
-	ut, _ := t.Store.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
+	ut, err := t.Store.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
+	if err != nil {
+		return err
+	}
+
 	v.Put(ut)
 	b, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToVar())
 	if err != nil {
 		return err
 	}
-	if b {
+
+	if b { // 投票通过
+		if err := t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
+			return err
+		}
 		return t.EmitDefault(ctx, t.TUserTask, emt)
 	}
 

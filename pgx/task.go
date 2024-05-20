@@ -2,6 +2,7 @@ package pgx
 
 import (
 	"context"
+	"time"
 
 	"github.com/it512/loong"
 	"github.com/it512/loong/pgx/internal/ent"
@@ -80,4 +81,11 @@ func (m *Store) LoadUserTaskBatch(ctx context.Context, batchNO string) ([]loong.
 		})
 	}
 	return uts, nil
+}
+
+func (m *Store) EndUserTaskBatch(ctx context.Context, batchNO string) error {
+	return m.UserTask.Update().Where(usertask.BatchNoEQ(batchNO), usertask.StatusEQ(loong.STATUS_START)).
+		SetEndTime(time.Now()).
+		SetStatus(loong.STATUS_FINISH).
+		Exec(ctx)
 }

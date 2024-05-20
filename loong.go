@@ -62,8 +62,10 @@ type Store interface {
 
 	CreateTasks(ctx context.Context, tasks ...UserTask) error
 	LoadUserTask(ctx context.Context, taskID string, ut *UserTask) error
-	LoadUserTaskBatch(ctx context.Context, batchNO string) ([]UserTask, error)
 	EndUserTask(ctx context.Context, ut UserTask) error
+
+	LoadUserTaskBatch(ctx context.Context, batchNO string) ([]UserTask, error)
+	EndUserTaskBatch(ctx context.Context, batchNO string) error
 
 	ForkExec(ctx context.Context, xs []Exec) error
 	JoinExec(ctx context.Context, ex *Exec) error
