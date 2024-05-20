@@ -5,10 +5,14 @@ import (
 )
 
 func uid() uuid.UUID {
+	return UUIDv7()
+}
+
+func UUIDv7() uuid.UUID {
 	id := uuid.Must(uuid.NewV7())
 	return id
 }
 
 func NewID() string {
-	return uid().String()
+	return UUIDv7().String()
 }

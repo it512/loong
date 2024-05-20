@@ -40,7 +40,19 @@ func eval[T any](ctx context.Context, ae ActivationEvaluator, el string) (val T,
 	if err != nil {
 		return
 	}
-	return a.(T), a, nil
+
+	val = a.(T)
+	return
+}
+
+func eval2[T any](ctx context.Context, e Evaluator, el string, env any) (val T, a any, err error) {
+	a, err = e.Eval(ctx, el, env)
+	if err != nil {
+		return
+	}
+
+	val = a.(T)
+	return
 }
 
 type Store interface {

@@ -17,6 +17,10 @@ type TMultiInstanceLoopCharacteristics struct {
 	CompletionCondition TExpression `xml:"completionCondition"`
 }
 
+func (m TMultiInstanceLoopCharacteristics) GetCompletionCondition() string {
+	return m.CompletionCondition.Text
+}
+
 func (m TMultiInstanceLoopCharacteristics) GetInputCollection() string {
 	if m.LoopCharacteristics.InputCollection != "" {
 		return m.LoopCharacteristics.InputCollection // for Camunda

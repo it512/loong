@@ -17,7 +17,9 @@ func (m *Store) CreateTasks(ctx context.Context, tasks ...loong.UserTask) error 
 			SetBusiKey(task.ProcInst.BusiKey).
 			SetBusiType(task.ProcInst.BusiType).
 			SetFormKey(task.FormKey).
+			SetAssignee(task.Assignee).
 			SetCandidateGroups(task.CandidateGroups).
+			SetCandidateUsers(task.CandidateUsers).
 			SetActID(task.ActID).
 			SetActName(task.ActName).
 			SetBatchNo(task.BatchNo).
@@ -53,11 +55,29 @@ func (m *Store) LoadUserTask(ctx context.Context, taskID string, ut *loong.UserT
 
 	ut.StartTime = u.StartTime
 	ut.ActID = u.ActID
+
+	ut.Assignee = u.Assignee
 	ut.CandidateGroups = u.CandidateGroups
+	ut.CandidateUsers = u.CandidateUsers
+
 	ut.BatchNo = u.BatchNo
 	return nil
 }
 
 func (m *Store) LoadUserTaskBatch(ctx context.Context, batchNO string) ([]loong.UserTask, error) {
-	return nil, nil
+	q := m.UserTask.Query()
+	q.Where(usertask.BatchNoEQ(batchNO))
+	us, err := q.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var uts []loong.UserTask // nolint:prealloc
+	for _, u := range us {
+		uts = append(uts, loong.UserTask{
+			Result: u.Result,
+			Status: u.Status,
+			TaskID: u.TaskID,
+		})
+	}
+	return uts, nil
 }

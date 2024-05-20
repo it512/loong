@@ -3,9 +3,11 @@ package loong
 import (
 	"context"
 	"fmt"
+	"maps"
 	"time"
 
 	"github.com/it512/loong/bpmn"
+	"github.com/it512/loong/bpmn/zeebe"
 )
 
 type UserTask struct {
@@ -46,27 +48,51 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	c.UserTask.ActName = c.TUserTask.GetName()
 	c.UserTask.StartTime = time.Now()
 	c.UserTask.Status = STATUS_START
+	c.UserTask.BatchNo = c.IDGen.NewID()
+
+	ad := c.TUserTask.AssignmentDefinition
 
 	var tasks []UserTask
 	if c.TUserTask.HasMultiInstanceLoopCharacteristics() {
+		milc := c.TUserTask.GetMultiInstanceLoopCharacteristics()
+		items, _, err := eval[[]string](ctx, c, milc.GetInputCollection())
+		if err != nil {
+			return err
+		}
+
+		for _, item := range items {
+			var a UserTask = c.UserTask // copy
+			a.Exec.Input = maps.Clone(c.Exec.Input)
+			if key := milc.GetInputElement(); key != "" {
+				a.Exec.Input.Set(key, item)
+			}
+			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, c.Exec, ad); err != nil {
+				return err
+			}
+			tasks = append(tasks, a)
+		}
 	} else {
 		var err error
-		if c.UserTask.Assignee, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.Assignee); err != nil {
-			panic(fmt.Errorf("执行人为空:%w", err))
+		var a UserTask = c.UserTask // copy
+		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, c.Exec, ad); err != nil {
+			return err
 		}
-		if c.UserTask.CandidateGroups, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.CandidateGroups); err != nil {
-			panic(fmt.Errorf("执行人为空:%w", err))
-		}
-		if c.UserTask.CandidateUsers, _, err = eval[string](ctx, c, c.TUserTask.AssignmentDefinition.CandidateUsers); err != nil {
-			panic(fmt.Errorf("执行人为空:%w", err))
-		}
-
-		c.UserTask.BatchNo = c.IDGen.NewID()
-
-		tasks = append(tasks, c.UserTask)
+		tasks = append(tasks, a)
 	}
-
 	return c.Store.CreateTasks(ctx, tasks...)
+}
+
+func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDefinition) (a string, b string, c string, err error) {
+	if a, _, err = eval[string](ctx, ae, ad.Assignee); err != nil {
+		panic(fmt.Errorf("执行人为空:%w", err))
+	}
+	if b, _, err = eval[string](ctx, ae, ad.CandidateGroups); err != nil {
+		panic(fmt.Errorf("执行人为空:%w", err))
+	}
+	if c, _, err = eval[string](ctx, ae, ad.CandidateUsers); err != nil {
+		panic(fmt.Errorf("执行人为空:%w", err))
+	}
+	return
 }
 
 type userTaskRunOp struct {
@@ -98,12 +124,15 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 		return t.EmitDefault(ctx, t.TUserTask, emt)
 	}
 
+	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
 	v := &vote{}
 
 	ut, _ := t.Store.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
 	v.Put(ut)
-	a, _ := t.Engine.Evaluator.Eval(ctx, "", v.ToVar())
-	b := a.(bool)
+	b, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToVar())
+	if err != nil {
+		return err
+	}
 	if b {
 		return t.EmitDefault(ctx, t.TUserTask, emt)
 	}
@@ -115,7 +144,7 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 }
 
 type vote struct {
-	numberOfInstances           int //The number of instances created.
+	numberOfInstances           int // The number of instances created.
 	numberOfActiveInstances     int // The number of instances currently active.
 	numberOfCompletedInstances  int // The number of instances already completed.
 	numberOfTerminatedInstances int // The number of instances already terminated.
