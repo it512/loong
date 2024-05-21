@@ -72,7 +72,7 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 func (c sequenceFlow) Emit(_ context.Context, commit Emitter) error {
 	switch c.target.GetType() {
 	case bpmn.UserTask:
-		return commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
+		return commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
 	case bpmn.ExclusiveGateway:
 		return commit.Emit(&exclusivGatewayOp{gateway: gateway{Forker: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec}})
 	case bpmn.ParallelGateway:
