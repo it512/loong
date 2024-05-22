@@ -10,7 +10,7 @@ type TaskDefinition interface {
 	Type() (string, error)
 }
 
-type Operator interface {
+type IoOperator interface {
 	BpmnElement
 	GetTaskDefinition(context.Context) TaskDefinition
 	GetInput() Getter
@@ -20,8 +20,8 @@ type Operator interface {
 	SetResult(Getter)
 }
 
-type ServiceConnector interface {
-	Call(context.Context, Operator) error
+type IoConnector interface {
+	Call(context.Context, IoOperator) error
 }
 
 type idTaskDef struct {
@@ -65,20 +65,9 @@ func (t *taskDef) Type() (string, error) {
 
 type nilConnect struct{}
 
-func (nilConnect) Call(_ context.Context, _ Operator) error { return nil }
+func (nilConnect) Call(_ context.Context, _ IoOperator) error { return nil }
 
 var emptyConnect = new(nilConnect)
-
-func out(o []zeebe.TIoMapping, g Getter, s Setter) error {
-	return Each(o, func(m zeebe.TIoMapping, _ int) error {
-		if m.Target != "" {
-			if v, ok := g.Get(m.Source); ok {
-				s.Set(m.Target, v)
-			}
-		}
-		return nil
-	})
-}
 
 type LazyGetFunc func(key string) (any, error)
 type LazyBag struct {
@@ -117,22 +106,14 @@ type InOut struct {
 	out Getter
 }
 
-func newInOut() *InOut {
-	return &InOut{
+func newInOut() InOut {
+	return InOut{
 		in:  NewLazyBag(),
 		out: emptyVar,
 	}
 }
 
-func (io *InOut) In() Setter {
-	return io.in
-}
-
-func (io *InOut) Out() Getter {
-	return io.out
-}
-
-func (io *InOut) GetInput() Getter {
+func (io InOut) GetInput() Getter {
 	return io.in
 }
 
@@ -140,16 +121,25 @@ func (io *InOut) SetResult(result Getter) {
 	io.out = result
 }
 
+func (io InOut) Get(key string) (any, bool) {
+	k, _ := exp(key)
+	return io.out.Get(k)
+}
+
+func (io *InOut) Set(key string, val any) {
+	io.in.Set(key, val)
+}
+
 type ioer interface {
 	GetIoInput() []zeebe.TIoMapping
 	GetIoOutput() []zeebe.TIoMapping
 	ActivationEvaluator
-	ServiceConnector
+	IoConnector
 
-	In() Setter
-	Out() Getter
+	Getter
+	Setter
 
-	Operator
+	IoOperator
 }
 
 func lazy(ctx context.Context, eval ActivationEvaluator, el string) LazyGetFunc {
@@ -167,15 +157,25 @@ func in(ctx context.Context, in []zeebe.TIoMapping, eval ActivationEvaluator, s 
 	})
 }
 
+func out(o []zeebe.TIoMapping, g Getter, s Setter) error {
+	return Each(o, func(m zeebe.TIoMapping, _ int) error {
+		if m.Target != "" {
+			if v, ok := g.Get(m.Source); ok {
+				s.Set(m.Target, v)
+			}
+		}
+		return nil
+	})
+}
+
 func io(ctx context.Context, x ioer, s Setter) (err error) {
-	v := x.In()
-	if err = in(ctx, x.GetIoInput(), x, v); err != nil {
+	if err = in(ctx, x.GetIoInput(), x, x); err != nil {
 		return
 	}
 	if err = x.Call(ctx, x); err != nil {
 		return
 	}
-	if err = out(x.GetIoOutput(), x.Out(), s); err != nil {
+	if err = out(x.GetIoOutput(), x, s); err != nil {
 		return
 	}
 	return
