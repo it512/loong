@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0c62x9p" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.23.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0">
+  <bpmn:process id="hello-test" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0lv94qa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_1b4xevw">
+      <bpmn:incoming>Flow_09l3tle</bpmn:incoming>
+      <bpmn:incoming>Flow_0ch9h8n</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_06me8wt">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="dd" />
+        <zeebe:assignmentDefinition assignee="=Input.op" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=xx" target="ops" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vba4zt</bpmn:incoming>
+      <bpmn:outgoing>Flow_09l3tle</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=Input.ops" inputElement="op" />
+        </bpmn:extensionElements>
+        <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">=numberOfCompletedInstances / numberOfInstances &gt;= 0.5</bpmn:completionCondition>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_09l3tle" sourceRef="Activity_06me8wt" targetRef="Event_1b4xevw" />
+    <bpmn:exclusiveGateway id="Gateway_1knnbop">
+      <bpmn:incoming>Flow_0lv94qa</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vba4zt</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0bey6km</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0lv94qa" sourceRef="StartEvent_1" targetRef="Gateway_1knnbop" />
+    <bpmn:sequenceFlow id="Flow_0vba4zt" sourceRef="Gateway_1knnbop" targetRef="Activity_06me8wt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=Input.path=='a'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0bey6km" sourceRef="Gateway_1knnbop" targetRef="Activity_1ecwx4q">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=Input.path=='b'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0ch9h8n" sourceRef="Activity_1ecwx4q" targetRef="Event_1b4xevw" />
+    <bpmn:userTask id="Activity_1ecwx4q">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition assignee="=Starter" />
+        <zeebe:formDefinition formKey="dd" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0bey6km</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ch9h8n</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="hello-test">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="159" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1b4xevw_di" bpmnElement="Event_1b4xevw">
+        <dc:Bounds x="772" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1knnbop_di" bpmnElement="Gateway_1knnbop" isMarkerVisible="true">
+        <dc:Bounds x="345" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gusgc9_di" bpmnElement="Activity_06me8wt">
+        <dc:Bounds x="500" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gysq2x_di" bpmnElement="Activity_1ecwx4q">
+        <dc:Bounds x="500" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_09l3tle_di" bpmnElement="Flow_09l3tle">
+        <di:waypoint x="600" y="117" />
+        <di:waypoint x="772" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lv94qa_di" bpmnElement="Flow_0lv94qa">
+        <di:waypoint x="195" y="117" />
+        <di:waypoint x="345" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vba4zt_di" bpmnElement="Flow_0vba4zt">
+        <di:waypoint x="395" y="117" />
+        <di:waypoint x="500" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bey6km_di" bpmnElement="Flow_0bey6km">
+        <di:waypoint x="370" y="142" />
+        <di:waypoint x="370" y="230" />
+        <di:waypoint x="500" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ch9h8n_di" bpmnElement="Flow_0ch9h8n">
+        <di:waypoint x="600" y="230" />
+        <di:waypoint x="790" y="230" />
+        <di:waypoint x="790" y="135" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
