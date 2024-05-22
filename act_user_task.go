@@ -140,52 +140,21 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	}
 
 	v.Put(ut)
-	b, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToEnv())
+	pass, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToEnv())
 	if err != nil {
 		return err
 	}
 
-	if b { // 投票通过
-		if err := t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
-			return err
+	if !pass { // 投票不通过
+		if v.numberOfActiveInstances == 0 {
+			panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", milc.GetCompletionCondition()))
 		}
-		return t.EmitDefault(ctx, t.TUserTask, emt)
+		return nil
 	}
 
-	if v.numberOfActiveInstances == 0 {
-		panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", milc.GetCompletionCondition()))
+	if err := t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
+		return err
 	}
-	return nil
+	return t.EmitDefault(ctx, t.TUserTask, emt)
 }
 
-type vote struct {
-	numberOfInstances           int // The number of instances created.
-	numberOfActiveInstances     int // The number of instances currently active.
-	numberOfCompletedInstances  int // The number of instances already completed.
-	numberOfTerminatedInstances int // The number of instances already terminated.
-}
-
-func (v *vote) Put(ut []UserTask) {
-	for _, u := range ut {
-		v.numberOfInstances++
-
-		if u.Status == STATUS_START { // 未投票的
-			v.numberOfActiveInstances++
-		}
-
-		if u.Result != 0 { // 投票不通过
-			v.numberOfTerminatedInstances++
-		}
-	}
-
-	// 投票通过的 = 已投票 - 投票不通过的 = 总数 - 未投票的 - 投票不通过的
-	v.numberOfCompletedInstances = v.numberOfInstances - v.numberOfActiveInstances - v.numberOfTerminatedInstances
-}
-
-func (v vote) ToEnv() Var {
-	return NewVar().
-		Put("numberOfInstances", v.numberOfInstances).
-		Put("numberOfActiveInstances", v.numberOfActiveInstances).
-		Put("numberOfCompletedInstances", v.numberOfCompletedInstances).
-		Put("numberOfTerminatedInstances", v.numberOfTerminatedInstances)
-}
