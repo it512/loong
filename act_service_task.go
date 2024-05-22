@@ -10,7 +10,7 @@ type ServiceTask struct {
 	Exec
 	bpmn.TServiceTask
 
-	*InOut
+	InOut
 }
 
 func (s *ServiceTask) Do(ctx context.Context) error {
