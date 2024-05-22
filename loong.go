@@ -27,34 +27,6 @@ type Driver interface {
 	Run() error
 }
 
-type Evaluator interface {
-	Eval(ctx context.Context, el string, a any) (any, error)
-}
-
-type ActivationEvaluator interface {
-	Eval(ctx context.Context, el string) (any, error)
-}
-
-func eval[T any](ctx context.Context, ae ActivationEvaluator, el string) (val T, a any, err error) {
-	a, err = ae.Eval(ctx, el)
-	if err != nil {
-		return
-	}
-
-	val = a.(T)
-	return
-}
-
-func eval2[T any](ctx context.Context, e Evaluator, el string, env any) (val T, a any, err error) {
-	a, err = e.Eval(ctx, el, env)
-	if err != nil {
-		return
-	}
-
-	val = a.(T)
-	return
-}
-
 type Store interface {
 	LoadProcInst(ctx context.Context, instID string, pi *ProcInst) error
 	CreateProcInst(ctx context.Context, procInst *ProcInst) error
