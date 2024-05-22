@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	loong.Loong()
+	loong.Logo()
 
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file")
@@ -33,7 +33,10 @@ func main() {
 		loong.FileTemplates("./bpmn/", "*.bpmn"),
 		loong.SetIoConnector(new(io.Io)),
 	)
-	eng.Run()
+
+	if err := eng.Run(); err != nil {
+		log.Fatal(err)
+	}
 
 	todo := pgx.NewTodoStore(db)
 
@@ -46,5 +49,4 @@ func main() {
 	if err := http.ListenAndServe(":10008", mux); err != nil {
 		log.Fatal(err)
 	}
-
 }

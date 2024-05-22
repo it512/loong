@@ -2,7 +2,7 @@ package loong
 
 import "fmt"
 
-func Loong() {
+func Logo() {
 	fmt.Print(`
    __
   / /  _   _   _     _
