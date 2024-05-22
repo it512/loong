@@ -3,8 +3,6 @@ package loong
 import (
 	"context"
 	"fmt"
-
-	"github.com/it512/loong/expr"
 )
 
 type StartProcCmd struct {
@@ -23,37 +21,6 @@ type UserTaskCommitCmd struct {
 	Version  int            `json:"version,omitempty"`
 }
 
-type Config struct {
-	store     Store
-	eh        EventHandler
-	templates Templates
-	sc        ServiceConnector
-
-	ctx context.Context
-
-	queueSize uint
-}
-
-type Option func(*Config)
-
-func SetContext(ctx context.Context) Option {
-	return func(e *Config) {
-		e.ctx = ctx
-	}
-}
-
-func SetStore(s Store) Option {
-	return func(e *Config) {
-		e.store = s
-	}
-}
-
-func SetEventHandler(eh EventHandler) Option {
-	return func(e *Config) {
-		e.eh = eh
-	}
-}
-
 type Engine struct {
 	Name string
 
@@ -61,7 +28,7 @@ type Engine struct {
 	Templates
 	Store
 	IDGen
-	ServiceConnector
+	IoConnector
 
 	ctx context.Context
 
@@ -75,7 +42,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 		queueSize: 4,
 		eh:        emptyEh,
 		ctx:       context.Background(),
-		sc:        emptyConnect,
+		connector: emptyConnect,
 	}
 
 	for _, op := range ops {
@@ -83,10 +50,10 @@ func NewEngine(name string, ops ...Option) *Engine {
 	}
 
 	return &Engine{
-		Name:             name,
-		Evaluator:        expr.New(),
-		IDGen:            uid{},
-		ServiceConnector: config.sc,
+		Name:        name,
+		Evaluator:   NewExprEval(),
+		IDGen:       uid{},
+		IoConnector: config.connector,
 
 		Templates: config.templates,
 		Store:     config.store,
@@ -111,7 +78,6 @@ func (e *Engine) Run() error {
 }
 
 func (e *Engine) StartProc(ctx context.Context, cmd StartProcCmd) (string, error) {
-
 	if e.Templates.GetTemplate(cmd.ProcID) == nil {
 		return "", fmt.Errorf("未找到流程(ProcID = %s)", cmd.ProcID)
 	}
