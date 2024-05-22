@@ -100,3 +100,18 @@ func (userTask TUserTask) GetAssignmentAssignee() string {
 func (userTask TUserTask) GetAssignmentCandidateGroups() []string {
 	return userTask.AssignmentDefinition.GetCandidateGroups()
 }
+func (u TUserTask) GetIoInput() []zeebe.TIoMapping {
+	return u.Input
+}
+
+func (u TUserTask) GetIoOutput() []zeebe.TIoMapping {
+	return u.Output
+}
+
+func (u TUserTask) GetTaskHeader(key string) (string, bool) {
+	return zeebe.GetTaskHeader(u.TaskHeaders, key)
+}
+
+func (u TUserTask) GetProperty(name string) (string, bool) {
+	return zeebe.GetProperty(u.Properties, name)
+}
