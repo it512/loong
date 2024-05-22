@@ -39,9 +39,16 @@ type UserTask struct {
 type userTaskOp struct {
 	UserTask
 	bpmn.TUserTask
+	InOut
+}
+
+func (c *userTaskOp) GetTaskDefinition(ctx context.Context) TaskDefinition {
+	return idTaskDef{c.GetId()}
 }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
+	io(ctx, c, c.Exec.Input)
+
 	c.UserTask.FormKey = c.TUserTask.FormDefinition.FormKey
 	c.UserTask.InstID = c.ProcInst.InstID
 	c.UserTask.ActID = c.TUserTask.GetId()
@@ -66,7 +73,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 			if key := milc.GetInputElement(); key != "" {
 				a.Exec.Input.Set(key, item)
 			}
-			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, c.Exec, ad); err != nil {
+			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Exec, ad); err != nil {
 				return err
 			}
 			tasks = append(tasks, a)
@@ -74,7 +81,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	} else {
 		var err error
 		var a UserTask = c.UserTask // copy
-		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, c.Exec, ad); err != nil {
+		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Exec, ad); err != nil {
 			return err
 		}
 		tasks = append(tasks, a)
@@ -133,7 +140,7 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	}
 
 	v.Put(ut)
-	b, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToVar())
+	b, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToEnv())
 	if err != nil {
 		return err
 	}
@@ -146,7 +153,7 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	}
 
 	if v.numberOfActiveInstances == 0 {
-		panic("")
+		panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", milc.GetCompletionCondition()))
 	}
 	return nil
 }
@@ -175,6 +182,10 @@ func (v *vote) Put(ut []UserTask) {
 	v.numberOfCompletedInstances = v.numberOfInstances - v.numberOfActiveInstances - v.numberOfTerminatedInstances
 }
 
-func (v vote) ToVar() Var {
-	return NewVar()
+func (v vote) ToEnv() Var {
+	return NewVar().
+		Put("numberOfInstances", v.numberOfInstances).
+		Put("numberOfActiveInstances", v.numberOfActiveInstances).
+		Put("numberOfCompletedInstances", v.numberOfCompletedInstances).
+		Put("numberOfTerminatedInstances", v.numberOfTerminatedInstances)
 }
