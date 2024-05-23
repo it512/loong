@@ -65,9 +65,10 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 			return err
 		}
 
-		for _, item := range items {
+		for i, item := range items {
 			var a UserTask = c.UserTask // copy
 			a.Exec.Input = maps.Clone(c.Exec.Input)
+			a.Exec.Input.Set("loopCounter", i)
 			if key := milc.GetInputElement(); key != "" {
 				a.Exec.Input.Set(key, item)
 			}
@@ -149,6 +150,14 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 
 	if err = t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
 		return err
+	}
+
+	if milc.GetOutputCollection() != "" {
+		var a any
+		if a, err = v.Result(ctx, milc.GetOutputElement()); err != nil {
+			return err
+		}
+		t.Exec.Input.Set(milc.GetOutputCollection(), a)
 	}
 
 	return t.EmitDefault(ctx, t.TUserTask, emt)

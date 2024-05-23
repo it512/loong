@@ -15,23 +15,35 @@ type vote struct {
 }
 
 func newVote(ut []UserTask, eval Evaluator) *vote {
-	v := &vote{Evaluator: eval}
+	var (
+		numberOfActiveInstances     int // The number of instances currently active.
+		numberOfCompletedInstances  int // The number of instances already completed.
+		numberOfTerminatedInstances int // The number of instances already terminated.
+	)
+
 	for _, u := range ut {
-		v.numberOfInstances++
-
-		if u.Status == STATUS_START { // 未投票的
-			v.numberOfActiveInstances++
-		}
-
-		if u.Result != 0 { // 投票不通过
-			v.numberOfTerminatedInstances++
+		if u.Status == STATUS_START {
+			numberOfActiveInstances++
+		} else {
+			switch {
+			case u.Result > 0:
+				numberOfCompletedInstances++
+			case u.Result < 0:
+				numberOfTerminatedInstances++
+			default:
+				panic("未投票")
+			}
 		}
 	}
 
-	// 投票通过的 = 已投票 - 投票不通过的 = 总数 - 未投票的 - 投票不通过的
-	v.numberOfCompletedInstances = v.numberOfInstances - v.numberOfActiveInstances - v.numberOfTerminatedInstances
+	return &vote{
+		Evaluator: eval,
 
-	return v
+		numberOfInstances:           len(ut),
+		numberOfActiveInstances:     numberOfActiveInstances,
+		numberOfCompletedInstances:  numberOfCompletedInstances,
+		numberOfTerminatedInstances: numberOfTerminatedInstances,
+	}
 }
 
 func (v vote) Test(ctx context.Context, el string) (pass bool, err error) {
@@ -40,6 +52,15 @@ func (v vote) Test(ctx context.Context, el string) (pass bool, err error) {
 			panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", el))
 		}
 	}
+	return
+}
+
+func (v vote) Result(ctx context.Context, el string) (a any, err error) {
+	if el == "" {
+		return
+	}
+
+	_, a, err = eval2[any](ctx, v, el, v.ToEnv())
 	return
 }
 

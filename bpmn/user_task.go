@@ -17,6 +17,14 @@ type TMultiInstanceLoopCharacteristics struct {
 	CompletionCondition TExpression `xml:"completionCondition"`
 }
 
+func (m TMultiInstanceLoopCharacteristics) GetOutputCollection() string {
+	return m.LoopCharacteristics.OutputCollection
+}
+
+func (m TMultiInstanceLoopCharacteristics) GetOutputElement() string {
+	return m.LoopCharacteristics.OutputElement
+}
+
 func (m TMultiInstanceLoopCharacteristics) GetCompletionCondition() string {
 	return m.CompletionCondition.GetText()
 }
