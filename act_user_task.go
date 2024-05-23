@@ -42,12 +42,10 @@ type userTaskOp struct {
 	InOut
 }
 
-func (c *userTaskOp) GetTaskDefinition(ctx context.Context) TaskDefinition {
-	return idTaskDef{c.GetId()}
-}
-
 func (c *userTaskOp) Do(ctx context.Context) error {
-	io(ctx, c, c.Exec.Input)
+	if err := io(ctx, c, c.Exec.Input); err != nil {
+		return err
+	}
 
 	c.UserTask.FormKey = c.TUserTask.FormDefinition.FormKey
 	c.UserTask.InstID = c.ProcInst.InstID
