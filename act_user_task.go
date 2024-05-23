@@ -132,29 +132,26 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	}
 
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
-	v := &vote{}
 
 	ut, err := t.Store.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
 	if err != nil {
 		return err
 	}
 
-	v.Put(ut)
-	pass, _, err := eval2[bool](ctx, t.Engine, milc.GetCompletionCondition(), v.ToEnv())
-	if err != nil {
+	v := newVote(ut, t.Engine)
+
+	var pass bool
+	if pass, err = v.Test(ctx, milc.GetCompletionCondition()); err != nil {
 		return err
 	}
 
 	if !pass { // 投票不通过
-		if v.numberOfActiveInstances == 0 {
-			panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", milc.GetCompletionCondition()))
-		}
 		return nil
 	}
 
-	if err := t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
+	if err = t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
 		return err
 	}
+
 	return t.EmitDefault(ctx, t.TUserTask, emt)
 }
-
