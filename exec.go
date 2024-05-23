@@ -76,7 +76,7 @@ func (c Exec) Type() ActivityType {
 }
 
 func (s Exec) GetTaskDefinition(ctx context.Context) TaskDefinition {
-	return idTaskDef{id: s.elementID}
+	return &taskDef{id: s.elementID}
 }
 
 func (e Exec) EmitDefault(ctx context.Context, o Out, emt Emitter) error {

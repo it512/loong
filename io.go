@@ -24,14 +24,6 @@ type IoConnector interface {
 	Call(context.Context, IoOperator) error
 }
 
-type idTaskDef struct {
-	id string
-}
-
-func (t idTaskDef) Type() (string, error) {
-	return t.id, nil
-}
-
 type taskDef struct {
 	typ string
 	err error
@@ -39,6 +31,8 @@ type taskDef struct {
 	el   string
 	eval ActivationEvaluator
 	c    context.Context
+
+	id string
 }
 
 func newTaskDef(ctx context.Context, eval ActivationEvaluator, el string) *taskDef {
@@ -50,16 +44,15 @@ func newTaskDef(ctx context.Context, eval ActivationEvaluator, el string) *taskD
 }
 
 func (t *taskDef) Type() (string, error) {
+	if t.el == "" {
+		return t.id, nil
+	}
+
 	if t.typ != "" {
 		return t.typ, t.err
 	}
 
-	a, err := t.eval.Eval(t.c, t.el)
-	t.err = err
-	if err != nil {
-		return "", err
-	}
-	t.typ = a.(string)
+	t.typ, _, t.err = eval[string](t.c, t.eval, t.el)
 	return t.typ, t.err
 }
 
