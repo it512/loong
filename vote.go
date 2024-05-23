@@ -47,7 +47,7 @@ func newVote(ut []UserTask, eval Evaluator) *vote {
 }
 
 func (v vote) Test(ctx context.Context, el string) (pass bool, err error) {
-	if pass, _, err = eval2[bool](ctx, v, el, v.ToEnv()); err == nil { // 无错误
+	if pass, _, err = eval2[bool](ctx, v.Evaluator, el, v.ToEnv()); err == nil { // 无错误
 		if !pass && v.numberOfActiveInstances == 0 {
 			panic(fmt.Errorf("投票已经结束，未能达成通过条件 %s", el))
 		}
@@ -55,12 +55,12 @@ func (v vote) Test(ctx context.Context, el string) (pass bool, err error) {
 	return
 }
 
-func (v vote) Result(ctx context.Context, el string) (a any, err error) {
+func (v vote) Eval(ctx context.Context, el string) (a any, err error) {
 	if el == "" {
 		return
 	}
 
-	_, a, err = eval2[any](ctx, v, el, v.ToEnv())
+	a, err = v.Evaluator.Eval(ctx, el, v.ToEnv())
 	return
 }
 

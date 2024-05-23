@@ -154,7 +154,7 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 
 	if milc.GetOutputCollection() != "" {
 		var a any
-		if a, err = v.Result(ctx, milc.GetOutputElement()); err != nil {
+		if a, err = v.Eval(ctx, milc.GetOutputElement()); err != nil {
 			return err
 		}
 		t.Exec.Input.Set(milc.GetOutputCollection(), a)
