@@ -15,8 +15,8 @@ type TServiceTask struct {
 	IncomingAssociation []string `xml:"incoming"`
 	OutgoingAssociation []string `xml:"outgoing"`
 
-	//Input          []zeebe.TIoMappingInput  `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>ioMapping>input"`
-	//Output         []zeebe.TIoMappingOutput `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>ioMapping>output"`
+	// Input          []zeebe.TIoMappingInput  `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>ioMapping>input"`
+	// Output         []zeebe.TIoMappingOutput `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>ioMapping>output"`
 	Input  []zeebe.TIoMapping `xml:"extensionElements>ioMapping>input"`
 	Output []zeebe.TIoMapping `xml:"extensionElements>ioMapping>output"`
 
