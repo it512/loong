@@ -11,29 +11,29 @@ import (
 )
 
 type UserTask struct {
-	Exec
+	Exec `json:"-"`
 
-	TaskID  string
-	InstID  string
-	FormKey string
+	TaskID  string `json:"task_id,omitempty"`
+	InstID  string `json:"inst_id,omitempty"`
+	FormKey string `json:"form_key,omitempty"`
 
-	ActName string
-	ActID   string
+	ActName string `json:"act_name,omitempty"`
+	ActID   string `json:"act_id,omitempty"`
 
-	Assignee        string
-	CandidateGroups string
-	CandidateUsers  string
+	Assignee        string `json:"assignee,omitempty"`
+	CandidateGroups string `json:"candidate_groups,omitempty"`
+	CandidateUsers  string `json:"candidate_users,omitempty"`
 
-	Operator string
+	Operator string `json:"operator,omitempty"`
 
-	Result int
+	Result int `json:"result,omitempty"`
 
-	BatchNo string
+	BatchNo string `json:"batch_no,omitempty"`
 
-	Status int
+	Status int `json:"status,omitempty"`
 
-	StartTime time.Time
-	EndTime   time.Time
+	StartTime time.Time `json:"start_time,omitempty"`
+	EndTime   time.Time `json:"end_time,omitempty"`
 }
 
 type userTaskOp struct {

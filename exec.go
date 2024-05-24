@@ -10,14 +10,14 @@ type Out interface {
 }
 
 type ProcInst struct {
-	InstID string
-	ProcID string
+	InstID string `json:"inst_id,omitempty"`
+	ProcID string `json:"proc_id,omitempty"`
 
-	Starter  string
-	Operator string
+	Starter  string `json:"starter,omitempty"`
+	Operator string `json:"operator,omitempty"`
 
-	BusiKey  string
-	BusiType string
+	BusiKey  string `json:"busi_key,omitempty"`
+	BusiType string `json:"busi_type,omitempty"`
 
 	/*
 		EndCode string
@@ -25,38 +25,38 @@ type ProcInst struct {
 		EndType string
 	*/
 
-	StartTime time.Time
-	EndTime   time.Time
+	StartTime time.Time `json:"start_time,omitempty"`
+	EndTime   time.Time `json:"end_time,omitempty"`
 
-	Status int
+	Status int `json:"status,omitempty"`
 
-	Init Var
+	Init Var `json:"init,omitempty"`
 
-	Template *Template
-	*Engine
+	Template *Template `json:"-"`
+	*Engine  `json:"-"`
 }
 
 type Exec struct {
-	ExecID string
+	ExecID string `json:"exec_id,omitempty"`
 
-	ParentForkID string // 上一级fork , 顶级为InstID
-	ForkID       string // 当前fork
+	ParentForkID string `json:"parent_fork_id,omitempty"` // 上一级fork , 顶级为InstID
+	ForkID       string `json:"fork_id,omitempty"`        // 当前fork
 
-	ForkTag string // 谁fork的
-	JoinTag string // 谁join的
-	OutTag  string // fork的出口
-	InTag   string // join的入口
+	ForkTag string `json:"fork_tag,omitempty"` // 谁fork的
+	JoinTag string `json:"join_tag,omitempty"` // 谁join的
+	OutTag  string `json:"out_tag,omitempty"`  // fork的出口
+	InTag   string `json:"in_tag,omitempty"`   // join的入口
 
-	GwType   int // 网关类型 // 并行，包容
-	ForkMode int // fork 模式
+	GwType   int `json:"gw_type,omitempty"`   // 网关类型 // 并行，包容
+	ForkMode int `json:"fork_mode,omitempty"` // fork 模式
 
-	Status int
+	Status int `json:"status,omitempty"`
 
-	Input Var
+	Input Var `json:"input,omitempty"`
 
 	*ProcInst
 
-	elementID string // 当前bpmnElementID
+	elementID string `json:"-"` // 当前bpmnElementID
 }
 
 func (e Exec) Eval(ctx context.Context, el string) (any, error) {
