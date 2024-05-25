@@ -3,14 +3,20 @@ package bpmn
 import "github.com/it512/loong/bpmn/zeebe"
 
 type TIntermediateThrowEvent struct {
-	Id                     string                   `xml:"id,attr"`
-	Name                   string                   `xml:"name,attr"`
-	IncomingAssociation    []string                 `xml:"incoming"`
-	OutgoingAssociation    []string                 `xml:"outgoing"`
+	Id                  string   `xml:"id,attr"`
+	Name                string   `xml:"name,attr"`
+	IncomingAssociation []string `xml:"incoming"`
+	OutgoingAssociation []string `xml:"outgoing"`
+
 	LinkEventDefinition    []TLinkEventDefinition   `xml:"linkEventDefinition"`
 	SignalEventDefinition  []TSignalEventDefinition `xml:"signalEventDefinition"`
 	MessageEventDefinition []TMessageEventDefinition
 
+	TaskDefinition zeebe.TTaskDefinition `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskDefinition"`
+	TaskHeaders    []zeebe.TTaskHeader   `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskHeaders>header"`
+	Properties     []zeebe.TProperty     `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
+
+	Input  []zeebe.TIoMapping `xml:"extensionElements>ioMapping>input"`
 	Output []zeebe.TIoMapping `xml:"extensionElements>ioMapping>output"`
 }
 
