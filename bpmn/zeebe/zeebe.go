@@ -56,3 +56,9 @@ type LoopCharacteristics struct {
 	OutputCollection string `xml:"outputCollection,attr"`
 	OutputElement    string `xml:"outputElement,attr"`
 }
+
+type CalledElement struct {
+	XMLName                    xml.Name
+	ProcessID                  string `xml:"processId,attr"`
+	PropagateAllChildVariables bool   `xml:"propagateAllChildVariables,attr"`
+}
