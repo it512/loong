@@ -12,9 +12,11 @@ type vote struct {
 	numberOfTerminatedInstances int // The number of instances already terminated.
 
 	Evaluator
+
+	input Var
 }
 
-func newVote(ut []UserTask, eval Evaluator) *vote {
+func newVote(ut []UserTask, eval Evaluator, input Var) *vote {
 	var (
 		numberOfActiveInstances     int // The number of instances currently active.
 		numberOfCompletedInstances  int // The number of instances already completed.
@@ -43,6 +45,8 @@ func newVote(ut []UserTask, eval Evaluator) *vote {
 		numberOfActiveInstances:     numberOfActiveInstances,
 		numberOfCompletedInstances:  numberOfCompletedInstances,
 		numberOfTerminatedInstances: numberOfTerminatedInstances,
+
+		input: input,
 	}
 }
 
@@ -79,6 +83,8 @@ func (v vote) ToEnv() Var {
 		Put("nrOfActiveInstances", v.numberOfActiveInstances).
 		Put("nrOfCompletedInstances", v.numberOfCompletedInstances).
 		Put("nrOfTerminatedInstances", v.numberOfTerminatedInstances)
+
+	r.Set("Input", v.input)
 
 	return r
 }

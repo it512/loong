@@ -137,7 +137,7 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 		return err
 	}
 
-	v := newVote(ut, t.Engine)
+	v := newVote(ut, t.Engine, t.Exec.Input)
 
 	var pass bool
 	if pass, err = v.Test(ctx, milc.GetCompletionCondition()); err != nil {
