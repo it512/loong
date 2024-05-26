@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	entgo.io/ent v0.13.1
 	github.com/99designs/gqlgen v0.17.47
-	github.com/expr-lang/expr v1.16.5
+	github.com/expr-lang/expr v1.16.8
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/vektah/gqlparser/v2 v2.5.12
