@@ -3,6 +3,7 @@ package loong
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/it512/loong/bpmn"
 )
@@ -45,7 +46,13 @@ func chooseDefault(me any, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 			return flow
 		}
 	}
-	return flows[0] //默认返回第一条
+	return flows[0] // 默认返回第一条
+}
+
+var xPool = sync.Pool{
+	New: func() any {
+		return &sequenceFlow{}
+	},
 }
 
 type sequenceFlow struct {
@@ -69,31 +76,38 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 	return nil
 }
 
-func (c sequenceFlow) Emit(_ context.Context, commit Emitter) error {
+func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 	switch c.target.GetType() {
 	case bpmn.UserTask:
-		return commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
+		err = commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
 	case bpmn.ExclusiveGateway:
-		return commit.Emit(&exclusivGatewayOp{gateway: gateway{Forker: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec}})
+		err = commit.Emit(&exclusivGatewayOp{gateway: gateway{Forker: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec}})
 	case bpmn.ParallelGateway:
-		return commit.Emit(&parallelGatewayCmd{gateway: gateway{Forker: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec}})
+		err = commit.Emit(&parallelGatewayCmd{gateway: gateway{Forker: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec}})
 	case bpmn.ServiceTask:
-		return commit.Emit(&ServiceTask{Exec: c.Exec, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
+		err = commit.Emit(&ServiceTask{Exec: c.Exec, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
 	case bpmn.EndEvent:
-		return commit.Emit(&EndEventOp{Exec: c.Exec, TEndEvent: bpmn.Cast[bpmn.TEndEvent](c.target)})
+		err = commit.Emit(&EndEventOp{Exec: c.Exec, TEndEvent: bpmn.Cast[bpmn.TEndEvent](c.target)})
 	case bpmn.IntermediateThrowEvent:
 		op := doIntermediationThrowEvent(c.Exec, bpmn.Cast[bpmn.TIntermediateThrowEvent](c.target))
-		return commit.Emit(op)
+		err = commit.Emit(op)
 	case bpmn.Task:
-		return commit.Emit(&taskOp{Exec: c.Exec, Ele: bpmn.Cast[bpmn.TTask](c.target)})
+		err = commit.Emit(&taskOp{Exec: c.Exec, Ele: bpmn.Cast[bpmn.TTask](c.target)})
 	default:
 		panic(fmt.Errorf("不支持的类型 Type: %s, ID: %s", c.target.GetType(), c.target.GetId()))
 	}
+
+	xPool.Put(c)
+	return
 }
 
 func fromExec(ex Exec, out string) *sequenceFlow {
 	if f, ok := ex.Template.FindSequenceFlow(out); ok {
-		return &sequenceFlow{Exec: ex, TSequenceFlow: f}
+		sf := xPool.Get().(*sequenceFlow)
+		sf.Exec = ex
+		sf.TSequenceFlow = f
+		return sf
+		// return &sequenceFlow{Exec: ex, TSequenceFlow: f}
 	}
 	panic("未找到Sequenceflow")
 }
