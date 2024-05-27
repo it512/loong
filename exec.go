@@ -86,7 +86,7 @@ func (e Exec) EmitDefault(ctx context.Context, o Out, emt Emitter) error {
 		return err
 	}
 	f := chooseDefault(o, out)
-	return emt.Emit(&sequenceFlow{TSequenceFlow: f, Exec: e})
+	return emt.Emit(getFromPool(e, f))
 }
 
 func (e Exec) isTop() bool {

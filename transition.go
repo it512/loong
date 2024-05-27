@@ -49,12 +49,6 @@ func chooseDefault(me any, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 	return flows[0] // 默认返回第一条
 }
 
-var xPool = sync.Pool{
-	New: func() any {
-		return &sequenceFlow{}
-	},
-}
-
 type sequenceFlow struct {
 	Exec
 	bpmn.TSequenceFlow
@@ -97,17 +91,30 @@ func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 		panic(fmt.Errorf("不支持的类型 Type: %s, ID: %s", c.target.GetType(), c.target.GetId()))
 	}
 
-	xPool.Put(c)
+	putToPool(c)
 	return
+}
+
+var sfPool = sync.Pool{
+	New: func() any {
+		return &sequenceFlow{}
+	},
+}
+
+func getFromPool(ex Exec, f bpmn.TSequenceFlow) *sequenceFlow {
+	sf := sfPool.Get().(*sequenceFlow)
+	sf.Exec = ex
+	sf.TSequenceFlow = f
+	return sf
+}
+
+func putToPool(sf *sequenceFlow) {
+	sfPool.Put(sf)
 }
 
 func fromExec(ex Exec, out string) *sequenceFlow {
 	if f, ok := ex.Template.FindSequenceFlow(out); ok {
-		sf := xPool.Get().(*sequenceFlow)
-		sf.Exec = ex
-		sf.TSequenceFlow = f
-		return sf
-		// return &sequenceFlow{Exec: ex, TSequenceFlow: f}
+		return getFromPool(ex, f)
 	}
 	panic("未找到Sequenceflow")
 }
