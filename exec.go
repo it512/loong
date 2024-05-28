@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 type ProcInst struct {
 	InstID string `json:"inst_id,omitempty"`
 	ProcID string `json:"proc_id,omitempty"`
@@ -29,8 +28,8 @@ type ProcInst struct {
 
 	Init Var `json:"init,omitempty"`
 
-	Template *Template `json:"-"`
-	*Engine  `json:"-"`
+	*Template `json:"-"`
+	*Engine   `json:"-"`
 }
 
 type Exec struct {

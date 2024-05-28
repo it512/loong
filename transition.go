@@ -86,7 +86,7 @@ func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 		op := doIntermediationThrowEvent(c.Exec, bpmn.Cast[bpmn.TIntermediateThrowEvent](c.target))
 		err = commit.Emit(op)
 	case bpmn.Task:
-		err = commit.Emit(&taskOp{Exec: c.Exec, Ele: bpmn.Cast[bpmn.TTask](c.target)})
+		err = commit.Emit(&taskOp{Exec: c.Exec, TTask: bpmn.Cast[bpmn.TTask](c.target)})
 	default:
 		panic(fmt.Errorf("不支持的类型 Type: %s, ID: %s", c.target.GetType(), c.target.GetId()))
 	}
@@ -112,6 +112,12 @@ func putToPool(sf *sequenceFlow) {
 	sfPool.Put(sf)
 }
 
+type Outer interface {
+	GetOutgoingAssociation() []string
+	FindSequenceFlow(string) (bpmn.TSequenceFlow, bool)
+	FindSequenceFlows([]string) []bpmn.TSequenceFlow
+}
+
 func fromExec(ex Exec, out string) *sequenceFlow {
 	if f, ok := ex.Template.FindSequenceFlow(out); ok {
 		return getFromPool(ex, f)
@@ -119,16 +125,12 @@ func fromExec(ex Exec, out string) *sequenceFlow {
 	panic("未找到Sequenceflow")
 }
 
-type Out interface {
-	GetOutgoingAssociation() []string
-}
-
-func (e Exec) EmitDefault(ctx context.Context, o Out, emt Emitter) error {
-	flows := e.ProcInst.Template.FindSequenceFlows(o.GetOutgoingAssociation())
-	out, err := choose(ctx, e, flows)
+func fromOuter(ctx context.Context, ex Exec, o Outer) *sequenceFlow {
+	flows := o.FindSequenceFlows(o.GetOutgoingAssociation())
+	out, err := choose(ctx, ex, flows)
 	if err != nil {
-		return err
+		panic(err)
 	}
 	f := chooseDefault(o, out)
-	return emt.Emit(getFromPool(e, f))
+	return getFromPool(ex, f)
 }

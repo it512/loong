@@ -127,7 +127,8 @@ func (c *userTaskRunOp) Do(ctx context.Context) error {
 
 func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 	if !t.TUserTask.HasMultiInstanceLoopCharacteristics() {
-		return t.EmitDefault(ctx, t.TUserTask, emt)
+		//return t.EmitDefault(ctx, t.TUserTask, emt)
+		return emt.Emit(fromOuter(ctx, t.Exec, t))
 	}
 
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
@@ -160,5 +161,5 @@ func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
 		t.Exec.Input.Set(milc.GetOutputCollection(), a)
 	}
 
-	return t.EmitDefault(ctx, t.TUserTask, emt)
+	return emt.Emit(fromOuter(ctx, t.Exec, t))
 }

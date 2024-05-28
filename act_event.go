@@ -45,8 +45,8 @@ func (n *StartEventOp) Do(ctx context.Context) error {
 	return n.CreateProcInst(ctx, n.ProcInst)
 }
 
-func (n StartEventOp) Emit(ctx context.Context, emit Emitter) error {
-	return n.EmitDefault(ctx, n.TStartEvent, emit)
+func (n *StartEventOp) Emit(ctx context.Context, emit Emitter) error {
+	return emit.Emit(fromOuter(ctx, n.Exec, n))
 }
 
 func (n StartEventOp) Type() ActivityType {

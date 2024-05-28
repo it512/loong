@@ -18,7 +18,7 @@ func (s *ServiceTask) Do(ctx context.Context) error {
 }
 
 func (s *ServiceTask) Emit(ctx context.Context, emt Emitter) error {
-	return s.EmitDefault(ctx, s.TServiceTask, emt)
+	return emt.Emit(fromOuter(ctx, s.Exec, s))
 }
 
 func (s *ServiceTask) GetTaskDefinition(ctx context.Context) TaskDefinition {

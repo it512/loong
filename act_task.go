@@ -8,9 +8,9 @@ import (
 
 type taskOp struct {
 	Exec
-	Ele bpmn.TTask
+	bpmn.TTask
 }
 
-func (t taskOp) Emit(ctx context.Context, emt Emitter) error {
-	return t.EmitDefault(ctx, t.Ele, emt)
+func (t *taskOp) Emit(ctx context.Context, emt Emitter) error {
+	return emt.Emit(fromOuter(ctx, t.Exec, t))
 }

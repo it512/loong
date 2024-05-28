@@ -60,6 +60,6 @@ func (e exclusivGatewayOp) Do(ctx context.Context) error {
 	return nil
 }
 
-func (e exclusivGatewayOp) Emit(ctx context.Context, emt Emitter) error {
-	return e.EmitDefault(ctx, e.Forker, emt)
+func (e *exclusivGatewayOp) Emit(ctx context.Context, emt Emitter) error {
+	return emt.Emit(fromOuter(ctx, e.Exec, e))
 }
