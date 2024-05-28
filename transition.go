@@ -118,3 +118,13 @@ func fromExec(ex Exec, out string) *sequenceFlow {
 	}
 	panic("未找到Sequenceflow")
 }
+
+func (e Exec) EmitDefault(ctx context.Context, o Out, emt Emitter) error {
+	flows := e.ProcInst.Template.FindSequenceFlows(o.GetOutgoingAssociation())
+	out, err := choose(ctx, e, flows)
+	if err != nil {
+		return err
+	}
+	f := chooseDefault(o, out)
+	return emt.Emit(getFromPool(e, f))
+}
