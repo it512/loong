@@ -5,9 +5,6 @@ import (
 	"time"
 )
 
-type Out interface {
-	GetOutgoingAssociation() []string
-}
 
 type ProcInst struct {
 	InstID string `json:"inst_id,omitempty"`
