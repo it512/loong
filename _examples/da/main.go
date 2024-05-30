@@ -38,13 +38,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	todo := pgx.NewTodoStore(db)
-
-	gql.New(eng, todo)
 	mux := chi.NewMux()
 	mux.Use(middleware.Logger, middleware.Recoverer)
 	mux.Mount("/gql", gql.Playground("GraphQL playground", "/gql/query"))
-	mux.Mount("/gql/query", gql.New(eng, todo))
+	mux.Mount("/gql/query", gql.New(eng))
 
 	if err := http.ListenAndServe(":10008", mux); err != nil {
 		log.Fatal(err)
