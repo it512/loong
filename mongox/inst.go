@@ -9,9 +9,6 @@ import (
 
 func (m *Store) LoadProcInst(ctx context.Context, instID string, p *loong.ProcInst) error {
 	sr := m.instC.FindOne(ctx, bson.D{{Key: "inst_id", Value: instID}})
-	if sr.Err() != nil {
-		return sr.Err()
-	}
 	return sr.Decode(p)
 }
 

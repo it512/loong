@@ -40,6 +40,8 @@ type userTaskOp struct {
 	UserTask
 	bpmn.TUserTask
 	InOut
+
+	UnimplementedActivity
 }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
@@ -106,6 +108,8 @@ type userTaskRunOp struct {
 	bpmn.TUserTask
 
 	cmd UserTaskCommitCmd
+
+	UnimplementedActivity
 }
 
 func (c *userTaskRunOp) Do(ctx context.Context) error {

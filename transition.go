@@ -54,6 +54,8 @@ type sequenceFlow struct {
 	bpmn.TSequenceFlow
 
 	target BpmnElement
+
+	UnimplementedActivity
 }
 
 func (c *sequenceFlow) Do(_ context.Context) error {

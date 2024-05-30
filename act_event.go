@@ -56,6 +56,8 @@ func (n StartEventOp) Type() ActivityType {
 type EndEventOp struct {
 	Exec
 	bpmn.TEndEvent
+
+	UnimplementedActivity
 }
 
 func (n *EndEventOp) Do(ctx context.Context) error {
@@ -89,6 +91,8 @@ func doIntermediationThrowEvent(exec Exec, i bpmn.TIntermediateThrowEvent) Activ
 type linkEventOp struct {
 	Exec
 	Throw bpmn.TLinkEventDefinition
+
+	UnimplementedActivity
 }
 
 func (n linkEventOp) Emit(ctx context.Context, emt Emitter) error {

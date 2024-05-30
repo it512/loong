@@ -59,18 +59,6 @@ func (e Exec) Eval(ctx context.Context, el string) (any, error) {
 	return e.Evaluator.Eval(ctx, el, e)
 }
 
-func (c Exec) Do(ctx context.Context) error {
-	return nil
-}
-
-func (c Exec) Emit(ctx context.Context, emt Emitter) error {
-	return nil
-}
-
-func (c Exec) Type() ActivityType {
-	return NotApplicable
-}
-
 func (s Exec) GetTaskDefinition(ctx context.Context) TaskDefinition {
 	return &taskDef{id: s.elementID}
 }

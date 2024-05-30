@@ -11,6 +11,8 @@ type ServiceTask struct {
 	bpmn.TServiceTask
 
 	InOut
+
+	UnimplementedActivity
 }
 
 func (s *ServiceTask) Do(ctx context.Context) error {

@@ -8,12 +8,10 @@ import (
 
 type ReassignOp struct {
 	TaskID string
+
+	loong.UnimplementedActivity
 }
 
 func (r ReassignOp) Do(ctx context.Context) error {
-	return nil
-}
-
-func (c ReassignOp) Emit(ctx context.Context, emt loong.Emitter) error {
 	return nil
 }

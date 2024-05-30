@@ -24,3 +24,18 @@ type Activity interface {
 	Emit(context.Context, Emitter) error
 	Type() ActivityType
 }
+
+type UnimplementedActivity struct {
+}
+
+func (UnimplementedActivity) Do(ctx context.Context) error {
+	return nil
+}
+
+func (UnimplementedActivity) Emit(ctx context.Context, emt Emitter) error {
+	return nil
+}
+
+func (UnimplementedActivity) Type() ActivityType {
+	return NotApplicable
+}

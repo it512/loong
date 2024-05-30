@@ -9,6 +9,8 @@ import (
 type taskOp struct {
 	Exec
 	bpmn.TTask
+
+	UnimplementedActivity
 }
 
 func (t *taskOp) Emit(ctx context.Context, emt Emitter) error {
