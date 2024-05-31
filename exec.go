@@ -123,10 +123,3 @@ func (e Exec) children(out []string) (x []Exec) {
 	}
 	return
 }
-
-func (e Exec) empty() Exec {
-	return Exec{
-		Status:   STATUS_START,
-		ProcInst: e.ProcInst,
-	}
-}

@@ -31,6 +31,8 @@ type Forker interface {
 type gateway struct {
 	Exec
 	Forker
+
+	UnimplementedActivity
 }
 
 func (c *gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
@@ -43,8 +45,6 @@ func (c *gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
 
 type exclusivGatewayOp struct {
 	gateway
-
-	UnimplementedActivity
 }
 
 func (e exclusivGatewayOp) Do(ctx context.Context) error {

@@ -6,8 +6,6 @@ import (
 
 type parallelGatewayCmd struct {
 	gateway
-
-	UnimplementedActivity
 }
 
 func (p *parallelGatewayCmd) Do(ctx context.Context) error {
