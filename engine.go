@@ -35,6 +35,8 @@ type Engine struct {
 	driver Driver
 
 	config *Config
+
+	isRunning bool
 }
 
 func NewEngine(name string, ops ...Option) *Engine {
@@ -70,11 +72,17 @@ func (e *Engine) init() error {
 	return nil
 }
 
-func (e *Engine) Run() error {
-	if err := e.init(); err != nil {
-		return err
+func (e *Engine) Run() (err error) {
+	if err = e.init(); err != nil {
+		return
 	}
-	return e.driver.Run()
+
+	if err = e.driver.Run(); err != nil {
+		return
+	}
+
+	e.isRunning = true
+	return
 }
 
 func (e *Engine) StartProc(ctx context.Context, cmd StartProcCmd) (string, error) {
