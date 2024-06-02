@@ -2,6 +2,7 @@ package loong
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -73,6 +74,10 @@ func (e *Engine) init() error {
 }
 
 func (e *Engine) Run() (err error) {
+	if e.isRunning {
+		return
+	}
+
 	if err = e.init(); err != nil {
 		return
 	}
@@ -125,5 +130,8 @@ func (e *Engine) CommitTask(ctx context.Context, cmd UserTaskCommitCmd) error {
 }
 
 func (e *Engine) Emit(ops ...Activity) error {
+	if !e.isRunning {
+		return errors.New("引擎未运行")
+	}
 	return e.driver.Emit(ops...)
 }
