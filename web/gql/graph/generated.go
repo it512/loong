@@ -93,7 +93,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "CommitTaskReturn.taskId":
+	case "CommitTaskReturn.task_id":
 		if e.complexity.CommitTaskReturn.TaskID == nil {
 			break
 		}
@@ -124,7 +124,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.StartProc(childComplexity, args["input"].(loong.StartProcCmd)), true
 
-	case "ProcReturn.instId":
+	case "ProcReturn.inst_id":
 		if e.complexity.ProcReturn.InstID == nil {
 			break
 		}
@@ -259,23 +259,23 @@ var sources = []*ast.Source{
 scalar Map
 
 type ProcReturn {
-  instId: String!
+  inst_id: String!
 }
 
 type CommitTaskReturn {
-  taskId: String!
+  task_id: String!
 }
 
 input StartProcCmd {
-  procId: String!
+  proc_id: String!
   starter: String!
-  busiKey: String!
-  busiType:String!
+  busi_key: String!
+  busi_type:String!
   input: Map!
 }
 
 input UserTaskCommitCmd {
-  taskId: String!
+  task_id: String!
   operator: String!
   input: Map!
   result: Int!
@@ -437,8 +437,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _CommitTaskReturn_taskId(ctx context.Context, field graphql.CollectedField, obj *model.CommitTaskReturn) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_CommitTaskReturn_taskId(ctx, field)
+func (ec *executionContext) _CommitTaskReturn_task_id(ctx context.Context, field graphql.CollectedField, obj *model.CommitTaskReturn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CommitTaskReturn_task_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -468,7 +468,7 @@ func (ec *executionContext) _CommitTaskReturn_taskId(ctx context.Context, field 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_CommitTaskReturn_taskId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CommitTaskReturn_task_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "CommitTaskReturn",
 		Field:      field,
@@ -520,8 +520,8 @@ func (ec *executionContext) fieldContext_Mutation_startProc(ctx context.Context,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "instId":
-				return ec.fieldContext_ProcReturn_instId(ctx, field)
+			case "inst_id":
+				return ec.fieldContext_ProcReturn_inst_id(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ProcReturn", field.Name)
 		},
@@ -579,8 +579,8 @@ func (ec *executionContext) fieldContext_Mutation_commitTask(ctx context.Context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "taskId":
-				return ec.fieldContext_CommitTaskReturn_taskId(ctx, field)
+			case "task_id":
+				return ec.fieldContext_CommitTaskReturn_task_id(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CommitTaskReturn", field.Name)
 		},
@@ -599,8 +599,8 @@ func (ec *executionContext) fieldContext_Mutation_commitTask(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _ProcReturn_instId(ctx context.Context, field graphql.CollectedField, obj *model.ProcReturn) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ProcReturn_instId(ctx, field)
+func (ec *executionContext) _ProcReturn_inst_id(ctx context.Context, field graphql.CollectedField, obj *model.ProcReturn) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ProcReturn_inst_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -630,7 +630,7 @@ func (ec *executionContext) _ProcReturn_instId(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ProcReturn_instId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ProcReturn_inst_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ProcReturn",
 		Field:      field,
@@ -2641,15 +2641,15 @@ func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"procId", "starter", "busiKey", "busiType", "input"}
+	fieldsInOrder := [...]string{"proc_id", "starter", "busi_key", "busi_type", "input"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "procId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("procId"))
+		case "proc_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("proc_id"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -2662,15 +2662,15 @@ func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj 
 				return it, err
 			}
 			it.Starter = data
-		case "busiKey":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("busiKey"))
+		case "busi_key":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("busi_key"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.BusiKey = data
-		case "busiType":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("busiType"))
+		case "busi_type":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("busi_type"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -2696,15 +2696,15 @@ func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"taskId", "operator", "input", "result", "version"}
+	fieldsInOrder := [...]string{"task_id", "operator", "input", "result", "version"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "taskId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+		case "task_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("task_id"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -2763,8 +2763,8 @@ func (ec *executionContext) _CommitTaskReturn(ctx context.Context, sel ast.Selec
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("CommitTaskReturn")
-		case "taskId":
-			out.Values[i] = ec._CommitTaskReturn_taskId(ctx, field, obj)
+		case "task_id":
+			out.Values[i] = ec._CommitTaskReturn_task_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -2858,8 +2858,8 @@ func (ec *executionContext) _ProcReturn(ctx context.Context, sel ast.SelectionSe
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("ProcReturn")
-		case "instId":
-			out.Values[i] = ec._ProcReturn_instId(ctx, field, obj)
+		case "inst_id":
+			out.Values[i] = ec._ProcReturn_inst_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

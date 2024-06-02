@@ -5,23 +5,23 @@
 scalar Map
 
 type ProcReturn {
-  instId: String!
+  inst_id: String!
 }
 
 type CommitTaskReturn {
-  taskId: String!
+  task_id: String!
 }
 
 input StartProcCmd {
-  procId: String!
+  proc_id: String!
   starter: String!
-  busiKey: String!
-  busiType:String!
+  busi_key: String!
+  busi_type:String!
   input: Map!
 }
 
 input UserTaskCommitCmd {
-  taskId: String!
+  task_id: String!
   operator: String!
   input: Map!
   result: Int!

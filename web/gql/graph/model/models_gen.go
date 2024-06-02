@@ -3,14 +3,14 @@
 package model
 
 type CommitTaskReturn struct {
-	TaskID string `json:"taskId"`
+	TaskID string `json:"task_id"`
 }
 
 type Mutation struct {
 }
 
 type ProcReturn struct {
-	InstID string `json:"instId"`
+	InstID string `json:"inst_id"`
 }
 
 type Query struct {
