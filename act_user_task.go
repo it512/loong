@@ -55,7 +55,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	c.UserTask.ActName = c.TUserTask.GetName()
 	c.UserTask.StartTime = time.Now()
 	c.UserTask.Status = STATUS_START
-	c.UserTask.BatchNo = c.IDGen.NewID()
+	c.UserTask.BatchNo = c.Engine.NewID()
 
 	ad := c.TUserTask.AssignmentDefinition
 
@@ -69,6 +69,8 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 
 		for i, item := range items {
 			var a UserTask = c.UserTask // copy
+			a.TaskID = c.Engine.NewID()
+
 			a.Exec.Input = maps.Clone(c.Exec.Input)
 			a.Exec.Input.Set("loopCounter", i)
 			if key := milc.GetInputElement(); key != "" {
@@ -82,6 +84,8 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	} else {
 		var err error
 		var a UserTask = c.UserTask // copy
+		a.TaskID = c.Engine.NewID()
+
 		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Exec, ad); err != nil {
 			return err
 		}
@@ -92,13 +96,13 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 
 func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDefinition) (a string, b string, c string, err error) {
 	if a, _, err = eval[string](ctx, ae, ad.Assignee); err != nil {
-		panic(fmt.Errorf("执行人为空:%w", err))
+		panic(fmt.Errorf("执行人为空>%w", err))
 	}
 	if b, _, err = eval[string](ctx, ae, ad.CandidateGroups); err != nil {
-		panic(fmt.Errorf("执行人为空:%w", err))
+		panic(fmt.Errorf("执行人为空>%w", err))
 	}
 	if c, _, err = eval[string](ctx, ae, ad.CandidateUsers); err != nil {
-		panic(fmt.Errorf("执行人为空:%w", err))
+		panic(fmt.Errorf("执行人为空>%w", err))
 	}
 	return
 }

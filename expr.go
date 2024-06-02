@@ -2,6 +2,7 @@ package loong
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/expr-lang/expr"
@@ -22,7 +23,10 @@ func eval[T any](ctx context.Context, ae ActivationEvaluator, el string) (val T,
 		return
 	}
 
-	val = a.(T)
+	var ok bool
+	if val, ok = a.(T); !ok {
+		err = fmt.Errorf("不能将 %T 转换为 %T", a, val)
+	}
 	return
 }
 
@@ -32,7 +36,10 @@ func eval2[T any](ctx context.Context, e Evaluator, el string, env any) (val T, 
 		return
 	}
 
-	val = a.(T)
+	var ok bool
+	if val, ok = a.(T); !ok {
+		err = fmt.Errorf("不能将 %T 转换为 %T", a, val)
+	}
 	return
 }
 
