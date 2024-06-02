@@ -9,8 +9,7 @@ type ProcInst struct {
 	InstID string `json:"inst_id,omitempty"`
 	ProcID string `json:"proc_id,omitempty"`
 
-	Starter  string `json:"starter,omitempty"`
-	Operator string `json:"operator,omitempty"`
+	Starter string `json:"starter,omitempty"`
 
 	BusiKey  string `json:"busi_key,omitempty"`
 	BusiType string `json:"busi_type,omitempty"`
