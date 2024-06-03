@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 
 	"github.com/it512/loong"
-	"github.com/it512/loong/pgx"
+	"github.com/it512/loong/mongox"
 	"github.com/it512/loong/web/gql"
 
 	"github.com/it512/da/internal/io"
@@ -23,13 +23,15 @@ func main() {
 		log.Println("no .env file")
 	}
 
-	DATABASE_URL := os.Getenv("DATABASE_URL")
+	// DATABASE_URL := os.Getenv("DATABASE_URL")
+	MONGODB_URI := os.Getenv("MONGODB_URI")
+	SERVER_ADDR := os.Getenv("SERVER_ADDR")
 
-	db := loong.Must(pgx.OpenDB(DATABASE_URL))
+	// db := loong.Must(pgx.OpenDB(DATABASE_URL))
 
 	eng := loong.NewEngine(
 		"loong-da",
-		loong.SetStore(pgx.NewStore(db)),
+		mongox.MongoStore(MONGODB_URI),
 		loong.FileTemplates("./bpmn/", "*.bpmn"),
 		loong.SetIoConnector(new(io.Io)),
 	)
@@ -43,7 +45,9 @@ func main() {
 	mux.Mount("/gql", gql.Playground("GraphQL playground", "/gql/query"))
 	mux.Mount("/gql/query", gql.New(eng))
 
-	if err := http.ListenAndServe(":10008", mux); err != nil {
+	log.Printf("SERVER_ADDR is -> %s", SERVER_ADDR)
+
+	if err := http.ListenAndServe(SERVER_ADDR, mux); err != nil {
 		log.Fatal(err)
 	}
 }
