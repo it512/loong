@@ -21,7 +21,7 @@ type liquid struct {
 
 	size uint
 
-	//log *slog.Logger
+	// log *slog.Logger
 }
 
 func newLiquid(ctx context.Context, eh EventHandler, size uint) *liquid {
