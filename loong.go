@@ -2,6 +2,7 @@ package loong
 
 import (
 	"context"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -59,4 +60,21 @@ func Must[T any](t T, err error) T {
 		panic(err)
 	}
 	return t
+}
+
+const (
+	banner = `
+   __
+  / /  _   _   _     _
+ / /_,'o|,'o| / \/7,'o|
+/___/|_,'|_,'/_n_/ |_,'
+                   _//  (2024)
+BPMN2流程引擎(%s)
+-------------------------------
+`
+	Version = "0.0.0"
+)
+
+func Logo() {
+	log.Printf(banner, "v"+Version)
 }

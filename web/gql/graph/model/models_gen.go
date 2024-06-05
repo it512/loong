@@ -15,3 +15,19 @@ type ProcReturn struct {
 
 type Query struct {
 }
+
+type StartProcCmd struct {
+	ProcID   string                 `json:"proc_id"`
+	Starter  string                 `json:"starter"`
+	BusiKey  string                 `json:"busi_key"`
+	BusiType string                 `json:"busi_type"`
+	Input    map[string]interface{} `json:"input"`
+}
+
+type UserTaskCommitCmd struct {
+	TaskID   string                 `json:"task_id"`
+	Operator string                 `json:"operator"`
+	Input    map[string]interface{} `json:"input"`
+	Result   int                    `json:"result"`
+	Version  int                    `json:"version"`
+}

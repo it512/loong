@@ -14,7 +14,6 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/99designs/gqlgen/plugin/federation/fedruntime"
-	"github.com/it512/loong"
 	"github.com/it512/loong/web/gql/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -52,8 +51,8 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CommitTask func(childComplexity int, input loong.UserTaskCommitCmd) int
-		StartProc  func(childComplexity int, input loong.StartProcCmd) int
+		CommitTask func(childComplexity int, input model.UserTaskCommitCmd) int
+		StartProc  func(childComplexity int, input model.StartProcCmd) int
 	}
 
 	ProcReturn struct {
@@ -70,8 +69,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	StartProc(ctx context.Context, input loong.StartProcCmd) (*model.ProcReturn, error)
-	CommitTask(ctx context.Context, input loong.UserTaskCommitCmd) (*model.CommitTaskReturn, error)
+	StartProc(ctx context.Context, input model.StartProcCmd) (*model.ProcReturn, error)
+	CommitTask(ctx context.Context, input model.UserTaskCommitCmd) (*model.CommitTaskReturn, error)
 }
 
 type executableSchema struct {
@@ -110,7 +109,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CommitTask(childComplexity, args["input"].(loong.UserTaskCommitCmd)), true
+		return e.complexity.Mutation.CommitTask(childComplexity, args["input"].(model.UserTaskCommitCmd)), true
 
 	case "Mutation.startProc":
 		if e.complexity.Mutation.StartProc == nil {
@@ -122,7 +121,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.StartProc(childComplexity, args["input"].(loong.StartProcCmd)), true
+		return e.complexity.Mutation.StartProc(childComplexity, args["input"].(model.StartProcCmd)), true
 
 	case "ProcReturn.inst_id":
 		if e.complexity.ProcReturn.InstID == nil {
@@ -357,10 +356,10 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 func (ec *executionContext) field_Mutation_commitTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 loong.UserTaskCommitCmd
+	var arg0 model.UserTaskCommitCmd
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚐUserTaskCommitCmd(ctx, tmp)
+		arg0, err = ec.unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -372,10 +371,10 @@ func (ec *executionContext) field_Mutation_commitTask_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_startProc_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 loong.StartProcCmd
+	var arg0 model.StartProcCmd
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚐStartProcCmd(ctx, tmp)
+		arg0, err = ec.unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -495,7 +494,7 @@ func (ec *executionContext) _Mutation_startProc(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().StartProc(rctx, fc.Args["input"].(loong.StartProcCmd))
+		return ec.resolvers.Mutation().StartProc(rctx, fc.Args["input"].(model.StartProcCmd))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -554,7 +553,7 @@ func (ec *executionContext) _Mutation_commitTask(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommitTask(rctx, fc.Args["input"].(loong.UserTaskCommitCmd))
+		return ec.resolvers.Mutation().CommitTask(rctx, fc.Args["input"].(model.UserTaskCommitCmd))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2634,8 +2633,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj interface{}) (loong.StartProcCmd, error) {
-	var it loong.StartProcCmd
+func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj interface{}) (model.StartProcCmd, error) {
+	var it model.StartProcCmd
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -2689,8 +2688,8 @@ func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context, obj interface{}) (loong.UserTaskCommitCmd, error) {
-	var it loong.UserTaskCommitCmd
+func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context, obj interface{}) (model.UserTaskCommitCmd, error) {
+	var it model.UserTaskCommitCmd
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3379,12 +3378,12 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNMap2map(ctx context.Context, v interface{}) (map[string]any, error) {
+func (ec *executionContext) unmarshalNMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
 	res, err := graphql.UnmarshalMap(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]any) graphql.Marshaler {
+func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3414,7 +3413,7 @@ func (ec *executionContext) marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋloong�
 	return ec._ProcReturn(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚐStartProcCmd(ctx context.Context, v interface{}) (loong.StartProcCmd, error) {
+func (ec *executionContext) unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx context.Context, v interface{}) (model.StartProcCmd, error) {
 	res, err := ec.unmarshalInputStartProcCmd(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3434,7 +3433,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚐUserTaskCommitCmd(ctx context.Context, v interface{}) (loong.UserTaskCommitCmd, error) {
+func (ec *executionContext) unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx context.Context, v interface{}) (model.UserTaskCommitCmd, error) {
 	res, err := ec.unmarshalInputUserTaskCommitCmd(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

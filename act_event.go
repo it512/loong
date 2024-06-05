@@ -2,6 +2,8 @@ package loong
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"maps"
 	"time"
 
@@ -13,43 +15,57 @@ const (
 	OP_END_EVENT   ActivityType = "OP_END_EVENT"
 )
 
-type StartEventOp struct {
+type StartProcCmd struct {
+	ProcID   string         `json:"proc_id,omitempty"`   // 流程ID
+	Starter  string         `json:"starter,omitempty"`   // 启动人人组
+	BusiKey  string         `json:"busi_key,omitempty"`  // 业务单据ID
+	BusiType string         `json:"busi_type,omitempty"` // 业务单据类型
+	Input    map[string]any `json:"input,omitempty"`     // 启动参数 map[string]any
+
 	Exec
 	bpmn.TStartEvent
-
-	cmd StartProcCmd
 }
 
-func (n *StartEventOp) Do(ctx context.Context) error {
-	n.ProcInst.InstID = n.Engine.NewID()
-	n.ProcInst.ProcID = n.cmd.ProcID
-	n.ProcInst.BusiKey = n.cmd.BusiKey
-	n.ProcInst.BusiType = n.cmd.BusiType
-	n.ProcInst.Starter = n.cmd.Starter
-
-	n.ProcInst.Template = n.GetTemplate(n.ProcID)
-
-	var ok bool
-	if n.TStartEvent, ok = n.ProcInst.Template.FindNormalStartEvent(); !ok {
-		panic("没有找到合适的StartEvnet")
+func (n *StartProcCmd) Init(ctx context.Context, e *Engine) error {
+	var t *Template
+	if t = e.Templates.GetTemplate(n.ProcID); t == nil {
+		return fmt.Errorf("未找到流程(ProcID = %s)", n.ProcID)
 	}
 
-	n.Exec.Input = Merge(n.Exec.Input, n.cmd.Input)
+	var ok bool
+	if n.TStartEvent, ok = t.FindNormalStartEvent(); !ok {
+		return errors.New("没有找到合适的StartEvnet")
+	}
 
-	n.ProcInst.Init = maps.Clone(n.Exec.Input)
-	n.ProcInst.StartTime = time.Now()
-	n.ProcInst.Status = STATUS_START
+	n.Exec.Input = Merge(n.Exec.Input, n.Input)
 
-	n.Exec.Status = STATUS_START
+	n.Exec.ProcInst = &ProcInst{
+		InstID:   e.NewID(),
+		ProcID:   n.ProcID,
+		BusiKey:  n.BusiKey,
+		BusiType: n.BusiType,
+		Starter:  n.Starter,
 
+		Init: maps.Clone(n.Exec.Input),
+
+		Template: t,
+		Engine:   e,
+	}
+
+	return nil
+}
+
+func (n *StartProcCmd) Do(ctx context.Context) error {
+	n.Exec.ProcInst.StartTime = time.Now()
+	n.Exec.ProcInst.Status = STATUS_START
 	return n.CreateProcInst(ctx, n.ProcInst)
 }
 
-func (n *StartEventOp) Emit(ctx context.Context, emit Emitter) error {
+func (n *StartProcCmd) Emit(ctx context.Context, emit Emitter) error {
 	return emit.Emit(fromOuter(ctx, n.Exec, n))
 }
 
-func (n StartEventOp) Type() ActivityType {
+func (n StartProcCmd) Type() ActivityType {
 	return OP_START_EVENT
 }
 
@@ -63,17 +79,6 @@ type EndEventOp struct {
 func (n *EndEventOp) Do(ctx context.Context) error {
 	n.ProcInst.Status = STATUS_FINISH
 	n.ProcInst.EndTime = time.Now()
-
-	// TODO
-	/*
-		if n.TEndEvent.HasErrorEventDefinition() {
-			if e, ok := n.Template.FindError(n.TEndEvent.GetErrorEventDefinition().ErrorRef); ok {
-				n.ProcInst.EndCode = e.ErrorCode
-				n.ProcInst.EndName = e.Name
-				n.EndType = "error"
-			}
-		}
-	*/
 
 	return n.EndProcInst(ctx, n.ProcInst)
 }

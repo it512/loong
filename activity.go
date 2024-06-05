@@ -19,10 +19,20 @@ const (
 
 type BpmnElement interface{ bpmn.BaseElement }
 
+type Cmd interface {
+	Init(context.Context, *Engine) error
+	Do(context.Context) error
+}
+
 type Activity interface {
 	Do(context.Context) error
 	Emit(context.Context, Emitter) error
 	Type() ActivityType
+}
+
+type ActivityCmd interface {
+	Activity
+	Init(context.Context, *Engine) error
 }
 
 type UnimplementedActivity struct {

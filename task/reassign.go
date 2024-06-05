@@ -6,12 +6,21 @@ import (
 	"github.com/it512/loong"
 )
 
-type ReassignOp struct {
+type ReassignCmd struct {
 	TaskID string
 
-	loong.UnimplementedActivity
+	*loong.Engine
 }
 
-func (r ReassignOp) Do(ctx context.Context) error {
+func (r *ReassignCmd) Init(ctx context.Context, e *loong.Engine) error {
+	r.Engine = e
+	return nil
+}
+
+func (r ReassignCmd) Do(ctx context.Context) error {
+	u := &loong.UserTask{}
+	if err := r.Engine.Store.LoadUserTask(ctx, r.TaskID, u); err != nil {
+		return err
+	}
 	return nil
 }

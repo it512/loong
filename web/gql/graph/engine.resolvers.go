@@ -12,14 +12,28 @@ import (
 )
 
 // StartProc is the resolver for the startProc field.
-func (r *mutationResolver) StartProc(ctx context.Context, input loong.StartProcCmd) (*model.ProcReturn, error) {
-	instID, err := r.Engine.StartProc(ctx, input)
-	return &model.ProcReturn{InstID: instID}, err
+func (r *mutationResolver) StartProc(ctx context.Context, input model.StartProcCmd) (*model.ProcReturn, error) {
+	err := r.Engine.CommitCmd(ctx, &loong.StartProcCmd{
+		ProcID:   input.ProcID,
+		Starter:  input.Starter,
+		BusiKey:  input.BusiKey,
+		BusiType: input.BusiType,
+		Input:    input.Input,
+	})
+
+	return &model.ProcReturn{InstID: "!"}, err
 }
 
 // CommitTask is the resolver for the commitTask field.
-func (r *mutationResolver) CommitTask(ctx context.Context, input loong.UserTaskCommitCmd) (*model.CommitTaskReturn, error) {
-	err := r.Engine.CommitTask(ctx, input)
+func (r *mutationResolver) CommitTask(ctx context.Context, input model.UserTaskCommitCmd) (*model.CommitTaskReturn, error) {
+	err := r.Engine.CommitCmd(ctx, &loong.UserTaskCommitCmd{
+		TaskID:   input.TaskID,
+		Operator: input.Operator,
+		Input:    input.Input,
+		Result:   input.Result,
+		Version:  input.Version,
+	})
+
 	return &model.CommitTaskReturn{TaskID: input.TaskID}, err
 }
 

@@ -107,35 +107,56 @@ func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDef
 	return
 }
 
-type userTaskRunOp struct {
+type UserTaskCommitCmd struct {
+	TaskID   string         `json:"task_id,omitempty"`  // 任务ID
+	Operator string         `json:"operator,omitempty"` // 任务提交人，对应的人组
+	Input    map[string]any `json:"input,omitempty"`    // 提交参数，map[string]any
+	Result   int            `json:"result,omitempty"`   // 任务执行的结果
+	Version  int            `json:"version,omitempty"`
+
 	UserTask
 	bpmn.TUserTask
-
-	cmd UserTaskCommitCmd
 
 	UnimplementedActivity
 }
 
-func (c *userTaskRunOp) Do(ctx context.Context) error {
-	c.ProcInst.Template = c.GetTemplate(c.ProcID)
+func (c *UserTaskCommitCmd) Init(ctx context.Context, e *Engine) error {
+	if err := e.LoadUserTask(ctx, c.TaskID, &c.UserTask); err != nil {
+		return fmt.Errorf("未找任务:%s > %w", c.TaskID, err)
+	}
+
+	if c.Exec.ExecID != "" {
+		if err := e.LoadExec(ctx, c.Exec.ExecID, &c.Exec); err != nil {
+			return fmt.Errorf("未找执行:%s > %w", c.Exec.ExecID, err)
+		}
+	}
+
+	c.Exec.ProcInst = &ProcInst{Engine: e}
+	if err := e.LoadProcInst(ctx, c.UserTask.InstID, c.Exec.ProcInst); err != nil {
+		return fmt.Errorf("未找到流程实例:%s > %w", c.UserTask.InstID, err)
+	}
+
+	c.Exec.ProcInst.Template = e.GetTemplate(c.ProcID)
 
 	var ok bool
 	if c.TUserTask, ok = c.Template.FindUserTask(c.UserTask.ActID); !ok {
-		panic("未找到环节")
+		return fmt.Errorf("未找到环节:%s", c.UserTask.ActID)
 	}
 
-	c.Exec.Input = Merge(c.Exec.Input, c.cmd.Input)
+	c.Exec.Input = Merge(c.Exec.Input, c.Input)
+	return nil
+}
 
+func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
 	c.UserTask.Status = STATUS_FINISH
 	c.UserTask.EndTime = time.Now()
-	c.UserTask.Operator = c.cmd.Operator
-	c.UserTask.Result = c.cmd.Result
+	c.UserTask.Operator = c.Operator
+	c.UserTask.Result = c.Result
 	return c.Store.EndUserTask(ctx, c.UserTask)
 }
 
-func (t *userTaskRunOp) Emit(ctx context.Context, emt Emitter) error {
+func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 	if !t.TUserTask.HasMultiInstanceLoopCharacteristics() {
-		//return t.EmitDefault(ctx, t.TUserTask, emt)
 		return emt.Emit(fromOuter(ctx, t.Exec, t))
 	}
 
