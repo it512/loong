@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-	loong.Logo()
 
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file")
