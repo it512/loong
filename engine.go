@@ -13,6 +13,7 @@ type Engine struct {
 	Store
 	IDGen
 	IoConnector
+	EventHandler
 
 	ctx context.Context
 
@@ -26,30 +27,31 @@ type Engine struct {
 func NewEngine(name string, ops ...Option) *Engine {
 	config := &Config{
 		queueSize: 4,
-		eh:        emptyEh,
+		eh:        eh{},
 		ctx:       context.Background(),
-		connector: emptyConnect,
+		connector: nopIo{},
 	}
 
 	for _, op := range ops {
 		op(config)
 	}
 
-	return &Engine{
+	e := &Engine{
 		name:        name,
 		Evaluator:   NewExprEval(),
 		IDGen:       uid{},
 		IoConnector: config.connector,
 
-		Templates: config.templates,
-		Store:     config.store,
+		Templates:    config.templates,
+		Store:        config.store,
+		EventHandler: config.eh,
 
 		ctx: config.ctx,
 
-		driver: newLiquid(config.ctx, config.eh, config.queueSize),
-
 		config: config,
 	}
+	e.driver = newLiquid(config.ctx, e, config.queueSize)
+	return e
 }
 
 func (e *Engine) Name() string {

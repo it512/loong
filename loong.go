@@ -10,6 +10,9 @@ import (
 type EventHandler interface {
 	Handle(context.Context, Activity)
 }
+type eh struct{}
+
+func (e eh) Handle(ctx context.Context, op Activity) {}
 
 type IDGen interface {
 	NewID() string

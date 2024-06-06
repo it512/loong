@@ -6,12 +6,6 @@ import (
 	"runtime/debug"
 )
 
-type eh struct{}
-
-func (e eh) Handle(ctx context.Context, op Activity) {}
-
-var emptyEh = new(eh)
-
 type liquid struct {
 	loop chan Activity
 	c    context.Context

@@ -56,11 +56,9 @@ func (t *taskDef) Type() (string, error) {
 	return t.typ, t.err
 }
 
-type nilConnect struct{}
+type nopIo struct{}
 
-func (nilConnect) Call(_ context.Context, _ IoOperator) error { return nil }
-
-var emptyConnect = new(nilConnect)
+func (nopIo) Call(_ context.Context, _ IoOperator) error { return nil }
 
 type LazyGetFunc func(key string) (any, error)
 type LazyBag struct {
