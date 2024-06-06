@@ -71,7 +71,7 @@ func (e *Engine) Run() (err error) {
 		return
 	}
 
-	Logo()
+	logo()
 
 	e.isRunning = true
 	return

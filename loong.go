@@ -118,6 +118,6 @@ BPMN2流程引擎(%s)
 	Version = "0.0.0"
 )
 
-func Logo() {
+func logo() {
 	log.Printf(banner, "v"+Version)
 }
