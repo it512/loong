@@ -85,10 +85,7 @@ func (e *Engine) CommitCmd(ctx context.Context, cmd ActivityCmd) error {
 }
 
 func (e *Engine) RunCmd(ctx context.Context, cmd Cmd) error {
-	if err := cmd.Init(ctx, e); err != nil {
-		return err
-	}
-	return cmd.Do(e.ctx)
+	return e.CommitCmd(ctx, &bgCmd{Cmd: cmd})
 }
 
 func (e *Engine) Emit(ops ...Activity) error {
@@ -97,3 +94,8 @@ func (e *Engine) Emit(ops ...Activity) error {
 	}
 	return e.driver.Emit(ops...)
 }
+
+type bgCmd struct{ Cmd }
+
+func (bgCmd) Emit(ctx context.Context, emt Emitter) error { return nil }
+func (bgCmd) Type() ActivityType                          { return backgroundCmd }

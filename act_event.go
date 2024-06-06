@@ -10,11 +10,6 @@ import (
 	"github.com/it512/loong/bpmn"
 )
 
-const (
-	OP_START_EVENT ActivityType = "OP_START_EVENT"
-	OP_END_EVENT   ActivityType = "OP_END_EVENT"
-)
-
 type StartProcCmd struct {
 	ProcID   string         `json:"proc_id,omitempty"`   // 流程ID
 	Starter  string         `json:"starter,omitempty"`   // 启动人人组

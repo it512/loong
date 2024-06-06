@@ -16,7 +16,11 @@ const (
 type ActivityType string
 
 const (
-	NotApplicable ActivityType = "N/A"
+	NotApplicable  ActivityType = "N/A"
+	OP_START_EVENT ActivityType = "OP_START_EVENT"
+	OP_END_EVENT   ActivityType = "OP_END_EVENT"
+
+	backgroundCmd ActivityType = "bgCmd" // for bgCmd only
 )
 
 type BpmnElement interface{ bpmn.BaseElement }
