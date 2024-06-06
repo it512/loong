@@ -23,6 +23,9 @@ type IoOperator interface {
 type IoConnector interface {
 	Call(context.Context, IoOperator) error
 }
+type nopIo struct{}
+
+func (nopIo) Call(_ context.Context, _ IoOperator) error { return nil }
 
 type taskDef struct {
 	typ string
@@ -55,10 +58,6 @@ func (t *taskDef) Type() (string, error) {
 	t.typ, _, t.err = eval[string](t.c, t.eval, t.el)
 	return t.typ, t.err
 }
-
-type nopIo struct{}
-
-func (nopIo) Call(_ context.Context, _ IoOperator) error { return nil }
 
 type LazyGetFunc func(key string) (any, error)
 type LazyBag struct {

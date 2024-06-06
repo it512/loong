@@ -6,7 +6,7 @@ import (
 )
 
 type Engine struct {
-	name string
+	Name string
 
 	Evaluator
 	Templates
@@ -37,7 +37,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 	}
 
 	e := &Engine{
-		name:        name,
+		Name:        name,
 		Evaluator:   NewExprEval(),
 		IDGen:       uid{},
 		IoConnector: config.connector,
@@ -52,10 +52,6 @@ func NewEngine(name string, ops ...Option) *Engine {
 	}
 	e.driver = newLiquid(config.ctx, e, config.queueSize)
 	return e
-}
-
-func (e *Engine) Name() string {
-	return e.name
 }
 
 func (e *Engine) init() error {
