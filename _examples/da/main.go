@@ -17,20 +17,18 @@ import (
 )
 
 func main() {
-
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file")
 	}
 
-	// DATABASE_URL := os.Getenv("DATABASE_URL")
 	MONGODB_URI := os.Getenv("MONGODB_URI")
 	SERVER_ADDR := os.Getenv("SERVER_ADDR")
 
-	// db := loong.Must(pgx.OpenDB(DATABASE_URL))
+	client := loong.Must(mongox.OpenDB(MONGODB_URI))
 
 	eng := loong.NewEngine(
 		"loong-da",
-		mongox.MongoStore(MONGODB_URI),
+		mongox.MongoStore(client),
 		loong.FileTemplates("./bpmn/", "*.bpmn"),
 		loong.SetIoConnector(new(io.Io)),
 	)

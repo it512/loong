@@ -18,9 +18,8 @@ func OpenDB(uri string) (*mongo.Client, error) {
 	return client, err
 }
 
-func MongoStore(url string) loong.Option {
-	db := loong.Must(OpenDB(url))
-	store := NewStore(db)
+func MongoStore(client *mongo.Client) loong.Option {
+	store := NewStore(client)
 	return loong.SetStore(store)
 }
 
