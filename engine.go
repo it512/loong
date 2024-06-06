@@ -6,7 +6,7 @@ import (
 )
 
 type Engine struct {
-	Name string
+	name string
 
 	Evaluator
 	Templates
@@ -36,7 +36,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 	}
 
 	return &Engine{
-		Name:        name,
+		name:        name,
 		Evaluator:   NewExprEval(),
 		IDGen:       uid{},
 		IoConnector: config.connector,
@@ -50,6 +50,10 @@ func NewEngine(name string, ops ...Option) *Engine {
 
 		config: config,
 	}
+}
+
+func (e *Engine) Name() string {
+	return e.name
 }
 
 func (e *Engine) init() error {

@@ -38,6 +38,10 @@ func newLiquid(ctx context.Context, eh EventHandler, size uint) *liquid {
 	return l
 }
 
+func (liquid) Name() string {
+	return "Liquid"
+}
+
 func (l *liquid) Emit(ops ...Activity) error {
 	for _, o := range ops {
 		go func(op Activity) {

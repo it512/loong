@@ -13,11 +13,13 @@ type EventHandler interface {
 
 type IDGen interface {
 	NewID() string
+	Name() string
 }
 
 type uid struct{}
 
 func (uid) NewID() string { return uuid.Must(uuid.NewV7()).String() }
+func (uid) Name() string  { return "UUIDGen" }
 
 type Emitter interface {
 	Emit(...Activity) error
@@ -26,6 +28,7 @@ type Emitter interface {
 type Driver interface {
 	Emitter
 	Run() error
+	Name() string
 }
 
 type Store interface {
