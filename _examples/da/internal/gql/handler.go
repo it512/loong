@@ -6,8 +6,8 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/it512/da/internal/gql/graph"
 	"github.com/it512/loong"
-	"github.com/it512/loong/web/gql/graph"
 )
 
 func New(engine *loong.Engine, exts ...graphql.HandlerExtension) http.Handler {

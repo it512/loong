@@ -11,8 +11,8 @@ import (
 
 	"github.com/it512/loong"
 	"github.com/it512/loong/mongox"
-	"github.com/it512/loong/web/gql"
 
+	"github.com/it512/da/internal/gql"
 	"github.com/it512/da/internal/io"
 )
 

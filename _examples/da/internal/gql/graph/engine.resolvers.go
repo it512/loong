@@ -7,8 +7,8 @@ package graph
 import (
 	"context"
 
+	"github.com/it512/da/internal/gql/graph/model"
 	"github.com/it512/loong"
-	"github.com/it512/loong/web/gql/graph/model"
 )
 
 // StartProc is the resolver for the startProc field.

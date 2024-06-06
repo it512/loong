@@ -14,7 +14,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/99designs/gqlgen/plugin/federation/fedruntime"
-	"github.com/it512/loong/web/gql/graph/model"
+	"github.com/it512/da/internal/gql/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -359,7 +359,7 @@ func (ec *executionContext) field_Mutation_commitTask_args(ctx context.Context, 
 	var arg0 model.UserTaskCommitCmd
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx, tmp)
+		arg0, err = ec.unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -374,7 +374,7 @@ func (ec *executionContext) field_Mutation_startProc_args(ctx context.Context, r
 	var arg0 model.StartProcCmd
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx, tmp)
+		arg0, err = ec.unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -508,7 +508,7 @@ func (ec *executionContext) _Mutation_startProc(ctx context.Context, field graph
 	}
 	res := resTmp.(*model.ProcReturn)
 	fc.Result = res
-	return ec.marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx, field.Selections, res)
+	return ec.marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_startProc(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -567,7 +567,7 @@ func (ec *executionContext) _Mutation_commitTask(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.CommitTaskReturn)
 	fc.Result = res
-	return ec.marshalNCommitTaskReturn2ᚖgithubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx, field.Selections, res)
+	return ec.marshalNCommitTaskReturn2ᚖgithubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_commitTask(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3334,11 +3334,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCommitTaskReturn2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx context.Context, sel ast.SelectionSet, v model.CommitTaskReturn) graphql.Marshaler {
+func (ec *executionContext) marshalNCommitTaskReturn2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx context.Context, sel ast.SelectionSet, v model.CommitTaskReturn) graphql.Marshaler {
 	return ec._CommitTaskReturn(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommitTaskReturn2ᚖgithubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx context.Context, sel ast.SelectionSet, v *model.CommitTaskReturn) graphql.Marshaler {
+func (ec *executionContext) marshalNCommitTaskReturn2ᚖgithubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐCommitTaskReturn(ctx context.Context, sel ast.SelectionSet, v *model.CommitTaskReturn) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3399,11 +3399,11 @@ func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNProcReturn2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx context.Context, sel ast.SelectionSet, v model.ProcReturn) graphql.Marshaler {
+func (ec *executionContext) marshalNProcReturn2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx context.Context, sel ast.SelectionSet, v model.ProcReturn) graphql.Marshaler {
 	return ec._ProcReturn(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx context.Context, sel ast.SelectionSet, v *model.ProcReturn) graphql.Marshaler {
+func (ec *executionContext) marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx context.Context, sel ast.SelectionSet, v *model.ProcReturn) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -3413,7 +3413,7 @@ func (ec *executionContext) marshalNProcReturn2ᚖgithubᚗcomᚋit512ᚋloong�
 	return ec._ProcReturn(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx context.Context, v interface{}) (model.StartProcCmd, error) {
+func (ec *executionContext) unmarshalNStartProcCmd2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐStartProcCmd(ctx context.Context, v interface{}) (model.StartProcCmd, error) {
 	res, err := ec.unmarshalInputStartProcCmd(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -3433,7 +3433,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋloongᚋwebᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx context.Context, v interface{}) (model.UserTaskCommitCmd, error) {
+func (ec *executionContext) unmarshalNUserTaskCommitCmd2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐUserTaskCommitCmd(ctx context.Context, v interface{}) (model.UserTaskCommitCmd, error) {
 	res, err := ec.unmarshalInputUserTaskCommitCmd(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
