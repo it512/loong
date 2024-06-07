@@ -38,9 +38,29 @@ func (m *Store) LoadUserTask(ctx context.Context, taskID string, ut *loong.UserT
 }
 
 func (m *Store) LoadUserTaskBatch(ctx context.Context, batchNO string) ([]loong.UserTask, error) {
-	return nil, nil
+	c, err := m.TaskColl().Find(ctx, bson.D{{Key: "batch_no", Value: batchNO}})
+	if err != nil {
+		return nil, err
+	}
+
+	var uts []loong.UserTask
+	err = c.All(ctx, &uts)
+
+	return uts, err
 }
 
 func (m *Store) EndUserTaskBatch(ctx context.Context, batchNO string) error {
-	return nil
+	_, err := m.TaskColl().UpdateMany(ctx,
+		bson.D{
+			{Key: "batch_no", Value: batchNO},
+			{Key: "status", Value: loong.STATUS_START},
+		},
+
+		bson.D{
+			{Key: "$set",
+				Value: bson.M{"status": loong.STATUS_FINISH},
+			},
+		},
+	)
+	return err
 }
