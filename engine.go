@@ -56,7 +56,19 @@ func NewEngine(name string, ops ...Option) *Engine {
 
 		config: config,
 	}
-	e.driver = newLiquid(config.ctx, e, config.queueSize)
+
+	e.driver = &liquid{
+		loop: make(chan Activity, 1),
+		c:    config.ctx,
+
+		ech: make(chan Activity, 1),
+		eh:  config.eh,
+
+		logger: config.logger.With(slog.String("driver", "liquid")),
+
+		size: 4,
+	}
+
 	return e
 }
 
@@ -89,6 +101,15 @@ func (e *Engine) CommitCmd(ctx context.Context, cmd ActivityCmd) error {
 	}
 	return e.Emit(cmd)
 }
+
+/*
+func (e *Engine) RunActivityCmd(ctx context.Context, cmd ActivityCmd) error {
+	if err := cmd.Init(ctx, e); err != nil {
+		return err
+	}
+	return e.Emit(cmd)
+}
+*/
 
 func (e *Engine) RunCmd(ctx context.Context, cmd Cmd) error {
 	return e.CommitCmd(ctx, &bgCmd{Cmd: cmd})

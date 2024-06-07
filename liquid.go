@@ -3,6 +3,7 @@ package loong
 import (
 	"context"
 	"log"
+	"log/slog"
 	"runtime/debug"
 )
 
@@ -13,23 +14,11 @@ type liquid struct {
 	ech chan Activity
 	eh  EventHandler
 
+	// cmdCh chan Cmd
+
 	size uint
 
-	// log *slog.Logger
-}
-
-func newLiquid(ctx context.Context, eh EventHandler, size uint) *liquid {
-	l := &liquid{
-		loop: make(chan Activity, 1),
-		c:    ctx,
-
-		ech: make(chan Activity, 1),
-		eh:  eh,
-
-		size: size,
-	}
-
-	return l
+	logger *slog.Logger
 }
 
 func (l *liquid) Emit(ops ...Activity) error {
@@ -44,7 +33,7 @@ func (l *liquid) Emit(ops ...Activity) error {
 func (l *liquid) doActivity(op Activity) error {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Print(err)
+			l.logger.ErrorContext(l.c, "err", "error", err)
 			debug.PrintStack()
 		}
 	}()
@@ -68,7 +57,7 @@ func (l *liquid) doActivity(op Activity) error {
 func (l *liquid) doEventHander(op Activity) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Print(err)
+			l.logger.ErrorContext(l.c, "err", "error", err)
 			debug.PrintStack()
 		}
 	}()
