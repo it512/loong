@@ -3,6 +3,7 @@ package loong
 import (
 	"context"
 	"errors"
+	"log/slog"
 )
 
 type Engine struct {
@@ -14,6 +15,8 @@ type Engine struct {
 	IDGen
 	IoConnector
 	EventHandler
+
+	Logger *slog.Logger
 
 	ctx context.Context
 
@@ -30,6 +33,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 		eh:        eh{},
 		ctx:       context.Background(),
 		connector: nopIo{},
+		logger:    slog.Default(),
 	}
 
 	for _, op := range ops {
@@ -45,6 +49,8 @@ func NewEngine(name string, ops ...Option) *Engine {
 		Templates:    config.templates,
 		Store:        config.store,
 		EventHandler: config.eh,
+
+		Logger: config.logger.With(slog.String("engine", name)),
 
 		ctx: config.ctx,
 

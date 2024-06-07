@@ -1,6 +1,9 @@
 package loong
 
-import "context"
+import (
+	"context"
+	"log/slog"
+)
 
 type Config struct {
 	store     Store
@@ -9,6 +12,8 @@ type Config struct {
 	connector IoConnector
 
 	ctx context.Context
+
+	logger *slog.Logger
 
 	queueSize uint
 }
@@ -36,5 +41,11 @@ func SetStore(s Store) Option {
 func SetEventHandler(eh EventHandler) Option {
 	return func(e *Config) {
 		e.eh = eh
+	}
+}
+
+func SetLogger(logger *slog.Logger) Option {
+	return func(e *Config) {
+		e.logger = logger
 	}
 }
