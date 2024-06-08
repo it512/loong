@@ -20,7 +20,7 @@ type Engine struct {
 
 	ctx context.Context
 
-	driver Driver
+	liquid *liquid
 
 	config *Config
 
@@ -57,16 +57,15 @@ func NewEngine(name string, ops ...Option) *Engine {
 		config: config,
 	}
 
-	e.driver = &liquid{
-		loop: make(chan Activity, 1),
-		c:    config.ctx,
+	e.liquid = &liquid{
+		engine: e,
 
-		ech: make(chan Activity, 1),
-		eh:  config.eh,
+		cmdCh: make(chan Cmd, 1),
+		actCh: make(chan Activity, 1),
+		ech:   make(chan Activity, 1),
 
 		logger: config.logger.With(slog.String("driver", "liquid")),
-
-		size: 4,
+		size:   4,
 	}
 
 	return e
@@ -85,7 +84,7 @@ func (e *Engine) Run() (err error) {
 		return
 	}
 
-	if err = e.driver.Run(); err != nil {
+	if err = e.liquid.run(); err != nil {
 		return
 	}
 
@@ -95,34 +94,22 @@ func (e *Engine) Run() (err error) {
 	return
 }
 
-func (e *Engine) CommitCmd(ctx context.Context, cmd ActivityCmd) error {
-	if err := cmd.Init(ctx, e); err != nil {
-		return err
-	}
-	return e.Emit(cmd)
-}
-
-/*
-func (e *Engine) RunActivityCmd(ctx context.Context, cmd ActivityCmd) error {
-	if err := cmd.Init(ctx, e); err != nil {
-		return err
-	}
-	return e.Emit(cmd)
-}
-*/
-
-func (e *Engine) RunCmd(ctx context.Context, cmd Cmd) error {
-	return e.CommitCmd(ctx, &bgCmd{Cmd: cmd})
-}
-
-func (e *Engine) Emit(ops ...Activity) error {
+func (e *Engine) RunActivityCmd(ctx context.Context, activity ActivityCmd) error {
 	if !e.isRunning {
 		return errors.New("引擎未运行")
 	}
-	return e.driver.Emit(ops...)
+	if err := activity.Init(ctx, e); err != nil {
+		return err
+	}
+	return e.liquid.Emit(activity)
 }
 
-type bgCmd struct{ Cmd }
-
-func (bgCmd) Emit(ctx context.Context, emt Emitter) error { return nil }
-func (bgCmd) Type() ActivityType                          { return backgroundCmd }
+func (e *Engine) BackgroundCmd(ctx context.Context, cmd Cmd) error {
+	if !e.isRunning {
+		return errors.New("引擎未运行")
+	}
+	if err := cmd.Init(ctx, e); err != nil {
+		return err
+	}
+	return e.liquid.Background(cmd)
+}

@@ -66,9 +66,8 @@ type Emitter interface {
 	Emit(...Activity) error
 }
 
-type Driver interface {
-	Emitter
-	Run() error
+type Backgrounder interface {
+	Background(...Cmd) error
 }
 
 type Store interface {

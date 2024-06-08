@@ -13,7 +13,7 @@ import (
 
 // StartProc is the resolver for the startProc field.
 func (r *mutationResolver) StartProc(ctx context.Context, input model.StartProcCmd) (*model.ProcReturn, error) {
-	err := r.Engine.CommitCmd(ctx, &loong.StartProcCmd{
+	err := r.Engine.RunActivityCmd(ctx, &loong.StartProcCmd{
 		ProcID:   input.ProcID,
 		Starter:  input.Starter,
 		BusiKey:  input.BusiKey,
@@ -26,7 +26,7 @@ func (r *mutationResolver) StartProc(ctx context.Context, input model.StartProcC
 
 // CommitTask is the resolver for the commitTask field.
 func (r *mutationResolver) CommitTask(ctx context.Context, input model.UserTaskCommitCmd) (*model.CommitTaskReturn, error) {
-	err := r.Engine.CommitCmd(ctx, &loong.UserTaskCommitCmd{
+	err := r.Engine.RunActivityCmd(ctx, &loong.UserTaskCommitCmd{
 		TaskID:   input.TaskID,
 		Operator: input.Operator,
 		Input:    input.Input,
