@@ -21,7 +21,7 @@ func (p *parallelGatewayCmd) Emit(ctx context.Context, emt Emitter) error {
 func (p *parallelGatewayCmd) join(ctx context.Context) error {
 	in := len(p.GetIncomingAssociation())
 	if in > 1 && p.ForkID == "" {
-		panic("不支持无fork 直接join, 在当前节点之前缺少排他网关")
+		panic("不支持无fork 直接join, 在当前节点之前缺少并行网关")
 	}
 
 	if in == 1 && p.ForkID == "" {
