@@ -2,7 +2,6 @@ package loong
 
 import (
 	"log/slog"
-	"runtime/debug"
 )
 
 type liquid struct {
@@ -39,7 +38,6 @@ func (l *liquid) doActivity(op Activity) {
 	defer func() {
 		if err := recover(); err != nil {
 			l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
-			debug.PrintStack()
 		}
 	}()
 
@@ -75,7 +73,6 @@ func (l *liquid) doEventHander(op Activity) {
 	defer func() {
 		if err := recover(); err != nil {
 			l.logger.ErrorContext(l.engine.ctx, "err", "error", err)
-			debug.PrintStack()
 		}
 	}()
 
