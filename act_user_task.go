@@ -34,6 +34,8 @@ type UserTask struct {
 
 	StartTime time.Time `json:"start_time,omitempty"`
 	EndTime   time.Time `json:"end_time,omitempty"`
+
+	Version int
 }
 
 type userTaskOp struct {

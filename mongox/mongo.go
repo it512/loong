@@ -25,14 +25,11 @@ func MongoStore(client *mongo.Client) loong.Option {
 
 type Store struct {
 	client *mongo.Client
-
-	db *mongo.Database
 }
 
 func NewStore(client *mongo.Client) *Store {
 	return &Store{
 		client: client,
-		db:     client.Database("loong"),
 	}
 }
 
@@ -40,6 +37,18 @@ func (s *Store) InstColl() *mongo.Collection {
 	return s.client.Database("loong").Collection("inst")
 }
 
+func (s *Store) ExecColl() *mongo.Collection {
+	return s.client.Database("loong").Collection("exec")
+}
+
 func (s *Store) TaskColl() *mongo.Collection {
 	return s.client.Database("loong").Collection("task")
+}
+
+func InterfaceSlice[T any](slice []T) []any {
+	res := make([]any, len(slice))
+	for i, v := range slice {
+		res[i] = v
+	}
+	return res
 }

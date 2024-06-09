@@ -7,10 +7,38 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+func x(ut loong.UserTask) bson.M {
+	return bson.M{
+		"task_id": ut.TaskID,
+		"inst_id": ut.InstID,
+		"exec_id": ut.ExecID,
+
+		"busi_key":  ut.BusiKey,
+		"busi_type": ut.BusiType,
+
+		"form_key": ut.FormKey,
+		"act_id":   ut.ActID,
+		"act_name": ut.ActName,
+
+		"assignee":         ut.Assignee,
+		"candidate_users":  ut.CandidateUsers,
+		"candidate_groups": ut.CandidateGroups,
+
+		"input": ut.Exec.Input,
+
+		"batch_no": ut.BatchNo,
+
+		"start_time": ut.StartTime,
+		"status":     ut.Status,
+
+		"version": ut.Version,
+	}
+}
+
 func (m *Store) CreateTasks(ctx context.Context, tasks ...loong.UserTask) error {
 	a := make([]any, len(tasks))
 	for i, t := range tasks {
-		a[i] = t
+		a[i] = x(t)
 	}
 	_, err := m.TaskColl().InsertMany(ctx, a)
 	return err
@@ -24,7 +52,7 @@ func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
 					"status":   ut.Status,
 					"end_time": ut.EndTime,
 					"operator": ut.Operator,
-					"input":    ut.Exec.Input,
+					"input2":   ut.Exec.Input,
 				},
 			},
 		},
