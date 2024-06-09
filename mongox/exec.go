@@ -17,7 +17,7 @@ func (m *Store) ForkExec(ctx context.Context, xs []loong.Exec) error {
 // join
 func (m *Store) JoinExec(ctx context.Context, ex *loong.Exec) error {
 	f := bson.D{{Key: "exec_id", Value: ex.ExecID}}
-	update := bson.D{{"$set", bson.M{"status": ex.Status, "join_tag": ex.JoinTag}}}
+	update := bson.D{{Key: "$set", Value: bson.M{"status": ex.Status, "join_tag": ex.JoinTag}}}
 	_, err := m.ExecColl().UpdateOne(ctx, f, update)
 	return err
 }

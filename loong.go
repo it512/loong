@@ -9,6 +9,17 @@ import (
 )
 
 const (
+	// 系统内置的账号，用于自动化任务
+	Robot      = "robot" // 保留，不使用
+	Robot01    = "robot01"
+	Robot02    = "robot02"
+	Robot03    = "robot03"
+	Robot04    = "robot04"
+	Robot05    = "robot05"
+	RobotAdmin = "robot_admin"
+)
+
+const (
 	STATUS_START  = 1
 	STATUS_FINISH = 100
 )
@@ -19,8 +30,6 @@ const (
 	NotApplicable  ActivityType = "N/A"
 	OP_START_EVENT ActivityType = "OP_START_EVENT"
 	OP_END_EVENT   ActivityType = "OP_END_EVENT"
-
-	backgroundCmd ActivityType = "bgCmd" // for bgCmd only
 )
 
 type BpmnElement interface{ bpmn.BaseElement }

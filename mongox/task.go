@@ -2,44 +2,18 @@ package mongox
 
 import (
 	"context"
+	"time"
 
 	"github.com/it512/loong"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func x(ut loong.UserTask) bson.M {
-	return bson.M{
-		"task_id": ut.TaskID,
-		"inst_id": ut.InstID,
-		"exec_id": ut.ExecID,
-
-		"busi_key":  ut.BusiKey,
-		"busi_type": ut.BusiType,
-
-		"form_key": ut.FormKey,
-		"act_id":   ut.ActID,
-		"act_name": ut.ActName,
-
-		"assignee":         ut.Assignee,
-		"candidate_users":  ut.CandidateUsers,
-		"candidate_groups": ut.CandidateGroups,
-
-		"input": ut.Exec.Input,
-
-		"batch_no": ut.BatchNo,
-
-		"start_time": ut.StartTime,
-		"status":     ut.Status,
-
-		"version": ut.Version,
-	}
-}
-
 func (m *Store) CreateTasks(ctx context.Context, tasks ...loong.UserTask) error {
 	a := make([]any, len(tasks))
-	for i, t := range tasks {
-		a[i] = x(t)
-	}
+	_ = loong.Each(tasks, func(ut loong.UserTask, i int) error {
+		a[i] = userTaskConv(ut)
+		return nil
+	})
 	_, err := m.TaskColl().InsertMany(ctx, a)
 	return err
 }
@@ -86,7 +60,7 @@ func (m *Store) EndUserTaskBatch(ctx context.Context, batchNO string) error {
 
 		bson.D{
 			{Key: "$set",
-				Value: bson.M{"status": loong.STATUS_FINISH},
+				Value: bson.M{"status": loong.STATUS_FINISH, "end_time": time.Now(), "operator": loong.Robot01},
 			},
 		},
 	)
