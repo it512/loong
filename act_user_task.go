@@ -13,8 +13,8 @@ import (
 type UserTask struct {
 	Exec `json:"-"`
 
-	TaskID  string `json:"task_id,omitempty"`
-	InstID  string `json:"inst_id,omitempty"`
+	TaskID string `json:"task_id,omitempty"`
+	//	InstID  string `json:"inst_id,omitempty"`
 	FormKey string `json:"form_key,omitempty"`
 
 	ActName string `json:"act_name,omitempty"`
@@ -123,6 +123,8 @@ type UserTaskCommitCmd struct {
 }
 
 func (c *UserTaskCommitCmd) Init(ctx context.Context, e *Engine) error {
+	c.Exec.ProcInst = &ProcInst{Engine: e}
+
 	if err := e.LoadUserTask(ctx, c.TaskID, &c.UserTask); err != nil {
 		return fmt.Errorf("未找任务:%s > %w", c.TaskID, err)
 	}
@@ -133,7 +135,6 @@ func (c *UserTaskCommitCmd) Init(ctx context.Context, e *Engine) error {
 		}
 	}
 
-	c.Exec.ProcInst = &ProcInst{Engine: e}
 	if err := e.LoadProcInst(ctx, c.UserTask.InstID, c.Exec.ProcInst); err != nil {
 		return fmt.Errorf("未找到流程实例:%s > %w", c.UserTask.InstID, err)
 	}

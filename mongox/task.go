@@ -11,7 +11,7 @@ import (
 func (m *Store) CreateTasks(ctx context.Context, tasks ...loong.UserTask) error {
 	a := make([]any, len(tasks))
 	_ = loong.Each(tasks, func(ut loong.UserTask, i int) error {
-		a[i] = userTaskConv(ut)
+		a[i] = usertask_2_usertaskdata(ut)
 		return nil
 	})
 	_, err := m.TaskColl().InsertMany(ctx, a)
@@ -35,8 +35,15 @@ func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
 }
 
 func (m *Store) LoadUserTask(ctx context.Context, taskID string, ut *loong.UserTask) error {
+	u := userTaskData{}
 	sr := m.TaskColl().FindOne(ctx, bson.D{{Key: "task_id", Value: taskID}})
-	return sr.Decode(ut)
+	if err := sr.Decode(&u); err != nil {
+		return err
+	}
+
+	usertaskdata_ptr_2_usertask_ptr(ut, &u)
+
+	return nil
 }
 
 func (m *Store) LoadUserTaskBatch(ctx context.Context, batchNO string) ([]loong.UserTask, error) {

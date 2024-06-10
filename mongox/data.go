@@ -39,7 +39,8 @@ type userTaskData struct {
 	Version int `json:"version"`
 }
 
-func userTaskConv(ut loong.UserTask) userTaskData {
+func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
+	//func userTaskConv(ut loong.UserTask) userTaskData {
 	return userTaskData{
 		TaskID: ut.TaskID,
 		InstID: ut.Exec.ProcInst.InstID,
@@ -72,4 +73,39 @@ func userTaskConv(ut loong.UserTask) userTaskData {
 
 		Version: ut.Version,
 	}
+}
+
+func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong.UserTask {
+	ut.TaskID = u.TaskID
+	ut.Exec.ProcInst.InstID = u.InstID
+	ut.Exec.ExecID = u.ExecID
+
+	ut.ProcInst.BusiKey = u.BusiKey
+	ut.ProcInst.BusiType = u.BusiType
+
+	ut.FormKey = u.FormKey
+
+	ut.ActID = u.ActID
+	ut.ActName = u.ActName
+
+	ut.Assignee = u.Assignee
+	ut.CandidateGroups = u.CandidateGroups
+	ut.CandidateUsers = u.CandidateUsers
+
+	ut.Operator = u.Operator
+
+	ut.Exec.Input = u.Input
+
+	ut.Result = u.Result
+
+	ut.BatchNo = u.BatchNo
+
+	ut.Status = u.Status
+
+	ut.StartTime = u.StartTime
+	ut.EndTime = u.EndTime
+
+	ut.Version = u.Version
+
+	return ut
 }
