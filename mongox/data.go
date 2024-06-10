@@ -39,8 +39,35 @@ type userTaskData struct {
 	Version int `json:"version"`
 }
 
+func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
+	return loong.UserTask{
+		TaskID: ut.TaskID,
+
+		FormKey: ut.FormKey,
+
+		ActID:   ut.ActID,
+		ActName: ut.ActName,
+
+		Assignee:        ut.Assignee,
+		CandidateGroups: ut.CandidateGroups,
+		CandidateUsers:  ut.CandidateUsers,
+
+		Operator: ut.Operator,
+
+		Result: ut.Result,
+
+		BatchNo: ut.BatchNo,
+
+		Status: ut.Status,
+
+		StartTime: ut.StartTime,
+		EndTime:   ut.EndTime,
+
+		Version: ut.Version,
+	}
+}
+
 func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
-	//func userTaskConv(ut loong.UserTask) userTaskData {
 	return userTaskData{
 		TaskID: ut.TaskID,
 		InstID: ut.Exec.ProcInst.InstID,

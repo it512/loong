@@ -53,7 +53,17 @@ func (m *Store) LoadUserTaskBatch(ctx context.Context, batchNO string) ([]loong.
 	}
 
 	var uts []loong.UserTask
-	err = c.All(ctx, &uts)
+
+	var data []userTaskData
+	if err = c.All(ctx, &data); err != nil {
+		return uts, err
+	}
+
+	uts = make([]loong.UserTask, len(data))
+	err = loong.Each(data, func(u userTaskData, i int) error {
+		uts[i] = usertaskdata_2_usertask_no_exec(u)
+		return nil
+	})
 
 	return uts, err
 }
