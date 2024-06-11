@@ -98,7 +98,7 @@ func (e *Engine) RunActivityCmd(ctx context.Context, activity ActivityCmd) error
 	if !e.isRunning {
 		return errors.New("引擎未运行")
 	}
-	if err := activity.Init(ctx, e); err != nil {
+	if err := activity.Bind(ctx, e); err != nil {
 		return err
 	}
 	return e.liquid.Emit(activity)
@@ -108,7 +108,7 @@ func (e *Engine) BackgroundCmd(ctx context.Context, cmd Cmd) error {
 	if !e.isRunning {
 		return errors.New("引擎未运行")
 	}
-	if err := cmd.Init(ctx, e); err != nil {
+	if err := cmd.Bind(ctx, e); err != nil {
 		return err
 	}
 	return e.liquid.Background(cmd)

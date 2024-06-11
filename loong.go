@@ -35,7 +35,7 @@ const (
 type BpmnElement interface{ bpmn.BaseElement }
 
 type Cmd interface {
-	Init(context.Context, *Engine) error
+	Bind(context.Context, *Engine) error
 	Do(context.Context) error
 }
 
@@ -47,7 +47,7 @@ type Activity interface {
 
 type ActivityCmd interface {
 	Activity
-	Init(context.Context, *Engine) error
+	Bind(context.Context, *Engine) error
 }
 
 type UnimplementedActivity struct{}

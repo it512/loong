@@ -122,7 +122,7 @@ type UserTaskCommitCmd struct {
 	UnimplementedActivity
 }
 
-func (c *UserTaskCommitCmd) Init(ctx context.Context, e *Engine) error {
+func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 	c.Exec.ProcInst = &ProcInst{Engine: e}
 
 	if err := e.LoadUserTask(ctx, c.TaskID, &c.UserTask); err != nil {

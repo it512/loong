@@ -21,7 +21,7 @@ type StartProcCmd struct {
 	bpmn.TStartEvent
 }
 
-func (n *StartProcCmd) Init(ctx context.Context, e *Engine) error {
+func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 	var t *Template
 	if t = e.Templates.GetTemplate(n.ProcID); t == nil {
 		return fmt.Errorf("未找到流程(ProcID = %s)", n.ProcID)
