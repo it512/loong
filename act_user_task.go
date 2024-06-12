@@ -2,6 +2,7 @@ package loong
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"maps"
 	"time"
@@ -122,7 +123,23 @@ type UserTaskCommitCmd struct {
 	UnimplementedActivity
 }
 
+func (c UserTaskCommitCmd) check() error {
+	if c.TaskID == "" {
+		return errors.New("参数TaskID为空")
+	}
+
+	if c.Operator == "" {
+		return errors.New("参数Operator为空")
+	}
+
+	return nil
+}
+
 func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
+	if err := c.check(); err != nil {
+		return err
+	}
+
 	c.Exec.ProcInst = &ProcInst{Engine: e}
 
 	if err := e.LoadUserTask(ctx, c.TaskID, &c.UserTask); err != nil {

@@ -21,7 +21,25 @@ type StartProcCmd struct {
 	bpmn.TStartEvent
 }
 
+func (n StartProcCmd) check() error {
+	if n.BusiKey == "" {
+		return errors.New("参数BusiKey为空")
+	}
+	if n.BusiType == "" {
+		return errors.New("参数BusiType为空")
+	}
+	if n.Starter == "" {
+		return errors.New("参数Starter为空")
+	}
+
+	return nil
+}
+
 func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
+	if err := n.check(); err != nil {
+		return err
+	}
+
 	var t *Template
 	if t = e.Templates.GetTemplate(n.ProcID); t == nil {
 		return fmt.Errorf("未找到流程(ProcID = %s)", n.ProcID)
