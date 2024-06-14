@@ -63,7 +63,7 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 
 		Init: maps.Clone(n.Exec.Input),
 
-		Flag: Merge(n.Exec.ProcInst.Flag, n.Flag),
+		Flag: Merge(nil, n.Flag),
 
 		Template: t,
 		Engine:   e,
