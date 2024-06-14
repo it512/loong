@@ -14,8 +14,7 @@ import (
 type UserTask struct {
 	Exec `json:"-"`
 
-	TaskID string `json:"task_id,omitempty"`
-	//	InstID  string `json:"inst_id,omitempty"`
+	TaskID  string `json:"task_id,omitempty"`
 	FormKey string `json:"form_key,omitempty"`
 
 	ActName string `json:"act_name,omitempty"`

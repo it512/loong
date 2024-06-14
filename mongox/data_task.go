@@ -8,6 +8,7 @@ import (
 
 type userTaskData struct {
 	TaskID string `json:"task_id,omitempty"`
+	ProcID string `json:"proc_id,omitempty"`
 	InstID string `json:"inst_id,omitempty"`
 	ExecID string `json:"exec_id,omitempty"`
 
@@ -37,6 +38,8 @@ type userTaskData struct {
 	EndTime   time.Time `json:"end_time,omitempty"`
 
 	Version int `json:"version"`
+
+	Flag loong.Var `json:"flag,omitempty"`
 }
 
 func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
@@ -70,6 +73,7 @@ func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
 func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
 	return userTaskData{
 		TaskID: ut.TaskID,
+		ProcID: ut.Exec.ProcInst.ProcID,
 		InstID: ut.Exec.ProcInst.InstID,
 		ExecID: ut.Exec.ExecID,
 
@@ -99,11 +103,14 @@ func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
 		EndTime:   ut.EndTime,
 
 		Version: ut.Version,
+
+		Flag: ut.Exec.ProcInst.Flag,
 	}
 }
 
 func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong.UserTask {
 	ut.TaskID = u.TaskID
+	ut.Exec.ProcInst.ProcID = u.ProcID
 	ut.Exec.ProcInst.InstID = u.InstID
 	ut.Exec.ExecID = u.ExecID
 
@@ -133,6 +140,8 @@ func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong
 	ut.EndTime = u.EndTime
 
 	ut.Version = u.Version
+
+	ut.Exec.ProcInst.Flag = u.Flag
 
 	return ut
 }

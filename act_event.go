@@ -17,6 +17,8 @@ type StartProcCmd struct {
 	BusiType string         `json:"busi_type,omitempty"` // 业务单据类型
 	Input    map[string]any `json:"input,omitempty"`     // 启动参数 map[string]any
 
+	Flag map[string]any `json:"flag,omitempty"` // 流程标志 map[string]any
+
 	Exec
 	bpmn.TStartEvent
 }
@@ -60,6 +62,8 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		Starter:  n.Starter,
 
 		Init: maps.Clone(n.Exec.Input),
+
+		Flag: Merge(n.Exec.ProcInst.Flag, n.Flag),
 
 		Template: t,
 		Engine:   e,

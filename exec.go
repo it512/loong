@@ -14,18 +14,14 @@ type ProcInst struct {
 	BusiKey  string `json:"busi_key,omitempty"`
 	BusiType string `json:"busi_type,omitempty"`
 
-	/*
-		EndCode string
-		EndName string
-		EndType string
-	*/
-
 	StartTime time.Time `json:"start_time,omitempty"`
 	EndTime   time.Time `json:"end_time,omitempty"`
 
 	Status int `json:"status,omitempty"`
 
 	Init Var `json:"init,omitempty"`
+
+	Flag Var `json:"flag,omitempty"`
 
 	*Template `json:"-"`
 	*Engine   `json:"-"`
