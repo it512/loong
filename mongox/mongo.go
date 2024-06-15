@@ -43,7 +43,7 @@ func (s *Store) ExecColl() *mongo.Collection {
 }
 
 func (s *Store) TaskColl() *mongo.Collection {
-	return s.client.Database(s.dbName).Collection("loon_task")
+	return s.client.Database(s.dbName).Collection("loong_task")
 }
 
 func InterfaceSlice[T any](slice []T) []any {
