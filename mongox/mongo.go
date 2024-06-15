@@ -3,7 +3,6 @@ package mongox
 import (
 	"context"
 
-	"github.com/it512/loong"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,31 +17,33 @@ func OpenDB(uri string) (*mongo.Client, error) {
 	return client, err
 }
 
-func MongoStore(client *mongo.Client) loong.Option {
-	store := NewStore(client)
-	return loong.SetStore(store)
-}
-
 type Store struct {
 	client *mongo.Client
+	dbName string
 }
 
 func NewStore(client *mongo.Client) *Store {
 	return &Store{
 		client: client,
+		dbName: "loong",
 	}
 }
 
+func (s *Store) SetDbName(dbname string) *Store {
+	s.dbName = dbname
+	return s
+}
+
 func (s *Store) InstColl() *mongo.Collection {
-	return s.client.Database("loong").Collection("inst")
+	return s.client.Database(s.dbName).Collection("loong_inst")
 }
 
 func (s *Store) ExecColl() *mongo.Collection {
-	return s.client.Database("loong").Collection("exec")
+	return s.client.Database(s.dbName).Collection("loong_exec")
 }
 
 func (s *Store) TaskColl() *mongo.Collection {
-	return s.client.Database("loong").Collection("task")
+	return s.client.Database(s.dbName).Collection("loon_task")
 }
 
 func InterfaceSlice[T any](slice []T) []any {
