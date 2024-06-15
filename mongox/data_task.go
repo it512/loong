@@ -39,7 +39,7 @@ type userTaskData struct {
 
 	Version int `json:"version"`
 
-	Tags loong.Var `Tags:"flag,omitempty"`
+	Tags loong.Var `json:"tags,omitempty"`
 }
 
 func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
