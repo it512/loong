@@ -6,7 +6,7 @@ import (
 	"github.com/it512/loong"
 )
 
-type inst struct {
+type instData struct {
 	InstID string `json:"inst_id,omitempty"`
 	ProcID string `json:"proc_id,omitempty"`
 
