@@ -39,7 +39,7 @@ type userTaskData struct {
 
 	Version int `json:"version"`
 
-	Flag loong.Var `json:"flag,omitempty"`
+	Tags loong.Var `Tags:"flag,omitempty"`
 }
 
 func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
@@ -104,7 +104,7 @@ func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
 
 		Version: ut.Version,
 
-		Flag: ut.Exec.ProcInst.Flag,
+		Tags: ut.Exec.ProcInst.Tags,
 	}
 }
 
@@ -141,7 +141,7 @@ func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong
 
 	ut.Version = u.Version
 
-	ut.Exec.ProcInst.Flag = u.Flag
+	ut.Exec.ProcInst.Tags = u.Tags
 
 	return ut
 }

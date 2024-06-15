@@ -21,7 +21,7 @@ type ProcInst struct {
 
 	Init Var `json:"init,omitempty"`
 
-	Flag Var `json:"flag,omitempty"`
+	Tags Var `json:"tags,omitempty"`
 
 	*Template `json:"-"`
 	*Engine   `json:"-"`
