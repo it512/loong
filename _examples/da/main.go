@@ -28,7 +28,7 @@ func main() {
 
 	eng := loong.NewEngine(
 		"loong-da",
-		mongox.MongoStore(client),
+		loong.SetStore(mongox.NewStore(client)),
 		loong.FileTemplates("./bpmn/", "*.bpmn"),
 		loong.SetIoConnector(new(io.Io)),
 	)
