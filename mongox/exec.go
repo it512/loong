@@ -9,9 +9,12 @@ import (
 
 // fork
 func (m *Store) ForkExec(ctx context.Context, xs []loong.Exec) error {
-	a := InterfaceSlice(xs)
-	_, err := m.ExecColl().InsertMany(ctx, a)
-	return err
+	/*
+		a := InterfaceSlice(xs)
+		_, err := m.ExecColl().InsertMany(ctx, a)
+		return err
+	*/
+	return nil
 }
 
 // join
