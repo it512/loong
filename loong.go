@@ -97,6 +97,17 @@ type Store interface {
 	LoadExec(ctx context.Context, execID string, ex *Exec) error
 }
 
+type TxContext interface {
+	Commit(context.Context) error
+	Abort(context.Context) error
+	End(context.Context)
+	context.Context
+}
+
+type Txer interface {
+	DoTrans(context.Context, func(TxContext) error) error
+}
+
 func Each[S ~[]E, E any](s S, f func(E, int) error) error {
 	for i, item := range s {
 		if err := f(item, i); err != nil {

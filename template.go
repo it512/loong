@@ -9,20 +9,18 @@ import (
 	"github.com/it512/loong/bpmn"
 )
 
-func FileTemplates(root string, patterns ...string) Option {
-	load := NewFileDirLoad(root, patterns...)
-	return SetTemplates(load)
-}
-
-func SetTemplates(load TemplatesLoader) Option {
-	tpls := Must(load.Load())
+func SetTemplates(t TemplateGetter) Option {
 	return func(c *Config) {
-		c.templates = tpls
+		c.templates = t
 	}
 }
 
 type TemplatesLoader interface {
 	Load() (Templates, error)
+}
+
+type TemplateGetter interface {
+	GetTemplate(procID string) *Template
 }
 
 type FileDirTemplatesLaod struct {
@@ -75,7 +73,16 @@ func (l *FileDirTemplatesLaod) Load() (Templates, error) {
 
 type Templates map[string]*Template
 
-/*
+func (t Templates) Each(fn func(*Template)) {
+	for _, v := range t {
+		fn(v)
+	}
+}
+
+func (t Templates) GetTemplate(procID string) *Template {
+	return t[procID]
+}
+
 func (t Templates) GetDefinitions(defID string) *bpmn.TDefinitions {
 	for _, v := range t {
 		if v.DefID == defID {
@@ -83,11 +90,6 @@ func (t Templates) GetDefinitions(defID string) *bpmn.TDefinitions {
 		}
 	}
 	return nil
-}
-*/
-
-func (t Templates) GetTemplate(procID string) *Template {
-	return t[procID]
 }
 
 type Template struct {

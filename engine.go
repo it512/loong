@@ -10,11 +10,12 @@ type Engine struct {
 	Name string
 
 	Evaluator
-	Templates
+	TemplateGetter
 	Store
 	IDGen
 	IoConnector
 	EventHandler
+	Txer
 
 	Logger *slog.Logger
 
@@ -46,9 +47,9 @@ func NewEngine(name string, ops ...Option) *Engine {
 		IDGen:       uid{},
 		IoConnector: config.connector,
 
-		Templates:    config.templates,
-		Store:        config.store,
-		EventHandler: config.eh,
+		TemplateGetter: config.templates,
+		Store:          config.store,
+		EventHandler:   config.eh,
 
 		Logger: config.logger.With(slog.String("engine", name)),
 

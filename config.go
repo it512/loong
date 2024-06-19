@@ -8,7 +8,7 @@ import (
 type Config struct {
 	store     Store
 	eh        EventHandler
-	templates Templates
+	templates TemplateGetter
 	connector IoConnector
 
 	ctx context.Context

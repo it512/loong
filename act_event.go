@@ -43,7 +43,7 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 	}
 
 	var t *Template
-	if t = e.Templates.GetTemplate(n.ProcID); t == nil {
+	if t = e.GetTemplate(n.ProcID); t == nil {
 		return fmt.Errorf("未找到流程(ProcID = %s)", n.ProcID)
 	}
 

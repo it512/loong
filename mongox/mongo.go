@@ -3,6 +3,7 @@ package mongox
 import (
 	"context"
 
+	"github.com/it512/loong"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -46,10 +47,27 @@ func (s *Store) TaskColl() *mongo.Collection {
 	return s.client.Database(s.dbName).Collection("loong_task")
 }
 
-func InterfaceSlice[T any](slice []T) []any {
-	res := make([]any, len(slice))
-	for i, v := range slice {
-		res[i] = v
+func (s *Store) DoTrans(ctx context.Context, fn func(loong.TxContext) error) error {
+	sess, err := s.client.StartSession()
+	if err != nil {
+		return err
 	}
-	return res
+	defer sess.EndSession(ctx)
+
+	return fn(&txCtx{session: sess, Context: ctx})
+}
+
+type txCtx struct {
+	session mongo.Session
+	context.Context
+}
+
+func (c *txCtx) Commit(ctx context.Context) error {
+	return c.session.CommitTransaction(ctx)
+}
+func (c *txCtx) Abort(ctx context.Context) error {
+	return c.session.AbortTransaction(ctx)
+}
+func (c *txCtx) End(ctx context.Context) {
+	c.session.EndSession(ctx)
 }
