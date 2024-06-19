@@ -9,6 +9,13 @@ import (
 	"github.com/it512/loong/bpmn"
 )
 
+func SetTemplatesByLoader(loader TemplatesLoader) Option {
+	g := Must(loader.Load())
+	return func(c *Config) {
+		c.templates = g
+	}
+}
+
 func SetTemplates(t TemplateGetter) Option {
 	return func(c *Config) {
 		c.templates = t
