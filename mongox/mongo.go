@@ -21,30 +21,37 @@ func OpenDB(uri string) (*mongo.Client, error) {
 type Store struct {
 	client *mongo.Client
 	dbName string
+
+	instName string
+	taskName string
+	execName string
 }
 
-func NewStore(client *mongo.Client) *Store {
+func New(dbname string, client *mongo.Client) *Store {
 	return &Store{
 		client: client,
-		dbName: "loong",
+		dbName: dbname,
+
+		instName: "loong_inst",
+		taskName: "loong_task",
+		execName: "loong_exec",
 	}
 }
 
-func (s *Store) SetDbName(dbname string) *Store {
-	s.dbName = dbname
-	return s
+func (s *Store) getColl(dbname, collname string) *mongo.Collection {
+	return s.client.Database(dbname).Collection(collname)
 }
 
 func (s *Store) InstColl() *mongo.Collection {
-	return s.client.Database(s.dbName).Collection("loong_inst")
+	return s.getColl(s.dbName, s.instName)
 }
 
 func (s *Store) ExecColl() *mongo.Collection {
-	return s.client.Database(s.dbName).Collection("loong_exec")
+	return s.getColl(s.dbName, s.execName)
 }
 
 func (s *Store) TaskColl() *mongo.Collection {
-	return s.client.Database(s.dbName).Collection("loong_task")
+	return s.getColl(s.dbName, s.taskName)
 }
 
 func (s *Store) DoTrans(ctx context.Context, fn func(loong.TxContext) error) error {
