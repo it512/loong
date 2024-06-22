@@ -34,6 +34,45 @@ func (l *liquid) Emit(ops ...Activity) error {
 	return nil
 }
 
+func (l *liquid) doActivityTx(op Activity) {
+	err := l.engine.Txer.DoTrans(l.engine.ctx, func(tx TxContext) error {
+		defer func() {
+			if err := recover(); err != nil {
+				if err = tx.Abort(l.engine.ctx); err != nil {
+					l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
+				}
+			}
+		}()
+
+		var err error
+		if err = op.Do(l.engine.ctx); err != nil {
+			return err
+		}
+
+		l.sendEventAsync(op)
+
+		if err = op.Emit(l.engine.ctx, l); err != nil {
+			return err
+		}
+
+		if err = tx.Commit(l.engine.ctx); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
+	}
+}
+
+func (l *liquid) sendEventAsync(op Activity) {
+	// 发送事件
+	go func() {
+		l.ech <- op
+	}()
+}
+
 func (l *liquid) doActivity(op Activity) {
 	defer func() {
 		if err := recover(); err != nil {
@@ -47,10 +86,7 @@ func (l *liquid) doActivity(op Activity) {
 		l.logger.ErrorContext(l.engine.ctx, "activity do error", "error", err)
 	}
 
-	// 发送事件
-	go func() {
-		l.ech <- op
-	}()
+	l.sendEventAsync(op)
 
 	if err = op.Emit(l.engine.ctx, l); err != nil {
 		l.logger.ErrorContext(l.engine.ctx, "activity emit error", "error", err)
