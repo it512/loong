@@ -60,21 +60,21 @@ func (s *Store) DoTrans(ctx context.Context, fn func(loong.TxContext) error) err
 		return err
 	}
 	defer sess.EndSession(ctx)
+	sc := mongo.NewSessionContext(ctx, sess)
 
-	return fn(&txCtx{session: sess, Context: ctx})
+	return fn(&txCtx{SessionContext: sc})
 }
 
 type txCtx struct {
-	session mongo.Session
-	context.Context
+	mongo.SessionContext
 }
 
 func (c *txCtx) Commit(ctx context.Context) error {
-	return c.session.CommitTransaction(ctx)
+	return c.SessionContext.CommitTransaction(ctx)
 }
 func (c *txCtx) Abort(ctx context.Context) error {
-	return c.session.AbortTransaction(ctx)
+	return c.SessionContext.AbortTransaction(ctx)
 }
 func (c *txCtx) End(ctx context.Context) {
-	c.session.EndSession(ctx)
+	c.SessionContext.EndSession(ctx)
 }
