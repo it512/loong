@@ -38,24 +38,24 @@ func (l *liquid) doActivityTx(op Activity) {
 	err := l.engine.Txer.DoTrans(l.engine.ctx, func(tx TxContext) error {
 		defer func() {
 			if err := recover(); err != nil {
-				if err = tx.Abort(l.engine.ctx); err != nil {
+				if err = tx.Abort(tx); err != nil {
 					l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
 				}
 			}
 		}()
 
 		var err error
-		if err = op.Do(l.engine.ctx); err != nil {
+		if err = op.Do(tx); err != nil {
 			return err
 		}
 
 		l.sendEventAsync(op)
 
-		if err = op.Emit(l.engine.ctx, l); err != nil {
+		if err = op.Emit(tx, l); err != nil {
 			return err
 		}
 
-		if err = tx.Commit(l.engine.ctx); err != nil {
+		if err = tx.Commit(tx); err != nil {
 			return err
 		}
 		return nil
