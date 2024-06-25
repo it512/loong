@@ -2,20 +2,33 @@ package mongox
 
 import (
 	"context"
+	"log"
 
-	"github.com/it512/loong"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func OpenDB(uri string) (*mongo.Client, error) {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(uri).
+func ClientOptions(uri string) *options.ClientOptions {
+	return options.
+		Client().
+		ApplyURI(uri).
 		SetBSONOptions(
 			&options.BSONOptions{
 				UseJSONStructTags: true,
 			},
-		))
-	return client, err
+		)
+}
+
+func OpenDB(uri string) (*mongo.Client, error) {
+	return OpenDBCtx(context.Background(), uri)
+}
+
+func OpenDBWith(ctx context.Context, op *options.ClientOptions) (*mongo.Client, error) {
+	return mongo.Connect(ctx, op)
+}
+
+func OpenDBCtx(ctx context.Context, uri string) (*mongo.Client, error) {
+	return mongo.Connect(ctx, ClientOptions(uri))
 }
 
 type Store struct {
@@ -54,7 +67,28 @@ func (s *Store) TaskColl() *mongo.Collection {
 	return s.getColl(s.dbName, s.taskName)
 }
 
-func (s *Store) DoTrans(ctx context.Context, fn func(loong.TxContext) error) error {
+func (s *Store) DoTx(ctx context.Context, fn func(context.Context) error) error {
+	sess, err := s.client.StartSession()
+	if err != nil {
+		return err
+	}
+	defer sess.EndSession(ctx)
+	_, err = sess.WithTransaction(ctx, func(sc mongo.SessionContext) (any, error) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Println(err)
+				if err = sc.AbortTransaction(ctx); err != nil {
+					log.Println(err)
+				}
+			}
+		}()
+		return nil, fn(sc)
+	})
+	return err
+}
+
+/*
+func (s *Store) DoTrans2(ctx context.Context, fn func(loong.TxContext) error) error {
 	sess, err := s.client.StartSession()
 	if err != nil {
 		return err
@@ -78,3 +112,4 @@ func (c *txCtx) Abort(ctx context.Context) error {
 func (c *txCtx) End(ctx context.Context) {
 	c.SessionContext.EndSession(ctx)
 }
+*/
