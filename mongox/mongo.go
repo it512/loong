@@ -8,16 +8,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NoTxStore(dbname string, client *mongo.Client) loong.Option {
-	store := New(dbname, client)
+func NoTxStore(store *Store) loong.Option {
 	return func(c *loong.Config) {
 		c.Store = store
 		c.Txer = store.NoTx()
 	}
 }
 
-func TxStore(dbname string, client *mongo.Client) loong.Option {
-	store := New(dbname, client)
+func TxStore(store *Store) loong.Option {
 	return func(c *loong.Config) {
 		c.Store = store
 		c.Txer = store.Tx()
