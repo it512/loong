@@ -75,10 +75,6 @@ type Emitter interface {
 	Emit(...Activity) error
 }
 
-type Backgrounder interface {
-	Background(...Cmd) error
-}
-
 type Store interface {
 	LoadProcInst(ctx context.Context, instID string, pi *ProcInst) error
 	CreateProcInst(ctx context.Context, procInst *ProcInst) error

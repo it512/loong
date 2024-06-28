@@ -1,6 +1,7 @@
 package loong
 
 import (
+	"context"
 	"log/slog"
 )
 
@@ -9,20 +10,10 @@ type liquid struct {
 
 	actCh chan Activity
 	ech   chan Activity
-	cmdCh chan Cmd
 
 	size uint
 
 	logger *slog.Logger
-}
-
-func (l *liquid) Background(cmds ...Cmd) error {
-	for _, cmd := range cmds {
-		go func(cmd Cmd) {
-			l.cmdCh <- cmd
-		}(cmd)
-	}
-	return nil
 }
 
 func (l *liquid) Emit(ops ...Activity) error {
@@ -35,30 +26,17 @@ func (l *liquid) Emit(ops ...Activity) error {
 }
 
 func (l *liquid) doActivityTx(op Activity) {
-	err := l.engine.Txer.DoTrans(l.engine.ctx, func(tx TxContext) error {
-		defer func() {
-			if err := recover(); err != nil {
-				if err = tx.Abort(tx); err != nil {
-					l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
-				}
-			}
-		}()
-
-		var err error
-		if err = op.Do(tx); err != nil {
-			return err
+	err := l.engine.Txer.DoTx(l.engine.ctx, func(txCtx context.Context) (err error) {
+		if err = op.Do(txCtx); err != nil {
+			return
 		}
 
 		l.sendEventAsync(op)
 
-		if err = op.Emit(tx, l); err != nil {
-			return err
+		if err = op.Emit(txCtx, l); err != nil {
+			return
 		}
-
-		if err = tx.Commit(tx); err != nil {
-			return err
-		}
-		return nil
+		return
 	})
 
 	if err != nil {
@@ -71,38 +49,6 @@ func (l *liquid) sendEventAsync(op Activity) {
 	go func() {
 		l.ech <- op
 	}()
-}
-
-func (l *liquid) doActivity(op Activity) {
-	defer func() {
-		if err := recover(); err != nil {
-			l.logger.ErrorContext(l.engine.ctx, "activity panic", "error", err)
-		}
-	}()
-
-	var err error
-
-	if err = op.Do(l.engine.ctx); err != nil {
-		l.logger.ErrorContext(l.engine.ctx, "activity do error", "error", err)
-	}
-
-	l.sendEventAsync(op)
-
-	if err = op.Emit(l.engine.ctx, l); err != nil {
-		l.logger.ErrorContext(l.engine.ctx, "activity emit error", "error", err)
-	}
-}
-
-func (l *liquid) doCmd(cmd Cmd) {
-	defer func() {
-		if err := recover(); err != nil {
-			l.logger.ErrorContext(l.engine.ctx, "cmd panic", "error", err)
-		}
-	}()
-
-	if err := cmd.Do(l.engine.ctx); err != nil {
-		l.logger.ErrorContext(l.engine.ctx, "cmd error", "error", err)
-	}
 }
 
 func (l *liquid) doEventHander(op Activity) {
@@ -119,11 +65,9 @@ func (l *liquid) loop() {
 	for {
 		select {
 		case op := <-l.actCh:
-			l.doActivity(op)
+			l.doActivityTx(op)
 		case op := <-l.ech:
 			l.doEventHander(op)
-		case cmd := <-l.cmdCh:
-			l.doCmd(cmd)
 		case <-l.engine.ctx.Done():
 			return
 		}

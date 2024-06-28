@@ -2,11 +2,27 @@ package mongox
 
 import (
 	"context"
-	"log"
 
+	"github.com/it512/loong"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+func NoTxStore(dbname string, client *mongo.Client) loong.Option {
+	store := New(dbname, client)
+	return func(c *loong.Config) {
+		c.Store = store
+		c.Txer = store.NoTx()
+	}
+}
+
+func TxStore(dbname string, client *mongo.Client) loong.Option {
+	store := New(dbname, client)
+	return func(c *loong.Config) {
+		c.Store = store
+		c.Txer = store.Tx()
+	}
+}
 
 func ClientOptions(uri string) *options.ClientOptions {
 	return options.
@@ -66,50 +82,3 @@ func (s *Store) ExecColl() *mongo.Collection {
 func (s *Store) TaskColl() *mongo.Collection {
 	return s.getColl(s.dbName, s.taskName)
 }
-
-func (s *Store) DoTx(ctx context.Context, fn func(context.Context) error) error {
-	sess, err := s.client.StartSession()
-	if err != nil {
-		return err
-	}
-	defer sess.EndSession(ctx)
-	_, err = sess.WithTransaction(ctx, func(sc mongo.SessionContext) (any, error) {
-		defer func() {
-			if err := recover(); err != nil {
-				log.Println(err)
-				if err = sc.AbortTransaction(ctx); err != nil {
-					log.Println(err)
-				}
-			}
-		}()
-		return nil, fn(sc)
-	})
-	return err
-}
-
-/*
-func (s *Store) DoTrans2(ctx context.Context, fn func(loong.TxContext) error) error {
-	sess, err := s.client.StartSession()
-	if err != nil {
-		return err
-	}
-	defer sess.EndSession(ctx)
-	sc := mongo.NewSessionContext(ctx, sess)
-
-	return fn(&txCtx{SessionContext: sc})
-}
-
-type txCtx struct {
-	mongo.SessionContext
-}
-
-func (c *txCtx) Commit(ctx context.Context) error {
-	return c.SessionContext.CommitTransaction(ctx)
-}
-func (c *txCtx) Abort(ctx context.Context) error {
-	return c.SessionContext.AbortTransaction(ctx)
-}
-func (c *txCtx) End(ctx context.Context) {
-	c.SessionContext.EndSession(ctx)
-}
-*/

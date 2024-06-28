@@ -23,6 +23,8 @@ type Engine struct {
 
 	liquid *liquid
 
+	bg Backgrounder
+
 	config *Config
 
 	isRunning bool
@@ -30,11 +32,10 @@ type Engine struct {
 
 func NewEngine(name string, ops ...Option) *Engine {
 	config := &Config{
-		queueSize: 4,
-		eh:        eh{},
-		ctx:       context.Background(),
-		connector: nopIo{},
-		logger:    slog.Default(),
+		EventHandler: eh{},
+		ctx:          context.Background(),
+		IoConnector:  nopIo{},
+		Logger:       slog.Default(),
 	}
 
 	for _, op := range ops {
@@ -45,27 +46,29 @@ func NewEngine(name string, ops ...Option) *Engine {
 		Name:        name,
 		Evaluator:   NewExprEval(),
 		IDGen:       uid{},
-		IoConnector: config.connector,
+		IoConnector: config.IoConnector,
 
 		TemplateGetter: config.templates,
-		Store:          config.store,
-		EventHandler:   config.eh,
+		Store:          config.Store,
+		Txer:           config.Txer,
+		EventHandler:   config.EventHandler,
 
-		Logger: config.logger.With(slog.String("engine", name)),
+		Logger: config.Logger.With(slog.String("engine", name)),
 
 		ctx: config.ctx,
 
 		config: config,
 	}
 
+	e.bg = bg{engine: e}
+
 	e.liquid = &liquid{
 		engine: e,
 
-		cmdCh: make(chan Cmd, 1),
 		actCh: make(chan Activity, 1),
 		ech:   make(chan Activity, 1),
 
-		logger: config.logger.With(slog.String("driver", "liquid")),
+		logger: config.Logger.With(slog.String("driver", "liquid")),
 		size:   4,
 	}
 
@@ -112,5 +115,5 @@ func (e *Engine) BackgroundCmd(ctx context.Context, cmd Cmd) error {
 	if err := cmd.Bind(ctx, e); err != nil {
 		return err
 	}
-	return e.liquid.Background(cmd)
+	return e.bg.Background(cmd)
 }

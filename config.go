@@ -6,23 +6,29 @@ import (
 )
 
 type Config struct {
-	store     Store
-	eh        EventHandler
-	templates TemplateGetter
-	connector IoConnector
+	Store        Store
+	EventHandler EventHandler
+	templates    TemplateGetter
+	IoConnector  IoConnector
+
+	Txer Txer
 
 	ctx context.Context
 
-	logger *slog.Logger
-
-	queueSize uint
+	Logger *slog.Logger
 }
 
 type Option func(*Config)
 
+func SetTxer(tx Txer) Option {
+	return func(e *Config) {
+		e.Txer = tx
+	}
+}
+
 func SetIoConnector(sc IoConnector) Option {
 	return func(e *Config) {
-		e.connector = sc
+		e.IoConnector = sc
 	}
 }
 
@@ -34,18 +40,18 @@ func SetContext(ctx context.Context) Option {
 
 func SetStore(s Store) Option {
 	return func(e *Config) {
-		e.store = s
+		e.Store = s
 	}
 }
 
 func SetEventHandler(eh EventHandler) Option {
 	return func(e *Config) {
-		e.eh = eh
+		e.EventHandler = eh
 	}
 }
 
 func SetLogger(logger *slog.Logger) Option {
 	return func(e *Config) {
-		e.logger = logger
+		e.Logger = logger
 	}
 }

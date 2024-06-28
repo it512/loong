@@ -37,13 +37,6 @@ func (s *Store) Tx() TxFunc {
 
 func (s *Store) NoTx() TxFunc {
 	return func(ctx context.Context, fn func(context.Context) error) error {
-		/*
-			defer func() {
-				if err := recover(); err != nil {
-					log.Println(err)
-				}
-			}()
-		*/
 		return fn(ctx)
 	}
 }
