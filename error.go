@@ -1,6 +1,6 @@
 package loong
 
-type RuntimeError struct {
+type SystemError struct {
 	error
 }
 
