@@ -33,7 +33,7 @@ type Engine struct {
 func NewEngine(name string, ops ...Option) *Engine {
 	config := &Config{
 		EventHandler: eh{},
-		ctx:          context.Background(),
+		Context:      context.Background(),
 		IoConnector:  nopIo{},
 		Logger:       slog.Default(),
 	}
@@ -55,7 +55,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 
 		Logger: config.Logger.With(slog.String("engine", name)),
 
-		ctx: config.ctx,
+		ctx: config.Context,
 
 		config: config,
 	}

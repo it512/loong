@@ -13,7 +13,7 @@ type Config struct {
 
 	Txer Txer
 
-	ctx context.Context
+	Context context.Context
 
 	Logger *slog.Logger
 }
@@ -34,7 +34,7 @@ func SetIoConnector(sc IoConnector) Option {
 
 func SetContext(ctx context.Context) Option {
 	return func(e *Config) {
-		e.ctx = ctx
+		e.Context = ctx
 	}
 }
 
