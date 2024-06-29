@@ -19,7 +19,10 @@ func (m *Store) CreateTasks(ctx context.Context, tasks ...loong.UserTask) error 
 }
 
 func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
-	_, err := m.TaskColl().UpdateOne(ctx, bson.D{{Key: "task_id", Value: ut.TaskID}},
+	_, err := m.TaskColl().UpdateOne(ctx, bson.D{
+		{Key: "task_id", Value: ut.TaskID},
+		{Key: "version", Value: ut.Version},
+	},
 		bson.D{
 			{Key: "$set",
 				Value: bson.M{
@@ -29,6 +32,7 @@ func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
 					"input2":   ut.Exec.Input,
 				},
 			},
+			{Key: "$inc", Value: bson.D{{Key: "version", Value: 1}}},
 		},
 	)
 	return err
@@ -36,7 +40,11 @@ func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
 
 func (m *Store) LoadUserTask(ctx context.Context, taskID string, ut *loong.UserTask) error {
 	u := userTaskData{}
-	sr := m.TaskColl().FindOne(ctx, bson.D{{Key: "task_id", Value: taskID}})
+	sr := m.TaskColl().FindOne(ctx, bson.D{
+		{Key: "task_id", Value: taskID},
+		{Key: "version", Value: ut.Version},
+	})
+
 	if err := sr.Decode(&u); err != nil {
 		return err
 	}
@@ -77,8 +85,13 @@ func (m *Store) EndUserTaskBatch(ctx context.Context, batchNO string) error {
 
 		bson.D{
 			{Key: "$set",
-				Value: bson.M{"status": loong.STATUS_FINISH, "end_time": time.Now(), "operator": loong.Robot01},
+				Value: bson.D{
+					{Key: "status", Value: loong.STATUS_FINISH},
+					{Key: "end_time", Value: time.Now()},
+					{Key: "operator", Value: loong.Robot01},
+				},
 			},
+			{Key: "$inc", Value: bson.D{{Key: "version", Value: 100}}},
 		},
 	)
 	return err

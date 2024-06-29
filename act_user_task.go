@@ -11,6 +11,8 @@ import (
 	"github.com/it512/loong/bpmn/zeebe"
 )
 
+const begin_version = 7
+
 type UserTask struct {
 	Exec `json:"-"`
 
@@ -58,6 +60,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	c.UserTask.StartTime = time.Now()
 	c.UserTask.Status = STATUS_START
 	c.UserTask.BatchNo = c.Engine.NewID()
+	c.UserTask.Version = begin_version
 
 	ad := c.TUserTask.AssignmentDefinition
 
@@ -131,6 +134,10 @@ func (c UserTaskCommitCmd) check() error {
 		return errors.New("参数Operator为空")
 	}
 
+	if c.Version < begin_version {
+		return errors.New("version错误")
+	}
+
 	return nil
 }
 
@@ -141,6 +148,8 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 
 	c.Exec.ProcInst = &ProcInst{Engine: e}
 
+	c.UserTask.TaskID = c.TaskID
+	c.UserTask.Version = c.Version
 	if err := e.LoadUserTask(ctx, c.TaskID, &c.UserTask); err != nil {
 		return fmt.Errorf("未找任务:%s > %w", c.TaskID, err)
 	}
