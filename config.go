@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	Store        Store
+	Store        Storer
 	EventHandler EventHandler
 	templates    TemplateGetter
 	IoConnector  IoConnector
@@ -38,7 +38,7 @@ func SetContext(ctx context.Context) Option {
 	}
 }
 
-func SetStore(s Store) Option {
+func SetStorer(s Storer) Option {
 	return func(e *Config) {
 		e.Store = s
 	}

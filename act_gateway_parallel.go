@@ -32,7 +32,7 @@ func (p *parallelGatewayCmd) join(ctx context.Context) error {
 
 	p.Exec.JoinTag = p.GetId()
 	p.Exec.Status = STATUS_FINISH
-	if err := p.Store.JoinExec(ctx, &p.Exec); err != nil {
+	if err := p.Storer.JoinExec(ctx, &p.Exec); err != nil {
 		return err
 	}
 	if in == 1 && p.ForkID != "" {
@@ -41,7 +41,7 @@ func (p *parallelGatewayCmd) join(ctx context.Context) error {
 	}
 
 	// in > 1
-	total, err := p.Store.LoadForks(ctx, p.Exec.ForkID)
+	total, err := p.Storer.LoadForks(ctx, p.Exec.ForkID)
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 	if c.ForkMode == forkFork || c.ForkMode == newFork {
 		_, xs := c.Exec.forkOut(out)
 
-		if err := c.Store.ForkExec(ctx, xs); err != nil {
+		if err := c.Storer.ForkExec(ctx, xs); err != nil {
 			return err
 		}
 		return c.EmitExec(ctx, xs, emt)
@@ -111,7 +111,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 			}
 			// join 后立刻fork了
 			_, xs := top.forkOut(out)
-			if err := c.Store.ForkExec(ctx, xs); err != nil {
+			if err := c.Storer.ForkExec(ctx, xs); err != nil {
 				return err
 			}
 			return c.EmitExec(ctx, xs, emt)
@@ -119,7 +119,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 			// 情况2 嵌套fork - join
 			// 此种情况下forkid为parent fork id
 			xs := c.Exec.parent().children(out)
-			if err := c.Store.ForkExec(ctx, xs); err != nil {
+			if err := c.Storer.ForkExec(ctx, xs); err != nil {
 				return err
 			}
 			return c.EmitExec(ctx, xs, emt)
@@ -134,7 +134,7 @@ func (c *parallelGatewayCmd) fork(ctx context.Context, emt Emitter) error {
 			panic("部分join模式下只允许有一个出口")
 		}
 		xs := c.Exec.children(out)
-		if err := c.Store.ForkExec(ctx, xs); err != nil {
+		if err := c.Storer.ForkExec(ctx, xs); err != nil {
 			return err
 		}
 		return c.EmitExec(ctx, xs, emt)

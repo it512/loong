@@ -11,8 +11,8 @@ type Engine struct {
 
 	Evaluator
 	TemplateGetter
-	Store
-	IDGen
+	Storer
+	IDGenerator
 	IoConnector
 	EventHandler
 	Txer
@@ -45,11 +45,11 @@ func NewEngine(name string, ops ...Option) *Engine {
 	e := &Engine{
 		Name:        name,
 		Evaluator:   NewExprEval(),
-		IDGen:       uid{},
+		IDGenerator:       uid{},
 		IoConnector: config.IoConnector,
 
 		TemplateGetter: config.templates,
-		Store:          config.Store,
+		Storer:          config.Store,
 		Txer:           config.Txer,
 		EventHandler:   config.EventHandler,
 

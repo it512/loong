@@ -63,7 +63,7 @@ type eh struct{}
 
 func (eh) Handle(ctx context.Context, op Activity) {}
 
-type IDGen interface {
+type IDGenerator interface {
 	NewID() string
 }
 
@@ -75,7 +75,7 @@ type Emitter interface {
 	Emit(...Activity) error
 }
 
-type Store interface {
+type Storer interface {
 	LoadProcInst(ctx context.Context, instID string, pi *ProcInst) error
 	CreateProcInst(ctx context.Context, procInst *ProcInst) error
 	EndProcInst(ctx context.Context, procInst *ProcInst) error

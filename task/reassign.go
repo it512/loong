@@ -19,7 +19,7 @@ func (r *ReassignCmd) Init(ctx context.Context, e *loong.Engine) error {
 
 func (r ReassignCmd) Do(ctx context.Context) error {
 	u := &loong.UserTask{}
-	if err := r.Engine.Store.LoadUserTask(ctx, r.TaskID, u); err != nil {
+	if err := r.Engine.Storer.LoadUserTask(ctx, r.TaskID, u); err != nil {
 		return err
 	}
 	return nil

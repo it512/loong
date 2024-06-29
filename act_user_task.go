@@ -93,7 +93,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 		}
 		tasks = append(tasks, a)
 	}
-	return c.Store.CreateTasks(ctx, tasks...)
+	return c.Storer.CreateTasks(ctx, tasks...)
 }
 
 func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDefinition) (a string, b string, c string, err error) {
@@ -171,7 +171,7 @@ func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
 	c.UserTask.EndTime = time.Now()
 	c.UserTask.Operator = c.Operator
 	c.UserTask.Result = c.Result
-	return c.Store.EndUserTask(ctx, c.UserTask)
+	return c.Storer.EndUserTask(ctx, c.UserTask)
 }
 
 func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
@@ -181,7 +181,7 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
 
-	ut, err := t.Store.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
+	ut, err := t.Storer.LoadUserTaskBatch(ctx, t.UserTask.BatchNo)
 	if err != nil {
 		return err
 	}
@@ -197,7 +197,7 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 		return nil
 	}
 
-	if err = t.Store.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
+	if err = t.Storer.EndUserTaskBatch(ctx, t.UserTask.BatchNo); err != nil {
 		return err
 	}
 
