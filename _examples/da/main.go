@@ -25,11 +25,14 @@ func main() {
 	SERVER_ADDR := os.Getenv("SERVER_ADDR")
 
 	client := loong.Must(mongox.OpenDB(MONGODB_URI))
+	store := mongox.New("test", client)
+
+	loader := loong.NewFileDirLoad("./bpmn/", "*.bpmn")
 
 	eng := loong.NewEngine(
 		"loong-da",
-		loong.SetStore(mongox.NewStore(client)),
-		loong.FileTemplates("./bpmn/", "*.bpmn"),
+		mongox.NoTxStore(store),
+		loong.SetTemplatesByLoader(loader),
 		loong.SetIoConnector(new(io.Io)),
 	)
 
