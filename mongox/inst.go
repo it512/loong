@@ -18,7 +18,11 @@ func (m *Store) CreateProcInst(ctx context.Context, procInst *loong.ProcInst) er
 }
 
 func (m *Store) EndProcInst(ctx context.Context, procInst *loong.ProcInst) error {
-	_, err := m.InstColl().UpdateOne(ctx, bson.D{{Key: "inst_id", Value: procInst.InstID}},
+	_, err := m.InstColl().UpdateOne(ctx,
+		bson.D{
+			{Key: "inst_id", Value: procInst.InstID},
+		},
+
 		bson.D{
 			{Key: "$set",
 				Value: bson.M{
