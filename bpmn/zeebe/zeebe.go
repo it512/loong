@@ -22,7 +22,7 @@ func (ad TAssignmentDefinition) GetCandidateUsers() []string {
 type TFormDefinition struct {
 	XMLName xml.Name
 	FormKey string `xml:"formKey,attr"`
-	//FormID  string `xml:"formId,attr"`
+	// FormID  string `xml:"formId,attr"`
 }
 
 type TIoMapping struct {
