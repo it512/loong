@@ -13,7 +13,7 @@ type Engine struct {
 	TemplateGetter
 	Storer
 	IDGenerator
-	IoConnector
+	IoCaller
 	EventHandler
 	Txer
 
@@ -34,7 +34,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 	config := &Config{
 		EventHandler: eh{},
 		Context:      context.Background(),
-		IoConnector:  nopIo{},
+		IoCaller:  nopIo{},
 		Logger:       slog.Default(),
 	}
 
@@ -45,11 +45,11 @@ func NewEngine(name string, ops ...Option) *Engine {
 	e := &Engine{
 		Name:        name,
 		Evaluator:   NewExprEval(),
-		IDGenerator:       uid{},
-		IoConnector: config.IoConnector,
+		IDGenerator: uid{},
+		IoCaller:    config.IoCaller,
 
 		TemplateGetter: config.templates,
-		Storer:          config.Store,
+		Storer:         config.Store,
 		Txer:           config.Txer,
 		EventHandler:   config.EventHandler,
 

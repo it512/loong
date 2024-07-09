@@ -46,16 +46,10 @@ type Exec struct {
 	Input Var `json:"input,omitempty"`
 
 	*ProcInst `json:"-"` // 当前bpmnElementID
-
-	elementID string `json:"-"` // 当前bpmnElementID
 }
 
 func (e Exec) Eval(ctx context.Context, el string) (any, error) {
 	return e.Evaluator.Eval(ctx, el, e)
-}
-
-func (s Exec) GetTaskDefinition(ctx context.Context) TaskDefinition {
-	return &taskDef{id: s.elementID}
 }
 
 func (e Exec) isTop() bool {

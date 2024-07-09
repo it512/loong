@@ -10,7 +10,7 @@ type TaskDefinition interface {
 	Type() (string, error)
 }
 
-type IoOperator interface {
+type IoTasker interface {
 	BpmnElement
 	GetTaskDefinition(context.Context) TaskDefinition
 	GetInput() Getter
@@ -20,12 +20,13 @@ type IoOperator interface {
 	SetResult(Getter)
 }
 
-type IoConnector interface {
-	Call(context.Context, IoOperator) error
+type IoCaller interface {
+	Call(context.Context, IoTasker) error
 }
+
 type nopIo struct{}
 
-func (nopIo) Call(_ context.Context, _ IoOperator) error { return nil }
+func (nopIo) Call(_ context.Context, _ IoTasker) error { return nil }
 
 type taskDef struct {
 	typ string
@@ -34,23 +35,17 @@ type taskDef struct {
 	el   string
 	eval ActivationEvaluator
 	c    context.Context
-
-	id string
 }
 
-func newTaskDef(ctx context.Context, eval ActivationEvaluator, el string) *taskDef {
+func newTaskDef(ctx context.Context, eval ActivationEvaluator, td zeebe.TTaskDefinition) *taskDef {
 	return &taskDef{
-		el:   el,
+		el:   td.TypeName,
 		eval: eval,
 		c:    ctx,
 	}
 }
 
 func (t *taskDef) Type() (string, error) {
-	if t.el == "" {
-		return t.id, nil
-	}
-
 	if t.typ != "" {
 		return t.typ, t.err
 	}
@@ -124,12 +119,12 @@ type ioer interface {
 	GetIoInput() []zeebe.TIoMapping
 	GetIoOutput() []zeebe.TIoMapping
 	ActivationEvaluator
-	IoConnector
+	IoCaller
 
 	Getter
 	Setter
 
-	IoOperator
+	IoTasker
 }
 
 func lazy(ctx context.Context, eval ActivationEvaluator, el string) LazyGetFunc {

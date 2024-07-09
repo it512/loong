@@ -67,8 +67,6 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 		panic(fmt.Errorf("未找到目标 TargetRef = %s", c.TargetRef))
 	}
 
-	c.Exec.elementID = c.target.GetId()
-
 	return nil
 }
 

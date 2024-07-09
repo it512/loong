@@ -49,9 +49,11 @@ type userTaskOp struct {
 }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
-	if err := io(ctx, c, c.Exec.Input); err != nil {
-		return err
-	}
+	/*
+		if err := io(ctx, c, c.Exec.Input); err != nil {
+			return err
+		}
+	*/
 
 	c.UserTask.FormKey = c.TUserTask.FormDefinition.FormKey
 	c.UserTask.InstID = c.ProcInst.InstID

@@ -27,6 +27,6 @@ func (s *ServiceTask) GetTaskDefinition(ctx context.Context) TaskDefinition {
 	return newTaskDef(
 		ctx,
 		s,
-		s.TServiceTask.TaskDefinition.TypeName,
+		s.TServiceTask.TaskDefinition,
 	)
 }

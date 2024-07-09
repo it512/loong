@@ -9,7 +9,7 @@ type Config struct {
 	Store        Storer
 	EventHandler EventHandler
 	templates    TemplateGetter
-	IoConnector  IoConnector
+	IoCaller     IoCaller
 
 	Txer Txer
 
@@ -26,9 +26,9 @@ func SetTxer(tx Txer) Option {
 	}
 }
 
-func SetIoConnector(sc IoConnector) Option {
+func SetIoCaller(sc IoCaller) Option {
 	return func(e *Config) {
-		e.IoConnector = sc
+		e.IoCaller = sc
 	}
 }
 
