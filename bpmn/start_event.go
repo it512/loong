@@ -65,3 +65,7 @@ func (startEvent TStartEvent) IsNormal() bool {
 		startEvent.HasTimerEventDefinition() ||
 		startEvent.HasSignalEventDefinition())
 }
+
+func (s TStartEvent) GetProperty(name string) (string, bool) {
+	return zeebe.GetProperty(s.Properties, name)
+}

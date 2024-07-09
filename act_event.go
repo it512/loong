@@ -21,6 +21,8 @@ type StartProcCmd struct {
 
 	Exec
 	bpmn.TStartEvent
+
+	InOut
 }
 
 func (n StartProcCmd) check() error {
@@ -73,6 +75,7 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 }
 
 func (n *StartProcCmd) Do(ctx context.Context) error {
+	// n.IoConnector.Call(ctx, n)
 	n.Exec.ProcInst.StartTime = time.Now()
 	n.Exec.ProcInst.Status = STATUS_START
 	return n.CreateProcInst(ctx, n.ProcInst)
