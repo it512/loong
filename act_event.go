@@ -110,7 +110,11 @@ func doIntermediationThrowEvent(exec Exec, i bpmn.TIntermediateThrowEvent) Activ
 	if i.HasLinkEventDefinition() {
 		return &linkEventOp{Exec: exec, Throw: i.GetLinkEventDefinition()}
 	}
-	panic("")
+
+	if i.HasMessageEventDefinitio() {
+		return &messageIntermediateThrowEventOp{Exec: exec, InOut: newInOut(), TIntermediateThrowEvent: i}
+	}
+	panic("不支持的IntermediateThrowEvent类型")
 }
 
 type linkEventOp struct {
@@ -129,4 +133,29 @@ func (n linkEventOp) Emit(ctx context.Context, emt Emitter) error {
 		}
 	}
 	panic("LinkEvent错误，Throw 没有找到 Catch")
+}
+
+type messageIntermediateThrowEventOp struct {
+	Exec
+	bpmn.TIntermediateThrowEvent
+
+	InOut
+
+	UnimplementedActivity
+}
+
+func (s *messageIntermediateThrowEventOp) Do(ctx context.Context) error {
+	return io(ctx, s, s.Exec.Input)
+}
+
+func (s *messageIntermediateThrowEventOp) Emit(ctx context.Context, emt Emitter) error {
+	return emt.Emit(fromOuter(ctx, s.Exec, s))
+}
+
+func (s *messageIntermediateThrowEventOp) GetTaskDefinition(ctx context.Context) TaskDefinition {
+	return newTaskDef(
+		ctx,
+		s,
+		s.TaskDefinition,
+	)
 }

@@ -8,9 +8,9 @@ type TIntermediateThrowEvent struct {
 	IncomingAssociation []string `xml:"incoming"`
 	OutgoingAssociation []string `xml:"outgoing"`
 
-	LinkEventDefinition    []TLinkEventDefinition   `xml:"linkEventDefinition"`
-	SignalEventDefinition  []TSignalEventDefinition `xml:"signalEventDefinition"`
-	MessageEventDefinition []TMessageEventDefinition
+	LinkEventDefinition    []TLinkEventDefinition    `xml:"linkEventDefinition"`
+	SignalEventDefinition  []TSignalEventDefinition  `xml:"signalEventDefinition"`
+	MessageEventDefinition []TMessageEventDefinition `xml:"messageEventDefinition"`
 
 	TaskDefinition zeebe.TTaskDefinition `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskDefinition"`
 	TaskHeaders    []zeebe.TTaskHeader   `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskHeaders>header"`
@@ -44,6 +44,30 @@ func (intermediateThrowEvent TIntermediateThrowEvent) HasLinkEventDefinition() b
 	return len(intermediateThrowEvent.LinkEventDefinition) > 0
 }
 
+func (intermediateThrowEvent TIntermediateThrowEvent) HasMessageEventDefinitio() bool {
+	return len(intermediateThrowEvent.MessageEventDefinition) > 0
+}
+
 func (intermediateThrowEvent TIntermediateThrowEvent) GetLinkEventDefinition() TLinkEventDefinition {
 	return intermediateThrowEvent.LinkEventDefinition[0]
+}
+
+func (intermediateThrowEvent TIntermediateThrowEvent) GetHasMessageEventDefinitio() TMessageEventDefinition {
+	return intermediateThrowEvent.MessageEventDefinition[0]
+}
+
+func (serviceTask TIntermediateThrowEvent) GetIoInput() []zeebe.TIoMapping {
+	return serviceTask.Input
+}
+
+func (serviceTask TIntermediateThrowEvent) GetIoOutput() []zeebe.TIoMapping {
+	return serviceTask.Output
+}
+
+func (s TIntermediateThrowEvent) GetTaskHeader(key string) (string, bool) {
+	return zeebe.GetTaskHeader(s.TaskHeaders, key)
+}
+
+func (s TIntermediateThrowEvent) GetProperty(name string) (string, bool) {
+	return zeebe.GetProperty(s.Properties, name)
 }
