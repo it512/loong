@@ -12,12 +12,13 @@ type TaskDefinition interface {
 
 type IoTasker interface {
 	BpmnElement
+
 	GetTaskDefinition(context.Context) TaskDefinition
-	GetInput() Getter
 	GetTaskHeader(string) (string, bool)
 	GetProperty(string) (string, bool)
 
-	SetResult(Getter)
+	GetInput(string) (any, bool)
+	SetResult(string, any)
 }
 
 type IoCaller interface {
@@ -88,22 +89,22 @@ func (b *LazyBag) Set(key string, val any) {
 
 type InOut struct {
 	in  *LazyBag
-	out Getter
+	out Var
 }
 
 func newInOut() InOut {
 	return InOut{
 		in:  NewLazyBag(),
-		out: emptyVar,
+		out: NewVar(),
 	}
 }
 
-func (io InOut) GetInput() Getter {
-	return io.in
+func (io InOut) GetInput(key string) (any, bool) {
+	return io.in.Get(key)
 }
 
-func (io *InOut) SetResult(result Getter) {
-	io.out = result
+func (io *InOut) SetResult(key string, val any) {
+	io.out.Set(key, val)
 }
 
 func (io InOut) Get(key string) (any, bool) {
