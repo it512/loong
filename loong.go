@@ -10,13 +10,7 @@ import (
 
 const (
 	// 系统内置的账号，用于自动化任务
-	Robot      = "robot" // 保留，不使用
-	Robot01    = "robot01"
-	Robot02    = "robot02"
-	Robot03    = "robot03"
-	Robot04    = "robot04"
-	Robot05    = "robot05"
-	RobotAdmin = "robot_admin"
+	Robot = "robot"
 )
 
 const (

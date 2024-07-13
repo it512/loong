@@ -88,7 +88,7 @@ func (m *Store) EndUserTaskBatch(ctx context.Context, batchNO string) error {
 				Value: bson.D{
 					{Key: "status", Value: loong.STATUS_FINISH},
 					{Key: "end_time", Value: time.Now()},
-					{Key: "operator", Value: loong.Robot01},
+					{Key: "operator", Value: loong.Robot},
 				},
 			},
 			{Key: "$inc", Value: bson.D{{Key: "version", Value: 100}}},

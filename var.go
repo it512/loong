@@ -1,12 +1,5 @@
 package loong
 
-type nilVar struct{}
-
-func (nilVar) Get(_ string) (v any, ok bool) { return }
-func (nilVar) Set(_ string, _ any)           {}
-
-var emptyVar = new(nilVar)
-
 type Setter interface {
 	Set(string, any)
 }
