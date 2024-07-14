@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func splitTrim(s, sep string) []string {
+func SplitTrim(s, sep string) []string {
 	groups := strings.Split(s, sep)
 	for i, group := range groups {
 		groups[i] = strings.TrimSpace(group)

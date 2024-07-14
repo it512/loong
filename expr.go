@@ -54,8 +54,10 @@ func NewExprEval() *ExprEval {
 }
 
 func (e *ExprEval) Eval(ctx context.Context, ex string, a any) (any, error) {
-	var el string
-	var ok bool
+	var (
+		el string
+		ok bool
+	)
 	if el, ok = exp(ex); !ok {
 		return el, nil
 	}
@@ -71,7 +73,7 @@ func (e *ExprEval) Eval(ctx context.Context, ex string, a any) (any, error) {
 func exp(s string) (string, bool) {
 	a, ok1 := fx(s)
 	b, ok2 := el(a)
-	return b, ok1 || ok2
+	return b, (ok1 || ok2) && b != ""
 }
 
 func fx(s string) (string, bool) {

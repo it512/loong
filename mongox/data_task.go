@@ -20,9 +20,9 @@ type userTaskData struct {
 	ActID   string `json:"act_id,omitempty"`
 	ActName string `json:"act_name,omitempty"`
 
-	Assignee        string `json:"assignee,omitempty"`
-	CandidateGroups string `json:"candidate_groups,omitempty"`
-	CandidateUsers  string `json:"candidate_users,omitempty"`
+	Assignee        string   `json:"assignee,omitempty"`
+	CandidateGroups []string `json:"candidate_groups,omitempty"`
+	CandidateUsers  []string `json:"candidate_users,omitempty"`
 
 	Operator string `json:"operator,omitempty"`
 

@@ -22,9 +22,9 @@ type UserTask struct {
 	ActName string `json:"act_name,omitempty"`
 	ActID   string `json:"act_id,omitempty"`
 
-	Assignee        string `json:"assignee,omitempty"`
-	CandidateGroups string `json:"candidate_groups,omitempty"`
-	CandidateUsers  string `json:"candidate_users,omitempty"`
+	Assignee        string   `json:"assignee,omitempty"`
+	CandidateGroups []string `json:"candidate_groups,omitempty"`
+	CandidateUsers  []string `json:"candidate_users,omitempty"`
 
 	Operator string `json:"operator,omitempty"`
 
@@ -101,16 +101,61 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	return c.Storer.CreateTasks(ctx, tasks...)
 }
 
-func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDefinition) (a string, b string, c string, err error) {
-	if a, _, err = eval[string](ctx, ae, ad.Assignee); err != nil {
-		panic(fmt.Errorf("执行人为空>%w", err))
+func groups(ctx context.Context, ae ActivationEvaluator, str string) (result []string, err error) {
+	if str == "" {
+		return
 	}
-	if b, _, err = eval[string](ctx, ae, ad.CandidateGroups); err != nil {
-		panic(fmt.Errorf("执行人为空>%w", err))
+
+	var (
+		s  string
+		ok bool
+		a  any
+	)
+	if s, ok = exp(str); ok {
+		if a, err = ae.Eval(ctx, str); err != nil {
+			return
+		}
+
+		switch v := a.(type) {
+		case []string:
+			result = v
+		case string:
+			if v != "" {
+				result = []string{v}
+			}
+		default:
+			panic("执行人必须为string或者[]string")
+		}
+		return
 	}
-	if c, _, err = eval[string](ctx, ae, ad.CandidateUsers); err != nil {
-		panic(fmt.Errorf("执行人为空>%w", err))
+
+	return zeebe.SplitTrim(s, ","), nil
+}
+
+func assignee(ctx context.Context, ae ActivationEvaluator, str string) (result string, err error) {
+	if result = str; str == "" {
+		return
 	}
+
+	if _, ok := exp(str); ok {
+		result, _, err = eval[string](ctx, ae, str)
+	}
+
+	return
+}
+
+func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDefinition) (a string, b []string, c []string, err error) {
+	if a, err = assignee(ctx, ae, ad.Assignee); err != nil {
+		return
+	}
+	if b, err = groups(ctx, ae, ad.CandidateGroups); err != nil {
+		return
+	}
+
+	if c, err = groups(ctx, ae, ad.CandidateUsers); err != nil {
+		return
+	}
+
 	return
 }
 

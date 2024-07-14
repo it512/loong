@@ -12,11 +12,11 @@ type TAssignmentDefinition struct {
 }
 
 func (ad TAssignmentDefinition) GetCandidateGroups() []string {
-	return splitTrim(ad.CandidateGroups, ",")
+	return SplitTrim(ad.CandidateGroups, ",")
 }
 
 func (ad TAssignmentDefinition) GetCandidateUsers() []string {
-	return splitTrim(ad.CandidateUsers, ",")
+	return SplitTrim(ad.CandidateUsers, ",")
 }
 
 type TFormDefinition struct {
