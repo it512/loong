@@ -151,7 +151,6 @@ func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDef
 	if b, err = groups(ctx, ae, ad.CandidateGroups); err != nil {
 		return
 	}
-
 	if c, err = groups(ctx, ae, ad.CandidateUsers); err != nil {
 		return
 	}
@@ -160,6 +159,7 @@ func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDef
 }
 
 type UserTaskCommitCmd struct {
+	// InstID   string         `json:"inst_id,omitempty"`  // 实例ID
 	TaskID   string         `json:"task_id,omitempty"`  // 任务ID
 	Operator string         `json:"operator,omitempty"` // 任务提交人，对应的人组
 	Input    map[string]any `json:"input,omitempty"`    // 提交参数，map[string]any
@@ -202,7 +202,7 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 	}
 
 	if c.Exec.ExecID != "" {
-		if err := e.LoadExec(ctx, c.Exec.ExecID, &c.Exec); err != nil {
+		if err := e.LoadExec(ctx, c.UserTask.InstID, c.Exec.ExecID, &c.Exec); err != nil {
 			return fmt.Errorf("未找执行:%s > %w", c.Exec.ExecID, err)
 		}
 	}

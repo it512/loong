@@ -83,8 +83,8 @@ type Storer interface {
 
 	ForkExec(ctx context.Context, xs []Exec) error
 	JoinExec(ctx context.Context, ex *Exec) error
-	LoadForks(ctx context.Context, forkID string) ([]Exec, error)
-	LoadExec(ctx context.Context, execID string, ex *Exec) error
+	LoadForks(ctx context.Context, instID, forkID string) ([]Exec, error)
+	LoadExec(ctx context.Context, instID, execID string, ex *Exec) error
 }
 
 type Txer interface {

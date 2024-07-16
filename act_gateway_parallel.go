@@ -41,7 +41,7 @@ func (p *parallelGatewayCmd) join(ctx context.Context) error {
 	}
 
 	// in > 1
-	total, err := p.Storer.LoadForks(ctx, p.Exec.ForkID)
+	total, err := p.Storer.LoadForks(ctx, p.ProcInst.InstID, p.Exec.ForkID)
 	if err != nil {
 		return err
 	}
