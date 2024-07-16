@@ -13,7 +13,6 @@ import (
 	"github.com/it512/loong/mongox"
 
 	"github.com/it512/da/internal/gql"
-	"github.com/it512/da/internal/io"
 )
 
 func main() {
@@ -33,7 +32,6 @@ func main() {
 		"loong-da",
 		mongox.NoTxStore(store),
 		loong.SetTemplatesByLoader(loader),
-		loong.SetIoConnector(new(io.Io)),
 	)
 
 	if err := eng.Run(); err != nil {
