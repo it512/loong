@@ -1,6 +1,8 @@
 package bpmn
 
-import "html"
+import (
+	"html"
+)
 
 // xmins:activiti="http://activiti.org/bpmn"
 
@@ -16,26 +18,6 @@ type TDefinitions struct {
 	Messages           []TMessage `xml:"message"`
 	Errors             []TError   `xml:"error"`
 	Signals            []TSignal  `xml:"signal"`
-}
-
-type TProcess struct {
-	Id                           string                    `xml:"id,attr"`
-	Name                         string                    `xml:"name,attr"`
-	ProcessType                  string                    `xml:"processType,attr"`
-	IsClosed                     bool                      `xml:"isClosed,attr"`
-	IsExecutable                 bool                      `xml:"isExecutable,attr"`
-	DefinitionalCollaborationRef string                    `xml:"definitionalCollaborationRef,attr"`
-	StartEvents                  []TStartEvent             `xml:"startEvent"`
-	EndEvents                    []TEndEvent               `xml:"endEvent"`
-	SequenceFlows                []TSequenceFlow           `xml:"sequenceFlow"`
-	Tasks                        []TTask                   `xml:"task"`
-	ServiceTasks                 []TServiceTask            `xml:"serviceTask"`
-	UserTasks                    []TUserTask               `xml:"userTask"`
-	ParallelGateway              []TParallelGateway        `xml:"parallelGateway"`
-	ExclusiveGateway             []TExclusiveGateway       `xml:"exclusiveGateway"`
-	IntermediateCatchEvent       []TIntermediateCatchEvent `xml:"intermediateCatchEvent"`
-	IntermediateTrowEvent        []TIntermediateThrowEvent `xml:"intermediateThrowEvent"`
-	EventBasedGateway            []TEventBasedGateway      `xml:"eventBasedGateway"`
 }
 
 type TTask struct {
