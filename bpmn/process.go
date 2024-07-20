@@ -22,7 +22,8 @@ type TProcess struct {
 	IntermediateTrowEvent  []TIntermediateThrowEvent `xml:"intermediateThrowEvent"`
 	EventBasedGateway      []TEventBasedGateway      `xml:"eventBasedGateway"`
 
-	Properties []zeebe.TProperty `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
+	// Properties []zeebe.TProperty `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
+	Properties []zeebe.TProperty `xml:"extensionElements>properties>property"`
 }
 
 func (s TProcess) GetProperty(name string) (string, bool) {
