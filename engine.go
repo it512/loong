@@ -34,7 +34,7 @@ func NewEngine(name string, ops ...Option) *Engine {
 	config := &Config{
 		EventHandler: eh{},
 		Context:      context.Background(),
-		IoCaller:  nopIo{},
+		IoCaller:     IoSet{},
 		Logger:       slog.Default(),
 	}
 

@@ -25,9 +25,16 @@ type IoCaller interface {
 	Call(context.Context, IoTasker) error
 }
 
-type nopIo struct{}
+type IoSet []IoCaller
 
-func (nopIo) Call(_ context.Context, _ IoTasker) error { return nil }
+func (io IoSet) Call(ctx context.Context, task IoTasker) error {
+	for _, call := range io {
+		if err := call.Call(ctx, task); err != nil {
+			return nil
+		}
+	}
+	return nil
+}
 
 type taskDef struct {
 	typ string
