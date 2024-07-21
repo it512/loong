@@ -2,9 +2,15 @@ package loong
 
 import (
 	"context"
+
+	"github.com/it512/loong/bpmn"
 )
 
 type parallelGatewayCmd struct {
+	bpmn.TParallelGateway
+	Exec
+	UnimplementedActivity
+
 	gateway
 }
 

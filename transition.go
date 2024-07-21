@@ -75,9 +75,9 @@ func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 	case bpmn.UserTask:
 		err = commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
 	case bpmn.ExclusiveGateway:
-		err = commit.Emit(&exclusivGatewayOp{gateway: gateway{Forker: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec}})
+		err = commit.Emit(&exclusivGatewayOp{TExclusiveGateway: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec})
 	case bpmn.ParallelGateway:
-		err = commit.Emit(&parallelGatewayCmd{gateway: gateway{Forker: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec}})
+		err = commit.Emit(&parallelGatewayCmd{TParallelGateway: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec})
 	case bpmn.ServiceTask:
 		err = commit.Emit(&ServiceTask{Exec: c.Exec, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
 	case bpmn.EndEvent:

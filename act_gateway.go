@@ -2,6 +2,8 @@ package loong
 
 import (
 	"context"
+
+	"github.com/it512/loong/bpmn"
 )
 
 // forkMode
@@ -22,20 +24,9 @@ const (
 	inclusive = 9
 )
 
-type Forker interface {
-	BpmnElement
-	GetIncomingAssociation() []string
-	GetOutgoingAssociation() []string
-}
+type gateway struct{}
 
-type gateway struct {
-	Exec
-	Forker
-
-	UnimplementedActivity
-}
-
-func (c *gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
+func (c gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
 	for _, ex := range xs {
 		sf := fromExec(ex, ex.OutTag)
 		emt.Emit(sf) //nolint:errcheck
@@ -44,7 +35,9 @@ func (c *gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
 }
 
 type exclusivGatewayOp struct {
-	gateway
+	bpmn.TExclusiveGateway
+	Exec
+	UnimplementedActivity
 }
 
 func (e exclusivGatewayOp) Do(ctx context.Context) error {
