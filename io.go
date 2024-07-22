@@ -30,7 +30,7 @@ type IoSet []IoCaller
 func (io IoSet) Call(ctx context.Context, task IoTasker) error {
 	for _, call := range io {
 		if err := call.Call(ctx, task); err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
