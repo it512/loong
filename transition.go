@@ -30,7 +30,7 @@ func choose(ctx context.Context, ae ActivationEvaluator, in []bpmn.TSequenceFlow
 	return
 }
 
-func chooseDefault(me any, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
+func chooseDefault(me Outer, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 	if len(flows) == 1 {
 		return flows[0]
 	}
