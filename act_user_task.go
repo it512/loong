@@ -157,7 +157,7 @@ func assign(ctx context.Context, ae ActivationEvaluator, ad zeebe.TAssignmentDef
 }
 
 type UserTaskCommitCmd struct {
-	// InstID   string         `json:"inst_id,omitempty"`  // 实例ID
+	InstID   string         `json:"inst_id,omitempty"`  // 实例ID
 	TaskID   string         `json:"task_id,omitempty"`  // 任务ID
 	Operator string         `json:"operator,omitempty"` // 任务提交人，对应的人组
 	Input    map[string]any `json:"input,omitempty"`    // 提交参数，map[string]any
@@ -171,6 +171,10 @@ type UserTaskCommitCmd struct {
 }
 
 func (c UserTaskCommitCmd) check() error {
+	if c.InstID == "" {
+		return errors.New("参数InstID为空")
+	}
+
 	if c.TaskID == "" {
 		return errors.New("参数TaskID为空")
 	}
