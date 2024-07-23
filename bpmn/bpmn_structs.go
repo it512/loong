@@ -20,40 +20,6 @@ type TDefinitions struct {
 	Signals            []TSignal  `xml:"signal"`
 }
 
-type TTask struct {
-	Id                  string   `xml:"id,attr"`
-	Name                string   `xml:"name,attr"`
-	Default             string   `xml:"default,attr"`
-	CompletionQuantity  int      `xml:"completionQuantity,attr"`
-	IsForCompensation   bool     `xml:"isForCompensation,attr"`
-	OperationRef        string   `xml:"operationRef,attr"`
-	Implementation      string   `xml:"implementation,attr"`
-	IncomingAssociation []string `xml:"incoming"`
-	OutgoingAssociation []string `xml:"outgoing"`
-}
-
-type TParallelGateway struct {
-	Id                  string   `xml:"id,attr"`
-	Name                string   `xml:"name,attr"`
-	IncomingAssociation []string `xml:"incoming"`
-	OutgoingAssociation []string `xml:"outgoing"`
-}
-
-type TExclusiveGateway struct {
-	Id                  string   `xml:"id,attr"`
-	Name                string   `xml:"name,attr"`
-	Default             string   `xml:"default,attr"`
-	IncomingAssociation []string `xml:"incoming"`
-	OutgoingAssociation []string `xml:"outgoing"`
-}
-
-type TEventBasedGateway struct {
-	Id                  string   `xml:"id,attr"`
-	Name                string   `xml:"name,attr"`
-	IncomingAssociation []string `xml:"incoming"`
-	OutgoingAssociation []string `xml:"outgoing"`
-}
-
 type TMessageEventDefinition struct {
 	Id         string `xml:"id,attr"`
 	MessageRef string `xml:"messageRef,attr"`
