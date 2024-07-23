@@ -3,6 +3,8 @@ package loong
 import (
 	"context"
 	"time"
+
+	"github.com/it512/loong/bpmn"
 )
 
 type ProcInst struct {
@@ -45,7 +47,14 @@ type Exec struct {
 
 	Input Var `json:"input,omitempty"`
 
-	*ProcInst `json:"-"` // 当前bpmnElementID
+	*ProcInst `json:"-"`
+
+	elementID   string           `json:"-"` // 当前bpmnElementID
+	elementType bpmn.ElementType `json:"-"` // 当前bpmnElementType
+}
+
+func (e Exec) GetTaskDefinition(context.Context) TaskDefinition {
+	return e.elementType
 }
 
 func (e Exec) Eval(ctx context.Context, el string) (any, error) {

@@ -59,13 +59,16 @@ type sequenceFlow struct {
 }
 
 func (c *sequenceFlow) Do(_ context.Context) error {
-	c.InTag = c.GetId()
+	c.Exec.InTag = c.GetId()
 
 	var ok bool
 	c.target, ok = c.ProcInst.Template.FindElementByID(c.TargetRef)
 	if !ok {
 		panic(fmt.Errorf("未找到目标 TargetRef = %s", c.TargetRef))
 	}
+
+	c.elementID = c.target.GetId()
+	c.elementType = c.target.GetType()
 
 	return nil
 }
