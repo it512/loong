@@ -9,6 +9,18 @@
 ```
 流程引擎
 
+# 已经完成的功能  
+
+## Activity  
+
+1. service task
+2. user task
+3. start event
+4. end event
+5. link event (chrow and catch)
+6. message intermediate throw event
+7. exclusive gateway
+8. sequence flow(defalut and condition)
 
 距离v0.0.1 还需解决的问题
 
@@ -17,3 +29,5 @@
 3. mongodb支持还不完善
 4. 常用的任务处理模式，例如转派等考虑实现
 5. 考虑mongodb分片问题
+
+
