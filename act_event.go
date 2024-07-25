@@ -49,6 +49,10 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		return fmt.Errorf("未找到流程(ProcID = %s)", n.ProcID)
 	}
 
+	if !t.Definitions.Process.IsExecutable {
+		return fmt.Errorf("流程已停用(ProcID = %s)", n.ProcID)
+	}
+
 	var ok bool
 	if n.TStartEvent, ok = t.FindNormalStartEvent(); !ok {
 		return errors.New("没有找到合适的StartEvnet")
