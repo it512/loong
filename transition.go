@@ -30,7 +30,7 @@ func choose(ctx context.Context, ae ActivationEvaluator, in []bpmn.TSequenceFlow
 	return
 }
 
-func chooseDefault(me Outer, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
+func chooseDefault(me outer, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 	if len(flows) == 1 {
 		return flows[0]
 	}
@@ -115,7 +115,7 @@ func putToPool(sf *sequenceFlow) {
 	sfPool.Put(sf)
 }
 
-type Outer interface {
+type outer interface {
 	GetOutgoingAssociation() []string
 	FindSequenceFlow(string) (bpmn.TSequenceFlow, bool)
 	FindSequenceFlows([]string) []bpmn.TSequenceFlow
@@ -128,7 +128,7 @@ func fromExec(ex Exec, out string) *sequenceFlow {
 	panic("未找到Sequenceflow")
 }
 
-func fromOuter(ctx context.Context, ex Exec, o Outer) *sequenceFlow {
+func fromOuter(ctx context.Context, ex Exec, o outer) *sequenceFlow {
 	flows := o.FindSequenceFlows(o.GetOutgoingAssociation())
 	out, err := choose(ctx, ex, flows)
 	if err != nil {
