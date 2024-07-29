@@ -155,3 +155,7 @@ func (h *Template) FindSequenceFlow(id string) (bpmn.TSequenceFlow, bool) {
 func (h *Template) FindError(id string) (bpmn.TError, bool) {
 	return bpmn.Find(h.Definitions.Errors, id)
 }
+
+func (h *Template) FindErrorByCode(code string) (bpmn.TError, bool) {
+	return bpmn.Find(h.Definitions.Errors, id)
+}
