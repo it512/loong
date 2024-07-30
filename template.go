@@ -1,6 +1,7 @@
 package loong
 
 import (
+	"cmp"
 	"fmt"
 	"io/fs"
 	"os"
@@ -152,10 +153,19 @@ func (h *Template) FindSequenceFlow(id string) (bpmn.TSequenceFlow, bool) {
 	return bpmn.Find(h.Definitions.Process.SequenceFlows, id)
 }
 
+/*
 func (h *Template) FindError(id string) (bpmn.TError, bool) {
 	return bpmn.Find(h.Definitions.Errors, id)
 }
+*/
 
-func (h *Template) FindErrorByCode(code string) (bpmn.TError, bool) {
-	return bpmn.Find(h.Definitions.Errors, id)
+func (h *Template) FindErrorByCode(code string) (ele bpmn.TError, ok bool) {
+	for _, t := range h.Definitions.Errors {
+		if cmp.Compare(t.ErrorCode, code) == 0 {
+			ele = t
+			ok = true
+			return
+		}
+	}
+	return
 }
