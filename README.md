@@ -21,6 +21,7 @@
 6. message intermediate throw event
 7. exclusive gateway
 8. sequence flow(defalut and condition)
+9. boundary event(Error event only)
 
 距离v0.0.1 还需解决的问题
 
