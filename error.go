@@ -1,11 +1,5 @@
 package loong
 
-import (
-	"context"
-
-	"github.com/it512/loong/bpmn"
-)
-
 type SystemError struct {
 	error
 }
@@ -18,6 +12,7 @@ func (e BizErr) Error() string {
 	return e.ErrorCode
 }
 
+/*
 type actErrOp struct {
 	Variable
 	bpmn.TBoundaryEvent
@@ -29,3 +24,4 @@ type actErrOp struct {
 func (s *actErrOp) Emit(ctx context.Context, emt Emitter) error {
 	return emt.Emit(fromOuter(ctx, s.Exec, s))
 }
+*/
