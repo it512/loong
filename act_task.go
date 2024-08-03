@@ -14,5 +14,5 @@ type taskOp struct {
 }
 
 func (t *taskOp) Emit(ctx context.Context, emt Emitter) error {
-	return emt.Emit(fromOuter(ctx, t.Exec, t))
+	return emt.Emit(fromOuter(ctx, t.Variable, t))
 }

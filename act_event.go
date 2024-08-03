@@ -85,7 +85,7 @@ func (n *StartProcCmd) Do(ctx context.Context) error {
 }
 
 func (n *StartProcCmd) Emit(ctx context.Context, emit Emitter) error {
-	return emit.Emit(fromOuter(ctx, n.Exec, n))
+	return emit.Emit(fromOuter(ctx, n.Variable, n))
 }
 
 func (n StartProcCmd) Type() ActivityType {
@@ -109,19 +109,20 @@ func (n EndEventOp) Type() ActivityType {
 	return OP_END_EVENT
 }
 
-func doIntermediationThrowEvent(exec Exec, i bpmn.TIntermediateThrowEvent) Activity {
+func doIntermediationThrowEvent(v Variable, i bpmn.TIntermediateThrowEvent) Activity {
 	if i.HasLinkEventDefinition() {
-		return &linkEventOp{Exec: exec, Throw: i.GetLinkEventDefinition()}
+		return &linkEventOp{Variable: v, Throw: i.GetLinkEventDefinition()}
 	}
 
 	if i.HasMessageEventDefinitio() {
-		return &messageIntermediateThrowEventOp{Variable: Variable{Exec: exec}, InOut: newInOut(), TIntermediateThrowEvent: i}
+		return &messageIntermediateThrowEventOp{Variable: v, InOut: newInOut(), TIntermediateThrowEvent: i}
 	}
+
 	panic("不支持的IntermediateThrowEvent类型")
 }
 
 type linkEventOp struct {
-	Exec
+	Variable
 	Throw bpmn.TLinkEventDefinition
 
 	UnimplementedActivity
@@ -131,17 +132,17 @@ func (n linkEventOp) Emit(ctx context.Context, emt Emitter) error {
 	for _, c := range n.Template.Definitions.Process.IntermediateCatchEvent {
 		if c.HasLinkEventDefinition() {
 			if c.GetLinkEventDefinition().Name == n.Throw.Name {
-				return emt.Emit(fromExec(n.Exec, c.OutgoingAssociation[0]))
+				return emt.Emit(fromVariable(n.Variable, c.OutgoingAssociation[0]))
 			}
 		}
 	}
-	panic("LinkEvent错误，Throw 没有找到 Catch")
+	panic("LinkEvent错误, Throw 没有找到 Catch")
 }
 
 type messageIntermediateThrowEventOp struct {
-	bpmn.TIntermediateThrowEvent
-	Variable
 	InOut
+	Variable
+	bpmn.TIntermediateThrowEvent
 
 	UnimplementedActivity
 }
@@ -160,7 +161,7 @@ func (s *messageIntermediateThrowEventOp) Do(ctx context.Context) (err error) {
 }
 
 func (s *messageIntermediateThrowEventOp) Emit(ctx context.Context, emt Emitter) error {
-	return emt.Emit(fromOuter(ctx, s.Exec, s))
+	return emt.Emit(fromOuter(ctx, s.Variable, s))
 }
 
 func (s *messageIntermediateThrowEventOp) GetTaskDefinition(ctx context.Context) TaskDefinition {

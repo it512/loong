@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 
 	"github.com/it512/loong/bpmn"
@@ -248,12 +249,13 @@ func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
 	c.UserTask.EndTime = time.Now()
 	c.UserTask.Operator = c.Operator
 	c.UserTask.Result = c.Result
+	c.Variable.Input = maps.Clone(c.Input)
 	return c.Storer.EndUserTask(ctx, c.UserTask)
 }
 
 func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 	if !t.TUserTask.HasMultiInstanceLoopCharacteristics() {
-		return emt.Emit(fromOuter(ctx, t.Exec, t))
+		return emt.Emit(fromOuter(ctx, t.Variable, t))
 	}
 
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
@@ -283,8 +285,8 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 		if a, err = v.Eval(ctx, milc.GetOutputElement()); err != nil {
 			return err
 		}
-		t.Exec.Var.Set(milc.GetOutputCollection(), a)
+		t.Variable.Input.Set(milc.GetOutputCollection(), a)
 	}
 
-	return emt.Emit(fromOuter(ctx, t.Exec, t))
+	return emt.Emit(fromOuter(ctx, t.Variable, t))
 }

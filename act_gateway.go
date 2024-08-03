@@ -27,10 +27,12 @@ const (
 type gateway struct{}
 
 func (c gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
-	for _, ex := range xs {
-		sf := fromExec(ex, ex.OutTag)
-		emt.Emit(sf) //nolint:errcheck
-	}
+	/*
+		for _, ex := range xs {
+			sf := fromExec(ex, ex.OutTag)
+			emt.Emit(sf) //nolint:errcheck
+		}
+	*/
 	return nil
 }
 
@@ -57,5 +59,5 @@ func (e exclusivGatewayOp) Do(ctx context.Context) error {
 }
 
 func (e *exclusivGatewayOp) Emit(ctx context.Context, emt Emitter) error {
-	return emt.Emit(fromOuter(ctx, e.Exec, e))
+	return emt.Emit(fromOuter(ctx, e.Variable, e))
 }

@@ -50,7 +50,7 @@ func chooseDefault(me outer, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 }
 
 type sequenceFlow struct {
-	Exec
+	Variable
 	bpmn.TSequenceFlow
 	target BpmnElement
 
@@ -75,20 +75,20 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 	switch c.target.GetType() {
 	case bpmn.UserTask:
-		err = commit.Emit(&userTaskOp{UserTask: UserTask{Variable: Variable{Exec: c.Exec}}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
+		err = commit.Emit(&userTaskOp{UserTask: UserTask{Variable: c.Variable}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
 	case bpmn.ExclusiveGateway:
-		err = commit.Emit(&exclusivGatewayOp{Variable: Variable{Exec: c.Exec}, TExclusiveGateway: bpmn.Cast[bpmn.TExclusiveGateway](c.target)})
+		err = commit.Emit(&exclusivGatewayOp{Variable: c.Variable, TExclusiveGateway: bpmn.Cast[bpmn.TExclusiveGateway](c.target)})
 	case bpmn.ParallelGateway:
 		err = commit.Emit(&parallelGatewayCmd{TParallelGateway: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec})
 	case bpmn.ServiceTask:
-		err = commit.Emit(&serviceTaskOp{Variable: Variable{Exec: c.Exec}, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
+		err = commit.Emit(&serviceTaskOp{Variable: c.Variable, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
 	case bpmn.EndEvent:
 		err = commit.Emit(&EndEventOp{Exec: c.Exec, TEndEvent: bpmn.Cast[bpmn.TEndEvent](c.target)})
 	case bpmn.IntermediateThrowEvent:
-		op := doIntermediationThrowEvent(c.Exec, bpmn.Cast[bpmn.TIntermediateThrowEvent](c.target))
+		op := doIntermediationThrowEvent(c.Variable, bpmn.Cast[bpmn.TIntermediateThrowEvent](c.target))
 		err = commit.Emit(op)
 	case bpmn.Task:
-		err = commit.Emit(&taskOp{Variable: Variable{Exec: c.Exec}, TTask: bpmn.Cast[bpmn.TTask](c.target)})
+		err = commit.Emit(&taskOp{Variable: c.Variable, TTask: bpmn.Cast[bpmn.TTask](c.target)})
 	default:
 		panic(fmt.Errorf("不支持的类型 Type: %s, ID: %s", c.target.GetType(), c.target.GetId()))
 	}
@@ -103,10 +103,15 @@ var sfPool = sync.Pool{
 	},
 }
 
-func getFromPool(ex Exec, f bpmn.TSequenceFlow) *sequenceFlow {
+func getFromPool(v Variable, f bpmn.TSequenceFlow) *sequenceFlow {
 	sf := sfPool.Get().(*sequenceFlow)
-	sf.Exec = ex
+
+	sf.Variable.Exec = v.Exec
+	sf.Variable.Input = v.Input
+	sf.Variable.isChanged = false
+
 	sf.TSequenceFlow = f
+
 	return sf
 }
 
@@ -121,19 +126,28 @@ type outer interface {
 	ActivationEvaluator
 }
 
-func fromExec(ex Exec, out string) *sequenceFlow {
-	if f, ok := ex.Template.FindSequenceFlow(out); ok {
-		return getFromPool(ex, f)
+/*
+	func fromExec(ex Exec, out string) *sequenceFlow {
+		if f, ok := ex.Template.FindSequenceFlow(out); ok {
+			return getFromPool(ex, f)
+		}
+		panic("未找到Sequenceflow")
+	}
+*/
+
+func fromVariable(v Variable, out string) *sequenceFlow {
+	if f, ok := v.ProcInst.Template.FindSequenceFlow(out); ok {
+		return getFromPool(v, f)
 	}
 	panic("未找到Sequenceflow")
 }
 
-func fromOuter(ctx context.Context, ex Exec, o outer) *sequenceFlow {
+func fromOuter(ctx context.Context, v Variable, o outer) *sequenceFlow {
 	flows := o.FindSequenceFlows(o.GetOutgoingAssociation())
 	out, err := choose(ctx, o, flows)
 	if err != nil {
 		panic(err)
 	}
 	f := chooseDefault(o, out)
-	return getFromPool(ex, f)
+	return getFromPool(v, f)
 }
