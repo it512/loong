@@ -10,6 +10,7 @@ type TBoundaryEvent struct {
 
 	OutgoingAssociation []string `xml:"outgoing"`
 
+	ErrorEventDefinition   []TErrorEventDefinition   `xml:"errorEventDefinition"`
 	MessageEventDefinition []TMessageEventDefinition `xml:"messageEventDefinition"`
 	TimerEventDefinition   []TTimerEventDefinition   `xml:"timerEventDefinition"`
 
