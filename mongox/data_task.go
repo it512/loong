@@ -91,7 +91,7 @@ func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
 
 		Operator: ut.Operator,
 
-		Input: ut.Exec.Input,
+		Input: ut.Variable.Input,
 
 		Result: ut.Result,
 
@@ -128,7 +128,7 @@ func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong
 
 	ut.Operator = u.Operator
 
-	ut.Exec.Input = u.Input
+	ut.Variable.Input = u.Input
 
 	ut.Result = u.Result
 

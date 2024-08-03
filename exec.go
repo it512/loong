@@ -1,7 +1,6 @@
 package loong
 
 import (
-	"context"
 	"time"
 
 	"github.com/it512/loong/bpmn"
@@ -21,7 +20,9 @@ type ProcInst struct {
 
 	Status int `json:"status,omitempty"`
 
-	Init Var `json:"init,omitempty"`
+	Init Var `json:"init,omitempty"` // 初始化变量，用于流程重启
+
+	Var Var `json:"var,omitempty"`
 
 	Tags Var `json:"tags,omitempty"`
 
@@ -45,20 +46,10 @@ type Exec struct {
 
 	Status int `json:"status,omitempty"`
 
-	Input Var `json:"input,omitempty"`
-
 	*ProcInst `json:"-"`
 
 	elementID   string           `json:"-"` // 当前bpmnElementID
 	elementType bpmn.ElementType `json:"-"` // 当前bpmnElementType
-}
-
-func (e Exec) GetTaskDefinition(context.Context) TaskDefinition {
-	return e.elementType
-}
-
-func (e Exec) Eval(ctx context.Context, el string) (any, error) {
-	return e.Evaluator.Eval(ctx, el, e)
 }
 
 func (e Exec) isTop() bool {

@@ -7,7 +7,7 @@ import (
 )
 
 type taskOp struct {
-	Exec
+	Variable
 	bpmn.TTask
 
 	UnimplementedActivity

@@ -52,7 +52,6 @@ func chooseDefault(me outer, flows []bpmn.TSequenceFlow) bpmn.TSequenceFlow {
 type sequenceFlow struct {
 	Exec
 	bpmn.TSequenceFlow
-
 	target BpmnElement
 
 	UnimplementedActivity
@@ -76,20 +75,20 @@ func (c *sequenceFlow) Do(_ context.Context) error {
 func (c *sequenceFlow) Emit(_ context.Context, commit Emitter) (err error) {
 	switch c.target.GetType() {
 	case bpmn.UserTask:
-		err = commit.Emit(&userTaskOp{UserTask: UserTask{Exec: c.Exec}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
+		err = commit.Emit(&userTaskOp{UserTask: UserTask{Variable: Variable{Exec: c.Exec}}, InOut: newInOut(), TUserTask: bpmn.Cast[bpmn.TUserTask](c.target)})
 	case bpmn.ExclusiveGateway:
-		err = commit.Emit(&exclusivGatewayOp{TExclusiveGateway: bpmn.Cast[bpmn.TExclusiveGateway](c.target), Exec: c.Exec})
+		err = commit.Emit(&exclusivGatewayOp{Variable: Variable{Exec: c.Exec}, TExclusiveGateway: bpmn.Cast[bpmn.TExclusiveGateway](c.target)})
 	case bpmn.ParallelGateway:
 		err = commit.Emit(&parallelGatewayCmd{TParallelGateway: bpmn.Cast[bpmn.TParallelGateway](c.target), Exec: c.Exec})
 	case bpmn.ServiceTask:
-		err = commit.Emit(&ServiceTask{Exec: c.Exec, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
+		err = commit.Emit(&serviceTaskOp{Variable: Variable{Exec: c.Exec}, InOut: newInOut(), TServiceTask: bpmn.Cast[bpmn.TServiceTask](c.target)})
 	case bpmn.EndEvent:
 		err = commit.Emit(&EndEventOp{Exec: c.Exec, TEndEvent: bpmn.Cast[bpmn.TEndEvent](c.target)})
 	case bpmn.IntermediateThrowEvent:
 		op := doIntermediationThrowEvent(c.Exec, bpmn.Cast[bpmn.TIntermediateThrowEvent](c.target))
 		err = commit.Emit(op)
 	case bpmn.Task:
-		err = commit.Emit(&taskOp{Exec: c.Exec, TTask: bpmn.Cast[bpmn.TTask](c.target)})
+		err = commit.Emit(&taskOp{Variable: Variable{Exec: c.Exec}, TTask: bpmn.Cast[bpmn.TTask](c.target)})
 	default:
 		panic(fmt.Errorf("不支持的类型 Type: %s, ID: %s", c.target.GetType(), c.target.GetId()))
 	}
@@ -119,6 +118,7 @@ type outer interface {
 	GetOutgoingAssociation() []string
 	FindSequenceFlow(string) (bpmn.TSequenceFlow, bool)
 	FindSequenceFlows([]string) []bpmn.TSequenceFlow
+	ActivationEvaluator
 }
 
 func fromExec(ex Exec, out string) *sequenceFlow {
@@ -130,7 +130,7 @@ func fromExec(ex Exec, out string) *sequenceFlow {
 
 func fromOuter(ctx context.Context, ex Exec, o outer) *sequenceFlow {
 	flows := o.FindSequenceFlows(o.GetOutgoingAssociation())
-	out, err := choose(ctx, ex, flows)
+	out, err := choose(ctx, o, flows)
 	if err != nil {
 		panic(err)
 	}

@@ -21,6 +21,7 @@ type instData struct {
 	Status int `json:"status,omitempty"`
 
 	Init loong.Var `json:"init,omitempty"`
+	Var  loong.Var `json:"var,omitempty"`
 
 	Tags loong.Var `json:"tags,omitempty"`
 }

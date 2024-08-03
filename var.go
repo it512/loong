@@ -1,5 +1,7 @@
 package loong
 
+import "context"
+
 type Setter interface {
 	Set(string, any)
 }
@@ -48,4 +50,24 @@ func Merge(dest, src Var) Var {
 		dest[k] = v
 	}
 	return dest
+}
+
+type Variable struct {
+	Input Var
+	Exec
+
+	isChanged bool
+}
+
+func (v Variable) Changed() bool {
+	return v.isChanged
+}
+
+func (v *Variable) Put(key string, val any) {
+	v.isChanged = true
+	v.Exec.ProcInst.Var.Set(key, val)
+}
+
+func (v Variable) Eval(ctx context.Context, el string) (any, error) {
+	return v.Evaluator.Eval(ctx, el, v)
 }

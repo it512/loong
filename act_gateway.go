@@ -35,8 +35,9 @@ func (c gateway) EmitExec(ctx context.Context, xs []Exec, emt Emitter) error {
 }
 
 type exclusivGatewayOp struct {
+	Variable
 	bpmn.TExclusiveGateway
-	Exec
+
 	UnimplementedActivity
 }
 

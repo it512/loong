@@ -20,6 +20,10 @@ const (
 
 type ActivityType string
 
+func (at ActivityType) Type() (string, error) {
+	return string(at), nil
+}
+
 const (
 	NotApplicable  ActivityType = "N/A"
 	OP_START_EVENT ActivityType = "OP_START_EVENT"
@@ -46,9 +50,10 @@ type ActivityCmd interface {
 
 type UnimplementedActivity struct{}
 
-func (UnimplementedActivity) Do(ctx context.Context) error                { return nil }
-func (UnimplementedActivity) Emit(ctx context.Context, emt Emitter) error { return nil }
-func (UnimplementedActivity) Type() ActivityType                          { return NotApplicable }
+func (UnimplementedActivity) Do(ctx context.Context) error                       { return nil }
+func (UnimplementedActivity) Emit(ctx context.Context, emt Emitter) error        { return nil }
+func (UnimplementedActivity) Type() ActivityType                                 { return NotApplicable }
+func (u UnimplementedActivity) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
 
 type EventHandler interface {
 	Handle(context.Context, Activity)
@@ -85,6 +90,8 @@ type Storer interface {
 	JoinExec(ctx context.Context, ex *Exec) error
 	LoadForks(ctx context.Context, instID, forkID string) ([]Exec, error)
 	LoadExec(ctx context.Context, instID, execID string, ex *Exec) error
+
+	SaveVar(ctx context.Context, procInst *ProcInst) error
 }
 
 type Txer interface {

@@ -29,7 +29,7 @@ func (m *Store) EndUserTask(ctx context.Context, ut loong.UserTask) error {
 					"status":   ut.Status,
 					"end_time": ut.EndTime,
 					"operator": ut.Operator,
-					"input2":   ut.Exec.Input,
+					"input2":   ut.Variable.Input,
 				},
 			},
 			{Key: "$inc", Value: bson.D{{Key: "version", Value: 1}}},

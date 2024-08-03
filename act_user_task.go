@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"time"
 
 	"github.com/it512/loong/bpmn"
@@ -14,7 +13,7 @@ import (
 const begin_version = 7
 
 type UserTask struct {
-	Exec `json:"-"`
+	Variable `json:"-"`
 
 	TaskID  string `json:"task_id,omitempty"`
 	FormKey string `json:"form_key,omitempty"`
@@ -41,15 +40,15 @@ type UserTask struct {
 }
 
 type userTaskOp struct {
+	InOut
 	UserTask
 	bpmn.TUserTask
-	InOut
 
 	UnimplementedActivity
 }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
-	if err := io(ctx, c, c.Exec.Input); err != nil {
+	if err := io(ctx, c, c); err != nil {
 		return err
 	}
 
@@ -74,14 +73,15 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 
 		for i, item := range items {
 			var a UserTask = c.UserTask // copy
+			a.Variable.Input = NewVar()
+
 			a.TaskID = c.Engine.NewID()
 
-			a.Exec.Input = maps.Clone(c.Exec.Input)
-			a.Exec.Input.Set("loopCounter", i)
+			a.Variable.Input.Set("loopCounter", i)
 			if key := milc.GetInputElement(); key != "" {
-				a.Exec.Input.Set(key, item)
+				a.Variable.Input.Set(key, item)
 			}
-			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Exec, ad); err != nil {
+			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Variable, ad); err != nil {
 				return err
 			}
 			tasks = append(tasks, a)
@@ -91,10 +91,16 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 		var a UserTask = c.UserTask // copy
 		a.TaskID = c.Engine.NewID()
 
-		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Exec, ad); err != nil {
+		if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Variable, ad); err != nil {
 			return err
 		}
 		tasks = append(tasks, a)
+	}
+
+	if c.Variable.Changed() {
+		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
+			return err
+		}
 	}
 	return c.Storer.CreateTasks(ctx, tasks...)
 }
@@ -161,6 +167,7 @@ type UserTaskCommitCmd struct {
 	TaskID   string         `json:"task_id,omitempty"`  // 任务ID
 	Operator string         `json:"operator,omitempty"` // 任务提交人，对应的人组
 	Input    map[string]any `json:"input,omitempty"`    // 提交参数，map[string]any
+	Var      map[string]any `json:"var,omitempty"`      // 提交参数，map[string]any
 	Result   int            `json:"result,omitempty"`   // 任务执行的结果
 	Version  int            `json:"version,omitempty"`
 
@@ -196,6 +203,13 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 	}
 
 	c.Exec.ProcInst = &ProcInst{Engine: e}
+	if err := e.LoadProcInst(ctx, c.InstID, c.Exec.ProcInst); err != nil {
+		return fmt.Errorf("未找到流程实例:%s > %w", c.UserTask.InstID, err)
+	}
+
+	if c.Exec.ProcInst.Status != STATUS_START {
+		return fmt.Errorf("流程实例: %s 当前状态为: %d, 已经终止", c.UserTask.InstID, c.ProcInst.Status)
+	}
 
 	c.UserTask.TaskID = c.TaskID
 	c.UserTask.Version = c.Version
@@ -209,10 +223,6 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 		}
 	}
 
-	if err := e.LoadProcInst(ctx, c.UserTask.InstID, c.Exec.ProcInst); err != nil {
-		return fmt.Errorf("未找到流程实例:%s > %w", c.UserTask.InstID, err)
-	}
-
 	c.Exec.ProcInst.Template = e.GetTemplate(c.ProcID)
 
 	var ok bool
@@ -220,11 +230,20 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 		return fmt.Errorf("未找到环节:%s", c.UserTask.ActID)
 	}
 
-	c.Exec.Input = Merge(c.Exec.Input, c.Input)
+	if len(c.Var) > 0 {
+		c.Variable.ProcInst.Var = Merge(c.Variable.ProcInst.Var, c.Var)
+		c.Variable.isChanged = true
+	}
 	return nil
 }
 
 func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
+	if c.Variable.Changed() {
+		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
+			return err
+		}
+	}
+
 	c.UserTask.Status = STATUS_FINISH
 	c.UserTask.EndTime = time.Now()
 	c.UserTask.Operator = c.Operator
@@ -244,7 +263,7 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 		return err
 	}
 
-	v := newVote(ut, t.Engine, t.Exec.Input)
+	v := newVote(ut, t.Engine, t.Variable.Input)
 
 	var pass bool
 	if pass, err = v.Test(ctx, milc.GetCompletionCondition()); err != nil {
@@ -264,7 +283,7 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 		if a, err = v.Eval(ctx, milc.GetOutputElement()); err != nil {
 			return err
 		}
-		t.Exec.Input.Set(milc.GetOutputCollection(), a)
+		t.Exec.Var.Set(milc.GetOutputCollection(), a)
 	}
 
 	return emt.Emit(fromOuter(ctx, t.Exec, t))

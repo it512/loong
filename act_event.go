@@ -16,12 +16,11 @@ type StartProcCmd struct {
 	BusiKey  string         `json:"busi_key,omitempty"`  // 业务单据ID
 	BusiType string         `json:"busi_type,omitempty"` // 业务单据类型
 	Input    map[string]any `json:"input,omitempty"`     // 启动参数 map[string]any
+	Var      map[string]any `json:"var,omitempty"`       // 启动参数 map[string]any
+	Tags     map[string]any `json:"tags,omitempty"`      // 流程标志 map[string]any
 
-	Tags map[string]any `json:"tags,omitempty"` // 流程标志 map[string]any
-
-	Exec
+	Variable
 	bpmn.TStartEvent
-
 	InOut
 }
 
@@ -58,18 +57,18 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		return errors.New("没有找到合适的StartEvnet")
 	}
 
-	n.Exec.Input = Merge(n.Exec.Input, n.Input)
-
-	n.Exec.ProcInst = &ProcInst{
+	n.Variable.Input = maps.Clone(n.Input)
+	n.Variable.Exec.ProcInst = &ProcInst{
 		InstID:   e.NewID(),
 		ProcID:   n.ProcID,
 		BusiKey:  n.BusiKey,
 		BusiType: n.BusiType,
 		Starter:  n.Starter,
 
-		Init: maps.Clone(n.Exec.Input),
+		Init: maps.Clone(n.Var),
+		Var:  maps.Clone(n.Var),
 
-		Tags: Merge(nil, n.Tags),
+		Tags: maps.Clone(n.Tags),
 
 		Template: t,
 		Engine:   e,
@@ -82,7 +81,7 @@ func (n *StartProcCmd) Do(ctx context.Context) error {
 	// n.IoConnector.Call(ctx, n)
 	n.Exec.ProcInst.StartTime = time.Now()
 	n.Exec.ProcInst.Status = STATUS_START
-	return n.CreateProcInst(ctx, n.ProcInst)
+	return n.Storer.CreateProcInst(ctx, n.Exec.ProcInst)
 }
 
 func (n *StartProcCmd) Emit(ctx context.Context, emit Emitter) error {
@@ -116,7 +115,7 @@ func doIntermediationThrowEvent(exec Exec, i bpmn.TIntermediateThrowEvent) Activ
 	}
 
 	if i.HasMessageEventDefinitio() {
-		return &messageIntermediateThrowEventOp{Exec: exec, InOut: newInOut(), TIntermediateThrowEvent: i}
+		return &messageIntermediateThrowEventOp{Variable: Variable{Exec: exec}, InOut: newInOut(), TIntermediateThrowEvent: i}
 	}
 	panic("不支持的IntermediateThrowEvent类型")
 }
@@ -140,16 +139,24 @@ func (n linkEventOp) Emit(ctx context.Context, emt Emitter) error {
 }
 
 type messageIntermediateThrowEventOp struct {
-	Exec
 	bpmn.TIntermediateThrowEvent
-
+	Variable
 	InOut
 
 	UnimplementedActivity
 }
 
-func (s *messageIntermediateThrowEventOp) Do(ctx context.Context) error {
-	return io(ctx, s, s.Exec.Input)
+func (s *messageIntermediateThrowEventOp) Do(ctx context.Context) (err error) {
+	if err = io(ctx, s, s); err != nil {
+		return
+	}
+
+	if s.Variable.Changed() {
+		if err = s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
+			return
+		}
+	}
+	return
 }
 
 func (s *messageIntermediateThrowEventOp) Emit(ctx context.Context, emt Emitter) error {

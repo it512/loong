@@ -150,18 +150,22 @@ func in(ctx context.Context, in []zeebe.TIoMapping, eval ActivationEvaluator, s 
 	})
 }
 
-func out(o []zeebe.TIoMapping, g Getter, s Setter) error {
+func out(o []zeebe.TIoMapping, g Getter, s Putter) error {
 	return Each(o, func(m zeebe.TIoMapping, _ int) error {
 		if m.Target != "" {
 			if v, ok := g.Get(m.Source); ok {
-				s.Set(m.Target, v)
+				s.Put(m.Target, v)
 			}
 		}
 		return nil
 	})
 }
 
-func io(ctx context.Context, x ioer, s Setter) (err error) {
+type Putter interface {
+	Put(string, any)
+}
+
+func io(ctx context.Context, x ioer, s Putter) (err error) {
 	if err = in(ctx, x.GetIoInput(), x, x); err != nil {
 		return
 	}
