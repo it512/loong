@@ -108,7 +108,7 @@ func getFromPool(v Variable, f bpmn.TSequenceFlow) *sequenceFlow {
 
 	sf.Variable.Exec = v.Exec
 	sf.Variable.Input = v.Input
-	sf.Variable.isChanged = false
+	sf.Variable.isVarChanged = false
 
 	sf.TSequenceFlow = f
 
@@ -125,15 +125,6 @@ type outer interface {
 	FindSequenceFlows([]string) []bpmn.TSequenceFlow
 	ActivationEvaluator
 }
-
-/*
-	func fromExec(ex Exec, out string) *sequenceFlow {
-		if f, ok := ex.Template.FindSequenceFlow(out); ok {
-			return getFromPool(ex, f)
-		}
-		panic("未找到Sequenceflow")
-	}
-*/
 
 func fromVariable(v Variable, out string) *sequenceFlow {
 	if f, ok := v.ProcInst.Template.FindSequenceFlow(out); ok {

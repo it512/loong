@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"time"
 
 	"github.com/it512/loong/bpmn"
@@ -74,13 +73,12 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 
 		for i, item := range items {
 			var a UserTask = c.UserTask // copy
-			a.Variable.Input = NewVar()
 
 			a.TaskID = c.Engine.NewID()
 
 			a.Variable.Input.Set("loopCounter", i)
 			if key := milc.GetInputElement(); key != "" {
-				a.Variable.Input.Set(key, item)
+				a.Variable.PutInput(key, item)
 			}
 			if a.Assignee, a.CandidateGroups, a.CandidateUsers, err = assign(ctx, a.Variable, ad); err != nil {
 				return err
@@ -175,13 +173,10 @@ type UserTaskCommitCmd struct {
 	InOut
 	UserTask
 	bpmn.TUserTask
-
-	UnimplementedActivity
 }
 
-func (u UserTaskCommitCmd) Type() ActivityType { return AT_USER_TASK_COMMIT }
-
-// func (u UserTaskCommitCmd) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
+func (u UserTaskCommitCmd) Type() ActivityType                               { return AT_USER_TASK_COMMIT }
+func (u UserTaskCommitCmd) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
 
 func (c UserTaskCommitCmd) check() error {
 	if c.InstID == "" {
@@ -208,7 +203,7 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 		return err
 	}
 
-	c.Exec.ProcInst = &ProcInst{Engine: e}
+	c.Exec.ProcInst = &ProcInst{Engine: e, Var: NewVar()}
 	if err := e.LoadProcInst(ctx, c.InstID, c.Exec.ProcInst); err != nil {
 		return fmt.Errorf("未找到流程实例:%s > %w", c.UserTask.InstID, err)
 	}
@@ -238,8 +233,10 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 
 	if len(c.Var) > 0 {
 		c.Variable.ProcInst.Var = Merge(c.Variable.ProcInst.Var, c.Var)
-		c.Variable.isChanged = true
+		c.Variable.isVarChanged = true
 	}
+
+	c.InOut = newInOut()
 
 	c.Variable.Param = NewVar().
 		Put("operator", c.Operator).
@@ -248,13 +245,16 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 		Put("task_id", c.TaskID).
 		Put("form_key", c.FormKey)
 
-	c.Variable.Input = maps.Clone(c.Input)
+	c.Variable.Input = Merge(c.Variable.Input, c.Input)
 
 	return nil
 }
 
 func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
-	io(ctx, c, c)
+	if err := io(ctx, c, c); err != nil {
+		return err
+	}
+
 	if c.Variable.Changed() {
 		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
 			return err
@@ -269,8 +269,12 @@ func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
 }
 
 func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
+	var v Variable
+	v.Exec = t.Variable.Exec
+	v.Input = Merge(v.Input, t.Input) // 丢弃掉原来的Input，并将新的Input传递下去(bug fix #5)
+
 	if !t.TUserTask.HasMultiInstanceLoopCharacteristics() {
-		return emt.Emit(fromOuter(ctx, t.Variable, t))
+		return emt.Emit(fromOuter(ctx, v, t))
 	}
 
 	milc := t.TUserTask.GetMultiInstanceLoopCharacteristics()
@@ -280,10 +284,10 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 		return err
 	}
 
-	v := newVote(ut, t.Engine, t.Variable.Input)
+	vote := newVote(ut, t.Engine, t.Variable.Input)
 
 	var pass bool
-	if pass, err = v.Test(ctx, milc.GetCompletionCondition()); err != nil {
+	if pass, err = vote.Test(ctx, milc.GetCompletionCondition()); err != nil {
 		return err
 	}
 
@@ -297,11 +301,11 @@ func (t *UserTaskCommitCmd) Emit(ctx context.Context, emt Emitter) error {
 
 	if milc.GetOutputCollection() != "" {
 		var a any
-		if a, err = v.Eval(ctx, milc.GetOutputElement()); err != nil {
+		if a, err = vote.Eval(ctx, milc.GetOutputElement()); err != nil {
 			return err
 		}
-		t.Variable.Input.Set(milc.GetOutputCollection(), a)
+		v.PutInput(milc.GetOutputCollection(), a)
 	}
 
-	return emt.Emit(fromOuter(ctx, t.Variable, t))
+	return emt.Emit(fromOuter(ctx, v, t))
 }

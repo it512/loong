@@ -57,7 +57,7 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		return errors.New("没有找到合适的StartEvnet")
 	}
 
-	n.Variable.Input = maps.Clone(n.Input)
+	n.Variable.Input = Merge(n.Variable.Input, n.Input)
 	n.Variable.Exec.ProcInst = &ProcInst{
 		InstID:   e.NewID(),
 		ProcID:   n.ProcID,
@@ -65,8 +65,8 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		BusiType: n.BusiType,
 		Starter:  n.Starter,
 
-		Init: maps.Clone(n.Var),
-		Var:  maps.Clone(n.Var),
+		Init: Merge(n.Variable.Init, n.Var),
+		Var:  Merge(n.Variable.Var, n.Var),
 
 		Tags: maps.Clone(n.Tags),
 

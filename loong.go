@@ -1,6 +1,7 @@
 package loong
 
 import (
+	"cmp"
 	"context"
 	"log"
 
@@ -22,6 +23,20 @@ type ActivityType string
 
 func (at ActivityType) Type() (string, error) {
 	return string(at), nil
+}
+
+func (at ActivityType) String() string {
+	return string(at)
+}
+
+func (at ActivityType) Eq(a any) bool {
+	switch v := a.(type) {
+	case string:
+		return cmp.Compare(at.String(), v) == 0
+	case ActivityType:
+		return at == v
+	}
+	return false
 }
 
 const (

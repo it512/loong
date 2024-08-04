@@ -1,6 +1,10 @@
 package loong
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"strings"
+)
 
 type Setter interface {
 	Set(string, any)
@@ -8,6 +12,10 @@ type Setter interface {
 
 type Getter interface {
 	Get(k string) (v any, ok bool)
+}
+
+type Putter interface {
+	Put(string, any)
 }
 
 type Var map[string]any
@@ -30,20 +38,11 @@ func (b Var) Get(k string) (v any, ok bool) {
 	return
 }
 
-func (b Var) Range(f func(string, any) error) error {
-	for k, v := range b {
-		if err := f(k, v); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func Merge(dest, src Var) Var {
 	if dest == nil {
 		dest = NewVar()
 	}
-	if src == nil {
+	if len(src) == 0 {
 		return dest
 	}
 	for k, v := range src {
@@ -57,16 +56,44 @@ type Variable struct {
 	Input Var
 	Exec
 
-	isChanged bool
+	isVarChanged bool
 }
 
 func (v Variable) Changed() bool {
-	return v.isChanged
+	return v.isVarChanged
+}
+
+func (v *Variable) Put(key string, val any) {
+	part := strings.Split(key, ".")
+	if len(part) < 2 {
+		panic("设置变量时必须指定作用域")
+	}
+
+	v.PutScope(part[0], part[1], val)
+}
+
+func (v *Variable) PutScope(s, k string, val any) {
+	switch s {
+	case "Var":
+		v.PutVar(k, val)
+	case "Input":
+		v.PutInput(k, val)
+	default:
+		panic(fmt.Errorf("作用域: %s 不被支持", s))
+	}
 }
 
 func (v *Variable) PutVar(key string, val any) {
-	v.isChanged = true
+	v.isVarChanged = true
 	v.Exec.ProcInst.Var.Set(key, val)
+}
+
+func (v *Variable) PutInput(key string, val any) {
+	v.Input.Set(key, val)
+}
+
+func (v *Variable) PutParam(key string, val any) {
+	v.Param.Set(key, val)
 }
 
 func (v Variable) Eval(ctx context.Context, el string) (any, error) {
