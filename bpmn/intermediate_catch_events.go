@@ -41,3 +41,10 @@ func (intermediateCatchEvent TIntermediateCatchEvent) HasLinkEventDefinition() b
 func (intermediateCatchEvent TIntermediateCatchEvent) GetLinkEventDefinition() TLinkEventDefinition {
 	return intermediateCatchEvent.LinkEventDefinition[0]
 }
+
+func (intermediateCatchEvent TIntermediateCatchEvent) GetLinkEventDefinition2() (link TLinkEventDefinition, ok bool) {
+	if ok = intermediateCatchEvent.HasLinkEventDefinition(); ok {
+		link = intermediateCatchEvent.GetLinkEventDefinition()
+	}
+	return
+}
