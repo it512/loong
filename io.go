@@ -154,7 +154,7 @@ func out(o []zeebe.TIoMapping, g Getter, s Putter) error {
 	return Each(o, func(m zeebe.TIoMapping, _ int) error {
 		if m.Target != "" {
 			if v, ok := g.Get(m.Source); ok {
-				s.Put(m.Target, v)
+				s.PutVar(m.Target, v)
 			}
 		}
 		return nil
@@ -162,7 +162,7 @@ func out(o []zeebe.TIoMapping, g Getter, s Putter) error {
 }
 
 type Putter interface {
-	Put(string, any)
+	PutVar(string, any)
 }
 
 func io(ctx context.Context, x ioer, s Putter) (err error) {

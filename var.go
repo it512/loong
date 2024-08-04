@@ -53,6 +53,7 @@ func Merge(dest, src Var) Var {
 }
 
 type Variable struct {
+	Param Var
 	Input Var
 	Exec
 
@@ -63,7 +64,7 @@ func (v Variable) Changed() bool {
 	return v.isChanged
 }
 
-func (v *Variable) Put(key string, val any) {
+func (v *Variable) PutVar(key string, val any) {
 	v.isChanged = true
 	v.Exec.ProcInst.Var.Set(key, val)
 }

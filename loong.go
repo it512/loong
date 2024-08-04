@@ -25,9 +25,11 @@ func (at ActivityType) Type() (string, error) {
 }
 
 const (
-	NotApplicable  ActivityType = "N/A"
-	OP_START_EVENT ActivityType = "OP_START_EVENT"
-	OP_END_EVENT   ActivityType = "OP_END_EVENT"
+	AT_NotApplicable ActivityType = "N/A"
+	OP_START_EVENT   ActivityType = "OP_START_EVENT"
+	OP_END_EVENT     ActivityType = "OP_END_EVENT"
+
+	AT_USER_TASK_COMMIT ActivityType = "USER_TASK_COMMIT"
 )
 
 type BpmnElement interface{ bpmn.BaseElement }
@@ -52,7 +54,7 @@ type UnimplementedActivity struct{}
 
 func (UnimplementedActivity) Do(ctx context.Context) error                       { return nil }
 func (UnimplementedActivity) Emit(ctx context.Context, emt Emitter) error        { return nil }
-func (UnimplementedActivity) Type() ActivityType                                 { return NotApplicable }
+func (UnimplementedActivity) Type() ActivityType                                 { return AT_NotApplicable }
 func (u UnimplementedActivity) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
 
 type EventHandler interface {

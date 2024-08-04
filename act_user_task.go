@@ -172,11 +172,16 @@ type UserTaskCommitCmd struct {
 	Result   int            `json:"result,omitempty"`   // 任务执行的结果
 	Version  int            `json:"version,omitempty"`
 
+	InOut
 	UserTask
 	bpmn.TUserTask
 
 	UnimplementedActivity
 }
+
+func (u UserTaskCommitCmd) Type() ActivityType { return AT_USER_TASK_COMMIT }
+
+// func (u UserTaskCommitCmd) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
 
 func (c UserTaskCommitCmd) check() error {
 	if c.InstID == "" {
@@ -235,10 +240,21 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 		c.Variable.ProcInst.Var = Merge(c.Variable.ProcInst.Var, c.Var)
 		c.Variable.isChanged = true
 	}
+
+	c.Variable.Param = NewVar().
+		Put("operator", c.Operator).
+		Put("result", c.Result).
+		Put("act_id", c.TUserTask.Id).
+		Put("task_id", c.TaskID).
+		Put("form_key", c.FormKey)
+
+	c.Variable.Input = maps.Clone(c.Input)
+
 	return nil
 }
 
 func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
+	io(ctx, c, c)
 	if c.Variable.Changed() {
 		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
 			return err
@@ -249,7 +265,6 @@ func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
 	c.UserTask.EndTime = time.Now()
 	c.UserTask.Operator = c.Operator
 	c.UserTask.Result = c.Result
-	c.Variable.Input = maps.Clone(c.Input)
 	return c.Storer.EndUserTask(ctx, c.UserTask)
 }
 
