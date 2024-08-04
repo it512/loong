@@ -58,7 +58,7 @@ func (a *actErrOp) Match() bool {
 	for _, be := range a.Template.Definitions.Process.BoundaryEvent {
 		if be.AttachedToRef == a.SourceID {
 			if ed, ok := be.GetErrorEventDefinition2(); ok {
-				if ed.ErrorRef == te.ErrorCode {
+				if ed.ErrorRef == te.GetId() {
 					a.TBoundaryEvent = be
 					return true
 				}
