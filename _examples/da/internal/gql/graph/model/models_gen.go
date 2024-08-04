@@ -21,13 +21,17 @@ type StartProcCmd struct {
 	Starter  string                 `json:"starter"`
 	BusiKey  string                 `json:"busi_key"`
 	BusiType string                 `json:"busi_type"`
-	Input    map[string]interface{} `json:"input"`
+	Input    map[string]interface{} `json:"input,omitempty"`
+	Var      map[string]interface{} `json:"var,omitempty"`
+	Tags     map[string]interface{} `json:"tags,omitempty"`
 }
 
 type UserTaskCommitCmd struct {
+	InstID   string                 `json:"inst_id"`
 	TaskID   string                 `json:"task_id"`
 	Operator string                 `json:"operator"`
-	Input    map[string]interface{} `json:"input"`
 	Result   int                    `json:"result"`
+	Input    map[string]interface{} `json:"input,omitempty"`
+	Var      map[string]interface{} `json:"var,omitempty"`
 	Version  int                    `json:"version"`
 }

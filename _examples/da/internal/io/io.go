@@ -9,9 +9,6 @@ import (
 type Io struct {
 }
 
-func (Io) Call(ctx context.Context, o loong.IoOperator) error {
-	v := loong.NewVar()
-	v.Put("xx", []string{"a", "b"})
-	o.SetResult(v)
-	return nil
+func (Io) Call(ctx context.Context, o loong.IoTasker) error {
+	return loong.NewBizErr("error-01")
 }

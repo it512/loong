@@ -251,11 +251,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../schema/engine.graphqls", Input: `# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
-scalar Map
+	{Name: "../schema/engine.graphqls", Input: `scalar Map
 
 type ProcReturn {
   inst_id: String!
@@ -270,14 +266,19 @@ input StartProcCmd {
   starter: String!
   busi_key: String!
   busi_type:String!
-  input: Map!
+  input: Map
+  var: Map
+  tags: Map
 }
 
+
 input UserTaskCommitCmd {
+  inst_id: String!
   task_id: String!
   operator: String!
-  input: Map!
   result: Int!
+  input: Map
+  var: Map
   version: Int!
 }
 
@@ -2640,7 +2641,7 @@ func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"proc_id", "starter", "busi_key", "busi_type", "input"}
+	fieldsInOrder := [...]string{"proc_id", "starter", "busi_key", "busi_type", "input", "var", "tags"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -2677,11 +2678,25 @@ func (ec *executionContext) unmarshalInputStartProcCmd(ctx context.Context, obj 
 			it.BusiType = data
 		case "input":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-			data, err := ec.unmarshalNMap2map(ctx, v)
+			data, err := ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Input = data
+		case "var":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("var"))
+			data, err := ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Var = data
+		case "tags":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
+			data, err := ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tags = data
 		}
 	}
 
@@ -2695,13 +2710,20 @@ func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"task_id", "operator", "input", "result", "version"}
+	fieldsInOrder := [...]string{"inst_id", "task_id", "operator", "result", "input", "var", "version"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "inst_id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inst_id"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InstID = data
 		case "task_id":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("task_id"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -2716,13 +2738,6 @@ func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context,
 				return it, err
 			}
 			it.Operator = data
-		case "input":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-			data, err := ec.unmarshalNMap2map(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Input = data
 		case "result":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("result"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -2730,6 +2745,20 @@ func (ec *executionContext) unmarshalInputUserTaskCommitCmd(ctx context.Context,
 				return it, err
 			}
 			it.Result = data
+		case "input":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+			data, err := ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Input = data
+		case "var":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("var"))
+			data, err := ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Var = data
 		case "version":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("version"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
@@ -3378,27 +3407,6 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) unmarshalNMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
-	res, err := graphql.UnmarshalMap(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	res := graphql.MarshalMap(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-	}
-	return res
-}
-
 func (ec *executionContext) marshalNProcReturn2githubᚗcomᚋit512ᚋdaᚋinternalᚋgqlᚋgraphᚋmodelᚐProcReturn(ctx context.Context, sel ast.SelectionSet, v model.ProcReturn) graphql.Marshaler {
 	return ec._ProcReturn(ctx, sel, &v)
 }
@@ -3876,6 +3884,22 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	res := graphql.MarshalBoolean(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalMap(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalMap(v)
 	return res
 }
 

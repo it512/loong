@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"github.com/it512/loong/mongox"
 
 	"github.com/it512/da/internal/gql"
+	"github.com/it512/da/internal/io"
 )
 
 func main() {
@@ -23,15 +25,19 @@ func main() {
 	MONGODB_URI := os.Getenv("MONGODB_URI")
 	SERVER_ADDR := os.Getenv("SERVER_ADDR")
 
-	client := loong.Must(mongox.OpenDB(MONGODB_URI))
-	store := mongox.New("test", client)
+	store := loong.Must(mongox.New(context.Background(), mongox.Config{DBName: "loong", URI: MONGODB_URI}))
 
 	loader := loong.NewFileDirLoad("./bpmn/", "*.bpmn")
+
+	io := loong.IoSet{
+		io.Io{},
+	}
 
 	eng := loong.NewEngine(
 		"loong-da",
 		mongox.NoTxStore(store),
 		loong.SetTemplatesByLoader(loader),
+		loong.SetIoCaller(io),
 	)
 
 	if err := eng.Run(); err != nil {
