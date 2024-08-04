@@ -148,14 +148,8 @@ type messageIntermediateThrowEventOp struct {
 }
 
 func (s *messageIntermediateThrowEventOp) Do(ctx context.Context) (err error) {
-	if err = io(ctx, s, s); err != nil {
-		return
-	}
-
-	if s.Variable.Changed() {
-		if err = s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
-			return
-		}
+	if err = io(ctx, s, s); err == nil { // err == nil
+		err = s.Variable.saveTo(ctx, s.Storer)
 	}
 	return
 }

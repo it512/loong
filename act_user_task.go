@@ -98,10 +98,8 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 		tasks = append(tasks, a)
 	}
 
-	if c.Variable.Changed() {
-		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
-			return err
-		}
+	if err := c.Variable.saveTo(ctx, c.Storer); err != nil {
+		return err
 	}
 	return c.Storer.CreateTasks(ctx, tasks...)
 }
@@ -253,12 +251,8 @@ func (c *UserTaskCommitCmd) Bind(ctx context.Context, e *Engine) error {
 }
 
 func (c *UserTaskCommitCmd) Do(ctx context.Context) error {
-	if err := io(ctx, c, c); err != nil {
-		return err
-	}
-
-	if c.Variable.Changed() {
-		if err := c.Storer.SaveVar(ctx, c.ProcInst); err != nil {
+	if err := io(ctx, c, c); err == nil {
+		if err = c.Variable.saveTo(ctx, c.Storer); err != nil {
 			return err
 		}
 	}

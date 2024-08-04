@@ -15,12 +15,8 @@ type serviceTaskOp struct {
 }
 
 func (s *serviceTaskOp) Do(ctx context.Context) error {
-	if err := io(ctx, s, s); err != nil {
-		return err
-	}
-
-	if s.Variable.Changed() {
-		if err := s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
+	if err := io(ctx, s, s); err == nil { // err == nil
+		if err = s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
 			return err
 		}
 	}

@@ -59,10 +59,6 @@ type Variable struct {
 	isVarChanged bool
 }
 
-func (v Variable) Changed() bool {
-	return v.isVarChanged
-}
-
 func (v *Variable) Put(key string, val any) {
 	part := strings.Split(key, ".")
 	if len(part) < 2 {
@@ -98,4 +94,11 @@ func (v *Variable) PutParam(key string, val any) {
 
 func (v Variable) Eval(ctx context.Context, el string) (any, error) {
 	return v.Evaluator.Eval(ctx, el, v)
+}
+
+func (v Variable) saveTo(ctx context.Context, s Storer) error {
+	if v.isVarChanged {
+		return s.SaveVar(ctx, v.ProcInst)
+	}
+	return nil
 }
