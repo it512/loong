@@ -28,6 +28,11 @@ func (l *liquid) Emit(ops ...Activity) error {
 func (l *liquid) doActivityTx(op Activity) {
 	err := l.engine.Txer.DoTx(l.engine.ctx, func(txCtx context.Context) (err error) {
 		if err = op.Do(txCtx); err != nil {
+			if e, ok := err.(boundaryErrorEventActivity); ok {
+				if e.Match() {
+					l.Emit(e)
+				}
+			}
 			return
 		}
 

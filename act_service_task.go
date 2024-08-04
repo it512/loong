@@ -15,29 +15,12 @@ type serviceTaskOp struct {
 }
 
 func (s *serviceTaskOp) Do(ctx context.Context) error {
-	if err := io(ctx, s, s); err == nil { // err == nil
-		if err = s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
-			return err
-		}
+	if err := io(ctx, s, s); err != nil { // err == nil
+		return w(err, s.GetId(), s.Variable)
 	}
-
-	/*
-		if e, ok := err.(*BizErr); ok {
-			for _, t := range s.Exec.ProcInst.Template.Definitions.Errors {
-				if cmp.Compare(t.ErrorCode, e.ErrorCode) == 0 {
-					return &actErrOp{
-						error: e,
-						Exec:  s.Exec,
-					}
-				}
-			}
-			return &actErrOp{
-				error: e,
-				Exec:  s.Exec,
-			}
-		}
-	*/
-
+	if err := s.Storer.SaveVar(ctx, s.ProcInst); err != nil {
+		return err
+	}
 	return nil
 }
 

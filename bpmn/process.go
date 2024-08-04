@@ -21,6 +21,7 @@ type TProcess struct {
 	IntermediateCatchEvent []TIntermediateCatchEvent `xml:"intermediateCatchEvent"`
 	IntermediateTrowEvent  []TIntermediateThrowEvent `xml:"intermediateThrowEvent"`
 	EventBasedGateway      []TEventBasedGateway      `xml:"eventBasedGateway"`
+	BoundaryEvent          []TBoundaryEvent          `xml:"boundaryEvent"`
 
 	// Properties []zeebe.TProperty `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
 	Properties []zeebe.TProperty `xml:"extensionElements>properties>property"`
