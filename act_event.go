@@ -65,8 +65,8 @@ func (n *StartProcCmd) Bind(ctx context.Context, e *Engine) error {
 		BusiType: n.BusiType,
 		Starter:  n.Starter,
 
-		Init: Merge(n.Variable.Init, n.Var),
-		Var:  Merge(n.Variable.Var, n.Var),
+		Init: Merge(nil, n.Var),
+		Var:  Merge(nil, n.Var),
 
 		Tags: maps.Clone(n.Tags),
 
