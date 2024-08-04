@@ -45,6 +45,7 @@ const (
 	OP_END_EVENT     ActivityType = "OP_END_EVENT"
 
 	AT_USER_TASK_COMMIT ActivityType = "USER_TASK_COMMIT"
+	AT_USER_TASK        ActivityType = "USER_TASK"
 )
 
 type BpmnElement interface{ bpmn.BaseElement }

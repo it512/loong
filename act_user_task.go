@@ -43,9 +43,11 @@ type userTaskOp struct {
 	InOut
 	UserTask
 	bpmn.TUserTask
-
-	UnimplementedActivity
 }
+
+func (u userTaskOp) Type() ActivityType                               { return AT_USER_TASK }
+func (u userTaskOp) GetTaskDefinition(context.Context) TaskDefinition { return u.Type() }
+func (userTaskOp) Emit(ctx context.Context, emt Emitter) error        { return nil }
 
 func (c *userTaskOp) Do(ctx context.Context) error {
 	if err := io(ctx, c, c); err != nil {
@@ -76,7 +78,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 
 			a.TaskID = c.Engine.NewID()
 
-			a.Variable.Input.Set("loopCounter", i)
+			a.Variable.PutInput("loopCounter", i)
 			if key := milc.GetInputElement(); key != "" {
 				a.Variable.PutInput(key, item)
 			}
