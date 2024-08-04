@@ -45,6 +45,11 @@ func OpenDBCtx(ctx context.Context, uri string) (*mongo.Client, error) {
 	return mongo.Connect(ctx, ClientOptions(uri))
 }
 
+type Config struct {
+	DBName string
+	URI    string
+}
+
 type Store struct {
 	client *mongo.Client
 	dbName string
@@ -52,17 +57,32 @@ type Store struct {
 	instName string
 	taskName string
 	execName string
+
+	config Config
 }
 
-func New(dbname string, client *mongo.Client) *Store {
-	return &Store{
-		client: client,
-		dbName: dbname,
+func New(ctx context.Context, config Config) (*Store, error) {
+	c, err := OpenDBCtx(ctx, config.URI)
+	if err != nil {
+		return nil, err
+	}
 
+	return &Store{
+		client:   c,
+		dbName:   config.DBName,
 		instName: "loong_inst",
 		taskName: "loong_task",
 		execName: "loong_exec",
-	}
+		config:   config,
+	}, nil
+}
+
+func (s *Store) Client() *mongo.Client {
+	return s.client
+}
+
+func (s *Store) DBName() string {
+	return s.dbName
 }
 
 func (s *Store) getColl(dbname, collname string) *mongo.Collection {
