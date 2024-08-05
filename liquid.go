@@ -29,8 +29,9 @@ func (l *liquid) doActivityTx(op Activity) {
 	err := l.engine.Txer.DoTx(l.engine.ctx, func(txCtx context.Context) (err error) {
 		if err = op.Do(txCtx); err != nil {
 			if e, ok := err.(boundaryErrorEventActivity); ok {
+				// 处理边界错误事件
 				if e.Match() {
-					l.Emit(e)
+					return l.Emit(e)
 				}
 			}
 			return
