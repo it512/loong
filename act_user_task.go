@@ -25,6 +25,7 @@ type UserTask struct {
 	CandidateGroups []string `json:"candidate_groups,omitempty"`
 	CandidateUsers  []string `json:"candidate_users,omitempty"`
 
+	Owner    string `json:"owner,omitempty"`
 	Operator string `json:"operator,omitempty"`
 
 	Result int `json:"result,omitempty"`
@@ -62,6 +63,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	c.UserTask.Status = STATUS_START
 	c.UserTask.BatchNo = c.Engine.NewID()
 	c.UserTask.Version = begin_version
+	c.UserTask.Owner = c.ProcInst.Starter
 
 	ad := c.TUserTask.AssignmentDefinition
 
