@@ -25,6 +25,8 @@ type userTaskData struct {
 	CandidateUsers  []string `json:"candidate_users,omitempty"`
 
 	Operator string `json:"operator,omitempty"`
+	Owner    string `json:"owner,omitempty"`
+	Manager  string `json:"manager,omitempty"`
 
 	Input loong.Var `json:"input,omitempty"`
 
@@ -56,6 +58,8 @@ func usertaskdata_2_usertask_no_exec(ut userTaskData) loong.UserTask {
 		CandidateUsers:  ut.CandidateUsers,
 
 		Operator: ut.Operator,
+		Owner:    ut.Owner,
+		Manager:  ut.Manager,
 
 		Result: ut.Result,
 
@@ -90,6 +94,8 @@ func usertask_2_usertaskdata(ut loong.UserTask) userTaskData {
 		CandidateUsers:  ut.CandidateUsers,
 
 		Operator: ut.Operator,
+		Owner:    ut.Owner,
+		Manager:  ut.Manager,
 
 		Input: ut.Variable.Input,
 
@@ -127,6 +133,8 @@ func usertaskdata_ptr_2_usertask_ptr(ut *loong.UserTask, u *userTaskData) *loong
 	ut.CandidateUsers = u.CandidateUsers
 
 	ut.Operator = u.Operator
+	ut.Owner = u.Owner
+	ut.Manager = u.Manager
 
 	ut.Variable.Input = u.Input
 
