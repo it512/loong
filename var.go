@@ -56,6 +56,8 @@ type Variable struct {
 	Input Var
 	Exec
 
+	BpmnElement
+
 	isVarChanged bool
 }
 

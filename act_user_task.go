@@ -66,6 +66,7 @@ func (c *userTaskOp) Do(ctx context.Context) error {
 	c.UserTask.Version = begin_version
 	c.UserTask.Owner = c.ProcInst.Starter
 	c.UserTask.Manager = c.ProcInst.Starter
+	c.Variable.BpmnElement = c
 
 	ad := c.TUserTask.AssignmentDefinition
 

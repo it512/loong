@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/expr-lang/expr v1.16.9
 	github.com/google/uuid v1.6.0
-	go.mongodb.org/mongo-driver v1.16.0
+	go.mongodb.org/mongo-driver v1.16.1
 )
 
 require (

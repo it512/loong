@@ -116,6 +116,16 @@ type Txer interface {
 	DoTx(context.Context, func(context.Context) error) error
 }
 
+type Xx interface {
+	Do(context.Context, Exec, BpmnElement) (string, string, error)
+}
+
+type X struct{}
+
+func (X) Do(ctx context.Context, v Variable) (owner, manager string, err error) {
+	return v.Starter, v.Starter, nil
+}
+
 func Each[S ~[]E, E any](s S, f func(E, int) error) error {
 	for i, item := range s {
 		if err := f(item, i); err != nil {
