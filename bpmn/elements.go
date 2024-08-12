@@ -2,27 +2,12 @@ package bpmn
 
 type ElementType string
 
-func (e ElementType) Type() (string, error) {
-	return string(e), nil
-}
-
-func (e ElementType) String() string {
-	return string(e)
-}
-
-func (e ElementType) Is(ele ElementType) bool {
-	return e == ele
-}
-
-func AsElementType(s string) ElementType {
-	return ElementType(s)
-}
-
 const (
 	StartEvent             ElementType = "START_EVENT"
 	EndEvent               ElementType = "END_EVENT"
 	Task                   ElementType = "TASK"
 	ServiceTask            ElementType = "SERVICE_TASK"
+	BusinessRuleTask       ElementType = "BUSINESS_RULE_TASK"
 	UserTask               ElementType = "USER_TASK"
 	ParallelGateway        ElementType = "PARALLEL_GATEWAY"
 	ExclusiveGateway       ElementType = "EXCLUSIVE_GATEWAY"

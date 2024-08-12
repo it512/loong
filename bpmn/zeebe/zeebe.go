@@ -62,3 +62,9 @@ type CalledElement struct {
 	ProcessID                  string `xml:"processId,attr"`
 	PropagateAllChildVariables bool   `xml:"propagateAllChildVariables,attr"`
 }
+
+type CalledDecision struct {
+	XMLName        xml.Name
+	DecisionID     string `xml:"decisionId,attr"`
+	ResultVariable string `xml:"resultVariable,attr"`
+}
