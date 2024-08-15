@@ -21,6 +21,7 @@ type TBusineeRuleTask struct {
 	Output []zeebe.TIoMapping `xml:"extensionElements>ioMapping>output"`
 
 	TaskDefinition zeebe.TTaskDefinition `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskDefinition"`
+	CalledDecision zeebe.CalledDecision  `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>calledDecision"`
 	TaskHeaders    []zeebe.TTaskHeader   `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>taskHeaders>header"`
 	Properties     []zeebe.TProperty     `xml:"http://camunda.org/schema/zeebe/1.0 extensionElements>properties>property"`
 }
