@@ -46,18 +46,18 @@ func (serviceTask TBusineeRuleTask) GetType() ElementType {
 	return BusinessRuleTask
 }
 
-func (serviceTask TServiceTask) GetIoInput() []zeebe.TIoMapping {
+func (serviceTask TBusineeRuleTask) GetIoInput() []zeebe.TIoMapping {
 	return serviceTask.Input
 }
 
-func (serviceTask TServiceTask) GetIoOutput() []zeebe.TIoMapping {
+func (serviceTask TBusineeRuleTask) GetIoOutput() []zeebe.TIoMapping {
 	return serviceTask.Output
 }
 
-func (s TServiceTask) GetTaskHeader(key string) (string, bool) {
+func (s TBusineeRuleTask) GetTaskHeader(key string) (string, bool) {
 	return zeebe.GetTaskHeader(s.TaskHeaders, key)
 }
 
-func (s TServiceTask) GetProperty(name string) (string, bool) {
+func (s TBusineeRuleTask) GetProperty(name string) (string, bool) {
 	return zeebe.GetProperty(s.Properties, name)
 }
