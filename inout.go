@@ -23,7 +23,7 @@ func (io *InOut) SetResult(key string, val any) {
 }
 
 func (io InOut) Get(key string) (any, bool) {
-	k, _ := exp(key)
+	k, _ := Expr(key)
 	return io.out.Get(k)
 }
 

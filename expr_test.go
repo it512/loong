@@ -1,16 +1,29 @@
 package loong
 
 import (
-	"context"
 	"testing"
 )
 
-func TestEmptyMap(t *testing.T) {
-	eval := NewExprEval()
-	var v Variable
-	// v.Input = Var{"op": "op"}
-	_, err := eval.Eval(context.Background(), "${Input.op}", v)
-	if err != nil {
-		t.Error(err)
+func TestEL(t *testing.T) {
+	el := "=a"
+	s, ok := Expr(el)
+	if !ok {
+		t.Error("xxxx")
+	}
+
+	if s != "a" {
+		t.Error("yyyy")
+	}
+}
+
+func TestEmptyEL(t *testing.T) {
+	el := "= "
+	s, ok := Expr(el)
+	if ok {
+		t.Error("xxxx")
+	}
+
+	if s != "" {
+		t.Error("yyyy")
 	}
 }

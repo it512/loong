@@ -58,8 +58,8 @@ func (e *ExprEval) Eval(ctx context.Context, ex string, a any) (any, error) {
 		el string
 		ok bool
 	)
-	if el, ok = exp(ex); !ok {
-		return el, nil
+	if el, ok = Expr(ex); !ok {
+		return el, nil // 不是表达式，直接返回
 	}
 
 	program, err := expr.Compile(el)
@@ -70,23 +70,29 @@ func (e *ExprEval) Eval(ctx context.Context, ex string, a any) (any, error) {
 	return e.inst.Run(program, a)
 }
 
-func exp(s string) (string, bool) {
-	a, ok1 := fx(s)
-	b, ok2 := el(a)
-	return b, (ok1 || ok2) && b != ""
+func Expr(s string) (string, bool) {
+	return fx(s)
 }
 
 func fx(s string) (string, bool) {
 	fx := strings.TrimSpace(s)
-	return strings.CutPrefix(fx, "=")
+	s, ok := strings.CutPrefix(fx, "=")
+	return s, ok && s != ""
 }
+
+/*
+func exp(s string) (string, bool) {
+	a, ok1 := fx(s)
+	b, ok2 := el(a)
+	return b, (ok1 || ok2)
+}
+
 
 func el(s string) (string, bool) {
 	fx := strings.TrimSpace(s)
 	if strings.HasPrefix(fx, "${") && strings.HasSuffix(fx, "}") {
-		if a, ok := strings.CutPrefix(fx, "${"); ok {
-			return strings.CutSuffix(a, "}")
-		}
+		return fx[2 : len(fx)-1], true
 	}
 	return fx, false
 }
+*/

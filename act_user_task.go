@@ -119,7 +119,7 @@ func groups(ctx context.Context, ae ActivationEvaluator, str string) (result []s
 		ok bool
 		a  any
 	)
-	if s, ok = exp(str); ok {
+	if s, ok = Expr(str); ok {
 		if a, err = ae.Eval(ctx, str); err != nil {
 			return
 		}
@@ -145,7 +145,7 @@ func assignee(ctx context.Context, ae ActivationEvaluator, str string) (result s
 		return
 	}
 
-	if _, ok := exp(str); ok {
+	if _, ok := Expr(str); ok {
 		result, _, err = eval[string](ctx, ae, str)
 	}
 
