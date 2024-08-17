@@ -77,7 +77,7 @@ func (v *Variable) PutScope(s, k string, val any) {
 	case "Input":
 		v.PutInput(k, val)
 	default:
-		panic(fmt.Errorf("作用域: %s 不被支持", s))
+		panic(fmt.Errorf("作用域: %s 不支持写入", s))
 	}
 }
 
