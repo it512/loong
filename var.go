@@ -3,6 +3,7 @@ package loong
 import (
 	"context"
 	"fmt"
+	"maps"
 	"strings"
 )
 
@@ -42,12 +43,11 @@ func Merge(dest, src Var) Var {
 	if dest == nil {
 		dest = NewVar()
 	}
+
 	if len(src) == 0 {
 		return dest
 	}
-	for k, v := range src {
-		dest[k] = v
-	}
+	maps.Copy(dest, src)
 	return dest
 }
 
