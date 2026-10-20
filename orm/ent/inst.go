@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/inst"
 )
@@ -19,7 +18,7 @@ import (
 type Inst struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// InstID holds the value of the "inst_id" field.
 	InstID string `json:"inst_id,omitempty"`
 	// ProcID holds the value of the "proc_id" field.
@@ -52,12 +51,10 @@ func (*Inst) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case inst.FieldStatus, inst.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case inst.FieldInstID, inst.FieldProcID, inst.FieldBusiKey, inst.FieldBusiType, inst.FieldStarter:
+		case inst.FieldID, inst.FieldInstID, inst.FieldProcID, inst.FieldBusiKey, inst.FieldBusiType, inst.FieldStarter:
 			values[i] = new(sql.NullString)
 		case inst.FieldStartTime, inst.FieldEndTime:
 			values[i] = new(sql.NullTime)
-		case inst.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -74,10 +71,10 @@ func (_m *Inst) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case inst.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				_m.ID = *value
+			} else if value.Valid {
+				_m.ID = value.String
 			}
 		case inst.FieldInstID:
 			if value, ok := values[i].(*sql.NullString); !ok {

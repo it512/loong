@@ -40,7 +40,7 @@ func (_d *UserTaskDelete) ExecX(ctx context.Context) int {
 }
 
 func (_d *UserTaskDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(usertask.Table, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewDeleteSpec(usertask.Table, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeString))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 )
 
@@ -136,7 +135,9 @@ var (
 	// DefaultVersion holds the default value on creation for the "version" field.
 	DefaultVersion int
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
+	DefaultID func() string
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the UserTask queries.

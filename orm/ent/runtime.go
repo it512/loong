@@ -5,7 +5,6 @@ package ent
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/inst"
 	"github.com/it512/loong/orm/ent/usertask"
@@ -127,7 +126,9 @@ func init() {
 	// instDescID is the schema descriptor for id field.
 	instDescID := instFields[0].Descriptor()
 	// inst.DefaultID holds the default value on creation for the id field.
-	inst.DefaultID = instDescID.Default.(func() uuid.UUID)
+	inst.DefaultID = instDescID.Default.(func() string)
+	// inst.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	inst.IDValidator = instDescID.Validators[0].(func(string) error)
 	usertaskFields := schema.UserTask{}.Fields()
 	_ = usertaskFields
 	// usertaskDescTaskID is the schema descriptor for task_id field.
@@ -295,5 +296,7 @@ func init() {
 	// usertaskDescID is the schema descriptor for id field.
 	usertaskDescID := usertaskFields[0].Descriptor()
 	// usertask.DefaultID holds the default value on creation for the id field.
-	usertask.DefaultID = usertaskDescID.Default.(func() uuid.UUID)
+	usertask.DefaultID = usertaskDescID.Default.(func() string)
+	// usertask.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	usertask.IDValidator = usertaskDescID.Validators[0].(func(string) error)
 }

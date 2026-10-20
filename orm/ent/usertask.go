@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/usertask"
 )
@@ -19,7 +18,7 @@ import (
 type UserTask struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID uuid.UUID `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// TaskID holds the value of the "task_id" field.
 	TaskID string `json:"task_id,omitempty"`
 	// InstID holds the value of the "inst_id" field.
@@ -72,12 +71,10 @@ func (*UserTask) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case usertask.FieldResult, usertask.FieldStatus, usertask.FieldVersion:
 			values[i] = new(sql.NullInt64)
-		case usertask.FieldTaskID, usertask.FieldInstID, usertask.FieldExecID, usertask.FieldBusiKey, usertask.FieldBusiType, usertask.FieldFormKey, usertask.FieldActID, usertask.FieldActName, usertask.FieldOwner, usertask.FieldAssignee, usertask.FieldCandidateUsers, usertask.FieldCandidateGroups, usertask.FieldOperator, usertask.FieldBatchNo:
+		case usertask.FieldID, usertask.FieldTaskID, usertask.FieldInstID, usertask.FieldExecID, usertask.FieldBusiKey, usertask.FieldBusiType, usertask.FieldFormKey, usertask.FieldActID, usertask.FieldActName, usertask.FieldOwner, usertask.FieldAssignee, usertask.FieldCandidateUsers, usertask.FieldCandidateGroups, usertask.FieldOperator, usertask.FieldBatchNo:
 			values[i] = new(sql.NullString)
 		case usertask.FieldStartTime, usertask.FieldEndTime:
 			values[i] = new(sql.NullTime)
-		case usertask.FieldID:
-			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -94,10 +91,10 @@ func (_m *UserTask) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case usertask.FieldID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
-			} else if value != nil {
-				_m.ID = *value
+			} else if value.Valid {
+				_m.ID = value.String
 			}
 		case usertask.FieldTaskID:
 			if value, ok := values[i].(*sql.NullString); !ok {

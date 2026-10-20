@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/it512/loong/orm/ent/predicate"
 	"github.com/it512/loong/orm/ent/usertask"
 )
@@ -83,8 +82,8 @@ func (_q *UserTaskQuery) FirstX(ctx context.Context) *UserTask {
 
 // FirstID returns the first UserTask ID from the query.
 // Returns a *NotFoundError when no UserTask ID was found.
-func (_q *UserTaskQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (_q *UserTaskQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -96,7 +95,7 @@ func (_q *UserTaskQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *UserTaskQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (_q *UserTaskQuery) FirstIDX(ctx context.Context) string {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -134,8 +133,8 @@ func (_q *UserTaskQuery) OnlyX(ctx context.Context) *UserTask {
 // OnlyID is like Only, but returns the only UserTask ID in the query.
 // Returns a *NotSingularError when more than one UserTask ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *UserTaskQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (_q *UserTaskQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -151,7 +150,7 @@ func (_q *UserTaskQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *UserTaskQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (_q *UserTaskQuery) OnlyIDX(ctx context.Context) string {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -179,7 +178,7 @@ func (_q *UserTaskQuery) AllX(ctx context.Context) []*UserTask {
 }
 
 // IDs executes the query and returns a list of UserTask IDs.
-func (_q *UserTaskQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+func (_q *UserTaskQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -191,7 +190,7 @@ func (_q *UserTaskQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *UserTaskQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (_q *UserTaskQuery) IDsX(ctx context.Context) []string {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -366,7 +365,7 @@ func (_q *UserTaskQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *UserTaskQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewQuerySpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeString))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

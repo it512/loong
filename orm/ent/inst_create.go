@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/inst"
 )
@@ -118,13 +117,13 @@ func (_c *InstCreate) SetNillableVersion(v *int) *InstCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *InstCreate) SetID(v uuid.UUID) *InstCreate {
+func (_c *InstCreate) SetID(v string) *InstCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *InstCreate) SetNillableID(v *uuid.UUID) *InstCreate {
+func (_c *InstCreate) SetNillableID(v *string) *InstCreate {
 	if v != nil {
 		_c.SetID(*v)
 	}
@@ -242,6 +241,11 @@ func (_c *InstCreate) check() error {
 	if _, ok := _c.mutation.Version(); !ok {
 		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "Inst.version"`)}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := inst.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Inst.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -257,10 +261,10 @@ func (_c *InstCreate) sqlSave(ctx context.Context) (*Inst, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Inst.ID type: %T", _spec.ID.Value)
 		}
 	}
 	_c.mutation.id = &_node.ID
@@ -271,12 +275,12 @@ func (_c *InstCreate) sqlSave(ctx context.Context) (*Inst, error) {
 func (_c *InstCreate) createSpec() (*Inst, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Inst{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(inst.Table, sqlgraph.NewFieldSpec(inst.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(inst.Table, sqlgraph.NewFieldSpec(inst.FieldID, field.TypeString))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.InstID(); ok {
 		_spec.SetField(inst.FieldInstID, field.TypeString, value)
@@ -595,7 +599,7 @@ func (u *InstUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *InstUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+func (u *InstUpsertOne) ID(ctx context.Context) (id string, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -609,7 +613,7 @@ func (u *InstUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *InstUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *InstUpsertOne) IDX(ctx context.Context) string {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

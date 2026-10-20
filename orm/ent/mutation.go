@@ -11,7 +11,6 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/inst"
 	"github.com/it512/loong/orm/ent/predicate"
@@ -36,7 +35,7 @@ type InstMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *string
 	inst_id       *string
 	proc_id       *string
 	busi_key      *string
@@ -75,7 +74,7 @@ func newInstMutation(c config, op Op, opts ...instOption) *InstMutation {
 }
 
 // withInstID sets the ID field of the mutation.
-func withInstID(id uuid.UUID) instOption {
+func withInstID(id string) instOption {
 	return func(m *InstMutation) {
 		var (
 			err   error
@@ -127,13 +126,13 @@ func (m InstMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of Inst entities.
-func (m *InstMutation) SetID(id uuid.UUID) {
+func (m *InstMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *InstMutation) ID() (id uuid.UUID, exists bool) {
+func (m *InstMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -144,12 +143,12 @@ func (m *InstMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *InstMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *InstMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -945,7 +944,7 @@ type UserTaskMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *uuid.UUID
+	id               *string
 	task_id          *string
 	inst_id          *string
 	exec_id          *string
@@ -995,7 +994,7 @@ func newUserTaskMutation(c config, op Op, opts ...usertaskOption) *UserTaskMutat
 }
 
 // withUserTaskID sets the ID field of the mutation.
-func withUserTaskID(id uuid.UUID) usertaskOption {
+func withUserTaskID(id string) usertaskOption {
 	return func(m *UserTaskMutation) {
 		var (
 			err   error
@@ -1047,13 +1046,13 @@ func (m UserTaskMutation) Tx() (*Tx, error) {
 
 // SetID sets the value of the id field. Note that this
 // operation is only accepted on creation of UserTask entities.
-func (m *UserTaskMutation) SetID(id uuid.UUID) {
+func (m *UserTaskMutation) SetID(id string) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserTaskMutation) ID() (id uuid.UUID, exists bool) {
+func (m *UserTaskMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1064,12 +1063,12 @@ func (m *UserTaskMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserTaskMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *UserTaskMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):

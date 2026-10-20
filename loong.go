@@ -4,8 +4,8 @@ import (
 	"cmp"
 	"context"
 	"log"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/it512/loong/bpmn"
 )
 
@@ -86,7 +86,7 @@ type IDGenerator interface {
 
 type uid struct{}
 
-func (uid) NewID() string { return uuid.Must(uuid.NewV7()).String() }
+func (uid) NewID() string { return uuid.NewV7().String() }
 
 type Emitter interface {
 	Emit(...Activity) error

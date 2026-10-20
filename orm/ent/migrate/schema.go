@@ -11,7 +11,7 @@ import (
 var (
 	// LoongInstColumns holds the columns for the "loong_inst" table.
 	LoongInstColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeString, Unique: true, SchemaType: map[string]string{"mysql": "char(36)", "postgres": "char(36)", "sqlite3": "char(36)"}},
 		{Name: "inst_id", Type: field.TypeString, Unique: true, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},
 		{Name: "proc_id", Type: field.TypeString, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},
 		{Name: "busi_key", Type: field.TypeString, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},
@@ -58,7 +58,7 @@ var (
 	}
 	// LoongUserTaskColumns holds the columns for the "loong_user_task" table.
 	LoongUserTaskColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID, Unique: true},
+		{Name: "id", Type: field.TypeString, Unique: true, SchemaType: map[string]string{"mysql": "char(36)", "postgres": "char(36)", "sqlite3": "char(36)"}},
 		{Name: "task_id", Type: field.TypeString, Unique: true, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},
 		{Name: "inst_id", Type: field.TypeString, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},
 		{Name: "exec_id", Type: field.TypeString, Nullable: true, Size: 64, SchemaType: map[string]string{"mysql": "varchar(64)", "postgres": "varchar(64)", "sqlite3": "varchar(64)"}},

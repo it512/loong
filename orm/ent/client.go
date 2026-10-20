@@ -9,7 +9,6 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/google/uuid"
 	"github.com/it512/loong/orm/ent/migrate"
 
 	"entgo.io/ent"
@@ -270,7 +269,7 @@ func (c *InstClient) UpdateOne(_m *Inst) *InstUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *InstClient) UpdateOneID(id uuid.UUID) *InstUpdateOne {
+func (c *InstClient) UpdateOneID(id string) *InstUpdateOne {
 	mutation := newInstMutation(c.config, OpUpdateOne, withInstID(id))
 	return &InstUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -287,7 +286,7 @@ func (c *InstClient) DeleteOne(_m *Inst) *InstDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *InstClient) DeleteOneID(id uuid.UUID) *InstDeleteOne {
+func (c *InstClient) DeleteOneID(id string) *InstDeleteOne {
 	builder := c.Delete().Where(inst.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -304,12 +303,12 @@ func (c *InstClient) Query() *InstQuery {
 }
 
 // Get returns a Inst entity by its id.
-func (c *InstClient) Get(ctx context.Context, id uuid.UUID) (*Inst, error) {
+func (c *InstClient) Get(ctx context.Context, id string) (*Inst, error) {
 	return c.Query().Where(inst.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *InstClient) GetX(ctx context.Context, id uuid.UUID) *Inst {
+func (c *InstClient) GetX(ctx context.Context, id string) *Inst {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -403,7 +402,7 @@ func (c *UserTaskClient) UpdateOne(_m *UserTask) *UserTaskUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserTaskClient) UpdateOneID(id uuid.UUID) *UserTaskUpdateOne {
+func (c *UserTaskClient) UpdateOneID(id string) *UserTaskUpdateOne {
 	mutation := newUserTaskMutation(c.config, OpUpdateOne, withUserTaskID(id))
 	return &UserTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -420,7 +419,7 @@ func (c *UserTaskClient) DeleteOne(_m *UserTask) *UserTaskDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserTaskClient) DeleteOneID(id uuid.UUID) *UserTaskDeleteOne {
+func (c *UserTaskClient) DeleteOneID(id string) *UserTaskDeleteOne {
 	builder := c.Delete().Where(usertask.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -437,12 +436,12 @@ func (c *UserTaskClient) Query() *UserTaskQuery {
 }
 
 // Get returns a UserTask entity by its id.
-func (c *UserTaskClient) Get(ctx context.Context, id uuid.UUID) (*UserTask, error) {
+func (c *UserTaskClient) Get(ctx context.Context, id string) (*UserTask, error) {
 	return c.Query().Where(usertask.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserTaskClient) GetX(ctx context.Context, id uuid.UUID) *UserTask {
+func (c *UserTaskClient) GetX(ctx context.Context, id string) *UserTask {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

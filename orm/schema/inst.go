@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 )
 
@@ -20,10 +19,7 @@ type Inst struct {
 func (Inst) Fields() []ent.Field {
 	return []ent.Field{
 
-		field.UUID("id", uuid.Nil).
-			Default(uuid.New).
-			Unique().
-			Immutable(),
+		field.String("id").Immutable().Unique().NotEmpty().DefaultFunc(id).SchemaType(char(36)),
 
 		field.String("inst_id").
 			MaxLen(64).

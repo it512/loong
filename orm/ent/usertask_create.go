@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 	"github.com/it512/loong/orm/ent/usertask"
 )
@@ -258,13 +257,13 @@ func (_c *UserTaskCreate) SetNillableVersion(v *int) *UserTaskCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *UserTaskCreate) SetID(v uuid.UUID) *UserTaskCreate {
+func (_c *UserTaskCreate) SetID(v string) *UserTaskCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (_c *UserTaskCreate) SetNillableID(v *uuid.UUID) *UserTaskCreate {
+func (_c *UserTaskCreate) SetNillableID(v *string) *UserTaskCreate {
 	if v != nil {
 		_c.SetID(*v)
 	}
@@ -438,6 +437,11 @@ func (_c *UserTaskCreate) check() error {
 	if _, ok := _c.mutation.Version(); !ok {
 		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "UserTask.version"`)}
 	}
+	if v, ok := _c.mutation.ID(); ok {
+		if err := usertask.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserTask.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -453,10 +457,10 @@ func (_c *UserTaskCreate) sqlSave(ctx context.Context) (*UserTask, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected UserTask.ID type: %T", _spec.ID.Value)
 		}
 	}
 	_c.mutation.id = &_node.ID
@@ -467,12 +471,12 @@ func (_c *UserTaskCreate) sqlSave(ctx context.Context) (*UserTask, error) {
 func (_c *UserTaskCreate) createSpec() (*UserTask, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserTask{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(usertask.Table, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeUUID))
+		_spec = sqlgraph.NewCreateSpec(usertask.Table, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeString))
 	)
 	_spec.OnConflict = _c.conflict
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = &id
+		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.TaskID(); ok {
 		_spec.SetField(usertask.FieldTaskID, field.TypeString, value)
@@ -933,7 +937,7 @@ func (u *UserTaskUpsertOne) ExecX(ctx context.Context) {
 }
 
 // Exec executes the UPSERT query and returns the inserted/updated ID.
-func (u *UserTaskUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
+func (u *UserTaskUpsertOne) ID(ctx context.Context) (id string, err error) {
 	if u.create.driver.Dialect() == dialect.MySQL {
 		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
 		// fields from the database since MySQL does not support the RETURNING clause.
@@ -947,7 +951,7 @@ func (u *UserTaskUpsertOne) ID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // IDX is like ID, but panics if an error occurs.
-func (u *UserTaskUpsertOne) IDX(ctx context.Context) uuid.UUID {
+func (u *UserTaskUpsertOne) IDX(ctx context.Context) string {
 	id, err := u.ID(ctx)
 	if err != nil {
 		panic(err)

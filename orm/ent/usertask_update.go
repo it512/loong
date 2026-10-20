@@ -188,7 +188,7 @@ func (_u *UserTaskUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeString))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -442,7 +442,7 @@ func (_u *UserTaskUpdateOne) sqlSave(ctx context.Context) (_node *UserTask, err 
 	if err := _u.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewUpdateSpec(usertask.Table, usertask.Columns, sqlgraph.NewFieldSpec(usertask.FieldID, field.TypeString))
 	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserTask.id" for update`)}

@@ -20,7 +20,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   inst.Table,
 			Columns: inst.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: inst.FieldID,
 			},
 		},
@@ -43,7 +43,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Table:   usertask.Table,
 			Columns: usertask.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeString,
 				Column: usertask.FieldID,
 			},
 		},
@@ -115,8 +115,8 @@ func (f *InstFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *InstFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql string predicate on the id field.
+func (f *InstFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(inst.FieldID))
 }
 
@@ -205,8 +205,8 @@ func (f *UserTaskFilter) Where(p entql.P) {
 	})
 }
 
-// WhereID applies the entql [16]byte predicate on the id field.
-func (f *UserTaskFilter) WhereID(p entql.ValueP) {
+// WhereID applies the entql string predicate on the id field.
+func (f *UserTaskFilter) WhereID(p entql.StringP) {
 	f.Where(p.Field(usertask.FieldID))
 }
 

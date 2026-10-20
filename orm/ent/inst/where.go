@@ -6,53 +6,62 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/google/uuid"
 	"github.com/it512/loong/orm/ent/predicate"
 )
 
 // ID filters vertices based on their ID field.
-func ID(id uuid.UUID) predicate.Inst {
+func ID(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id uuid.UUID) predicate.Inst {
+func IDEQ(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id uuid.UUID) predicate.Inst {
+func IDNEQ(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...uuid.UUID) predicate.Inst {
+func IDIn(ids ...string) predicate.Inst {
 	return predicate.Inst(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...uuid.UUID) predicate.Inst {
+func IDNotIn(ids ...string) predicate.Inst {
 	return predicate.Inst(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id uuid.UUID) predicate.Inst {
+func IDGT(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id uuid.UUID) predicate.Inst {
+func IDGTE(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id uuid.UUID) predicate.Inst {
+func IDLT(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id uuid.UUID) predicate.Inst {
+func IDLTE(id string) predicate.Inst {
 	return predicate.Inst(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Inst {
+	return predicate.Inst(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Inst {
+	return predicate.Inst(sql.FieldContainsFold(FieldID, id))
 }
 
 // InstID applies equality check predicate on the "inst_id" field. It's identical to InstIDEQ.

@@ -9,7 +9,6 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
-	"github.com/google/uuid"
 	"github.com/it512/loong"
 )
 
@@ -20,17 +19,14 @@ type UserTask struct {
 func (UserTask) Fields() []ent.Field {
 	return []ent.Field{
 
-		field.UUID("id", uuid.Nil).
-			Default(uuid.New).
-			Unique().
-			Immutable(),
+		field.String("id").Immutable().Unique().NotEmpty().DefaultFunc(id).SchemaType(char(36)),
 
 		field.String("task_id").
 			MaxLen(64).
 			NotEmpty().
 			Unique().
 			Immutable().
-			DefaultFunc(uuid.NewString).
+			DefaultFunc(id).
 			SchemaType(map[string]string{
 				dialect.MySQL:    "varchar(64)", // Override MySQL.
 				dialect.Postgres: "varchar(64)", // Override Postgres.

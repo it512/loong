@@ -9,6 +9,8 @@ import (
 	"github.com/it512/loong/orm/ent"
 )
 
+const PGX = "pgx"
+
 func OpenClient(db *sql.DB, driverName string, opts ...ent.Option) (*ent.Client, error) {
 	switch driverName {
 	case dialect.MySQL, dialect.Postgres, dialect.SQLite:

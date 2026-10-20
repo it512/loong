@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/it512/loong/orm/ent/inst"
 	"github.com/it512/loong/orm/ent/predicate"
 )
@@ -83,8 +82,8 @@ func (_q *InstQuery) FirstX(ctx context.Context) *Inst {
 
 // FirstID returns the first Inst ID from the query.
 // Returns a *NotFoundError when no Inst ID was found.
-func (_q *InstQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (_q *InstQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
@@ -96,7 +95,7 @@ func (_q *InstQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *InstQuery) FirstIDX(ctx context.Context) uuid.UUID {
+func (_q *InstQuery) FirstIDX(ctx context.Context) string {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -134,8 +133,8 @@ func (_q *InstQuery) OnlyX(ctx context.Context) *Inst {
 // OnlyID is like Only, but returns the only Inst ID in the query.
 // Returns a *NotSingularError when more than one Inst ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *InstQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
-	var ids []uuid.UUID
+func (_q *InstQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
@@ -151,7 +150,7 @@ func (_q *InstQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *InstQuery) OnlyIDX(ctx context.Context) uuid.UUID {
+func (_q *InstQuery) OnlyIDX(ctx context.Context) string {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -179,7 +178,7 @@ func (_q *InstQuery) AllX(ctx context.Context) []*Inst {
 }
 
 // IDs executes the query and returns a list of Inst IDs.
-func (_q *InstQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
+func (_q *InstQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
@@ -191,7 +190,7 @@ func (_q *InstQuery) IDs(ctx context.Context) (ids []uuid.UUID, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *InstQuery) IDsX(ctx context.Context) []uuid.UUID {
+func (_q *InstQuery) IDsX(ctx context.Context) []string {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -366,7 +365,7 @@ func (_q *InstQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (_q *InstQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(inst.Table, inst.Columns, sqlgraph.NewFieldSpec(inst.FieldID, field.TypeUUID))
+	_spec := sqlgraph.NewQuerySpec(inst.Table, inst.Columns, sqlgraph.NewFieldSpec(inst.FieldID, field.TypeString))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
